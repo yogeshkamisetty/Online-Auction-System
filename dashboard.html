@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Online Auction System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+
+        <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="home.html" class="logo">
+                    <span class="logo-icon">G</span>
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="home.html">Home</a>
+                    <a href="browse.html">Browse Auctions</a>
+                    <a href="dashboard.html" class="active">Dashboard</a>
+                    <a href="profile.html">Profile</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="login-link">Log In</a>
+                <a href="register.html" class="btn btn-dark">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        </nav>
+
+    <main class="container">
+        <h1 class="page-title">Welcome back, User!</h1>
+        
+        <div class="split-layout">
+            <aside class="sidebar dashboard-menu">
+                <ul>
+                    <li><a href="#" class="active">My Active Bids</a></li>
+                    <li><a href="#">Items Won</a></li>
+                    <li><a href="#">My Listings</a></li>
+                    <li><a href="#">Account Settings</a></li>
+                </ul>
+            </aside>
+
+            <div class="main-content dashboard-panel">
+                <h2>My Active Bids</h2>
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>My Highest Bid</th>
+                            <th>Current Top Bid</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vintage Typewriter</td>
+                            <td>$145.00</td>
+                            <td>$145.00</td>
+                            <td class="status-winning">Winning</td>
+                            <td><a href="item.html">View</a></td>
+                        </tr>
+                        <tr>
+                            <td>Antique Gold Watch</td>
+                            <td>$800.00</td>
+                            <td>$850.00</td>
+                            <td class="status-outbid">Outbid</td>
+                            <td><a href="item.html">Bid Again</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

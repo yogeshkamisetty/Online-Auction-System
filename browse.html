@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Auctions | Online Auction System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="home.html" class="logo">
+                    <span class="logo-icon">G</span>
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="home.html">Home</a>
+                    <a href="browse.html" class="active">Browse Auctions</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="profile.html">Profile</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="login-link">Log In</a>
+                <a href="register.html" class="btn btn-dark">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Browse All Categories</h1>
+        
+        <div class="split-layout">
+            <aside class="sidebar">
+                <h3>Filters</h3>
+                <div class="filter-group">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><label><input type="checkbox"> Antiques</label></li>
+                        <li><label><input type="checkbox"> Electronics</label></li>
+                        <li><label><input type="checkbox"> Art</label></li>
+                        <li><label><input type="checkbox"> Vehicles</label></li>
+                    </ul>
+                </div>
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <input type="number" placeholder="Min $" class="price-input"> - 
+                    <input type="number" placeholder="Max $" class="price-input">
+                </div>
+                <button class="view-details-btn filter-btn">Apply Filters</button>
+            </aside>
+
+            <div class="main-content">
+                <div class="auction-grid">
+                    <article class="auction-item">
+                        <img src="https://via.placeholder.com/400x300" alt="Oil Painting" class="item-image">
+                        <h3 class="item-title">Original Oil Painting</h3>
+                        <p class="current-bid">Current Bid: $320.00</p>
+                        <p class="time-remaining">Ends in: 05:12:00</p>
+                        <a href="item.html" class="view-details-btn">View Details</a>
+                    </article>
+                    </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
