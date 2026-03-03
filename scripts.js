@@ -1,7 +1,9 @@
 const products = [
     {
         pid: 101,
-        productimg: "images/Vintagecamera.avif", 
+        productimg: {
+            src: "images/Vintagecamera.avif",
+        },
         category: "Electronics",
         cardtitle: "Vintage 1970s Film Camera",
         carddesc: "A pristine condition 35mm film camera. Fully functional with original lens cap and leather strap. Perfect for...",
@@ -10,7 +12,9 @@ const products = [
     },
     {
         pid: 102,
-        productimg: "images/Modernchair.avif",
+        productimg: {
+            src: "images/Modernchair.avif",
+        },
         category: "Furniture",
         cardtitle: "Mid-Century Modern Chair",
         carddesc: "Authentic teak wood chair with original upholstery. Minor wear consistent with age. A statement piece for...",
@@ -19,12 +23,26 @@ const products = [
     },
     {
         pid: 103,
-        productimg: "images/Antique Gold Watch.webp",
+        productimg: {
+            src: "images/Antique Gold Watch.webp",
+        },
         category: "Accessories",
         cardtitle: "Limited Edition Antique Gold Watch",
         carddesc: "Swiss movement, sapphire crystal. Number 45 of 500. Comes with box and papers.",
         bidprice: "$830",
         bidcount: "1"
+    },
+    {
+        pid: 104,
+        productimg: {
+            src: "images/1965-ford-mustang-gt-fastback.jpeg",
+            src1: "images/Ford-Mustang-Fastback-Grey-Red-1.jpg",
+        },
+        category: "Vehicles",
+        cardtitle: "Classic 1965 Mustang Fastback",
+        carddesc: "Restored to original specs. V8 engine, manual transmission. Runs perfectly and looks stunning.",
+        bidprice: "$25,000",
+        bidcount: "5"
     }
 ];
 
@@ -44,10 +62,10 @@ if (itemDetailsLayout && pid) {
         const productHTML = `
             <div class="item-gallery">
                 <div class="main-image-container">
-                    <img src="${product.productimg}" alt="${product.cardtitle}" class="main-item-image">
+                    <img src="${product.productimg.src}" alt="${product.cardtitle}" class="main-item-image">
                 </div>
                 <div class="thumbnail-list">
-                    <img src="${product.productimg}" class="thumbnail active">
+                    <img src="${product.productimg.src1}" class="thumbnail active">
                     <div class="thumbnail placeholder"></div>
                     <div class="thumbnail placeholder"></div>
                 </div>
@@ -144,7 +162,7 @@ if (auctionProducts) {
         const productCard = `
             <article class="auction-card">
                 <div class="card-image-wrapper">
-                    <img src="${product.productimg}" alt="${product.cardtitle}" class="card-image"> <span class="badge category-badge">${product.category}</span>
+                    <img src="${product.productimg.src}" alt="${product.cardtitle}" class="card-image"> <span class="badge category-badge">${product.category}</span>
                     <span class="badge timer-badge left">Ends in:</span>
                     <span class="badge timer-badge right">1d 23h</span>
                 </div>
@@ -167,4 +185,10 @@ if (auctionProducts) {
         `;
         auctionProducts.innerHTML += productCard;
     });
+}
+
+function placeBid(pid) {
+    
+    document.querySelector(".alert-success").style.display = "block";
+
 }
