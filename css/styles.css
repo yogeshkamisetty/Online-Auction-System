@@ -175,7 +175,7 @@ a {
 .hero {
     background-color: var(--hero-bg);
     color: white;
-    padding: 100px 0;
+    padding: 250px 0;
     text-align: center;
 }
 
@@ -793,4 +793,8 @@ a {
     .item-gallery {
         max-width: 100%;
     }
+}
+
+.alert.alert-success{
+    display: none;
 }
