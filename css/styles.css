@@ -204,17 +204,115 @@ a {
 }
 
 /* =========================================
+   Category Section (New Layout)
+   ========================================= */
+
+.categories {    
+    background-color: var(--bg-light); 
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Forces 3 equal columns */
+    gap: 40px; /* Creates the breathing room between columns */
+}
+
+.category-column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* The header with the title and arrow */
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--text-main); /* The solid dark line under the title */
+    margin-bottom: 20px;
+}
+
+.category-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.category-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.2s;
+    /* Optional: Add a subtle circle around the arrow to match the reference */
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-arrow:hover {
+    color: var(--text-main);
+    border-color: var(--text-main);
+}
+
+/* Forces the images into the wide landscape box */
+.category-image-new {
+    width: 100%;
+    aspect-ratio: 4 / 3; /* Landscape rectangle */
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+/* The list of links below the image */
+.category-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-links li {
+    border-bottom: 1px solid var(--border-color); /* The faint lines between items */
+}
+
+.category-links li:last-child {
+    border-bottom: none; /* Removes the line from the very last item */
+}
+
+.category-links li a {
+    display: block;
+    padding: 15px 0;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.category-links li a:hover {
+    color: var(--primary); /* Turns golden on hover */
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 900px) {
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .category-grid {
+        grid-template-columns: 1fr; /* Stacks into a single column on phones */
+        gap: 50px;
+    }
+}
+/* =========================================
    Featured Auctions
    ========================================= */
 .section-padding {
     padding: 80px 24px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 30px;
 }
 
 .section-title {
