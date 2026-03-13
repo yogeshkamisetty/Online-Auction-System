@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Auctions | Online Auction System</title>
+    <title>Browse Auctions | Golden Hammer Auctions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -29,42 +30,55 @@
         </div>
     </header>
 
-    <main class="container">
-        <h1 class="page-title">Browse All Categories</h1>
+    <main class="container page-spacing">
+        
+        <div class="page-header">
+            <h1 class="page-title">Browse All Categories</h1>
+        </div>
         
         <div class="split-layout">
+            
             <aside class="sidebar">
-                <h3>Filters</h3>
+                <h3 class="sidebar-title">Filters</h3>
+                
                 <div class="filter-group">
                     <h4>Categories</h4>
-                    <ul>
-                        <li><label><input type="checkbox"> Antiques</label></li>
-                        <li><label><input type="checkbox"> Electronics</label></li>
-                        <li><label><input type="checkbox"> Art</label></li>
-                        <li><label><input type="checkbox"> Vehicles</label></li>
+                    <ul class="filter-list">
+                        <li><label><input type="checkbox"> Ancient</label></li>
+                        <li><label><input type="checkbox"> Modern</label></li>
+                        <li><label><input type="checkbox"> Luxury</label></li>
+                        <li><label><input type="checkbox"> Furniture</label></li>
                     </ul>
                 </div>
+                
                 <div class="filter-group">
                     <h4>Price Range</h4>
-                    <input type="number" placeholder="Min $" class="price-input"> - 
-                    <input type="number" placeholder="Max $" class="price-input">
+                    <div class="price-inputs">
+                        <input type="number" placeholder="Min $" class="price-input"> 
+                        <span>-</span> 
+                        <input type="number" placeholder="Max $" class="price-input">
+                    </div>
                 </div>
-                <button class="view-details-btn filter-btn">Apply Filters</button>
+                
+                <button class="btn btn-primary filter-btn">Apply Filters</button>
             </aside>
 
             <div class="main-content">
+                
                 <div class="auction-grid">
-                    <article class="auction-item">
-                        <img src="https://via.placeholder.com/400x300" alt="Oil Painting" class="item-image">
-                        <h3 class="item-title">Original Oil Painting</h3>
-                        <p class="current-bid">Current Bid: $320.00</p>
-                        <p class="time-remaining">Ends in: 05:12:00</p>
-                        <a href="item.html" class="view-details-btn">View Details</a>
-                    </article>
                     </div>
+                
             </div>
+            
         </div>
     </main>
 
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Golden Hammer Auctions. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
 </body>
 </html>

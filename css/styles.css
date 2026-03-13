@@ -213,8 +213,8 @@ a {
 
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Forces 3 equal columns */
-    gap: 40px; /* Creates the breathing room between columns */
+    grid-template-columns: 1fr 1fr 1fr;  /* Forces 3 equal columns */
+    gap: 40px;
 }
 
 .category-column {
@@ -264,6 +264,7 @@ a {
     aspect-ratio: 4 / 3; /* Landscape rectangle */
     object-fit: cover;
     margin-bottom: 15px;
+    border-radius: 20px;
 }
 
 /* The list of links below the image */
@@ -295,19 +296,7 @@ a {
     color: var(--primary); /* Turns golden on hover */
 }
 
-/* Adjustments for smaller screens */
-@media (max-width: 900px) {
-    .category-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
-    }
-}
 
-@media (max-width: 600px) {
-    .category-grid {
-        grid-template-columns: 1fr; /* Stacks into a single column on phones */
-        gap: 50px;
-    }
-}
 /* =========================================
    Featured Auctions
    ========================================= */
@@ -895,4 +884,196 @@ a {
 
 .alert.alert-success{
     display: none;
+}
+
+/* =========================================
+   Browse Page Layout & Sidebar
+   ========================================= */
+
+/* Box model spacing for the whole page */
+.page-spacing {
+    padding-top: 40px;
+    padding-bottom: 80px;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-title {
+    font-size: 2rem;
+    color: var(--text-main);
+}
+
+.split-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start; /* Prevents the sidebar from stretching to the bottom of the page */
+}
+
+/* THE SIDEBAR 
+*/
+.sidebar {
+    /* Flex property: Don't grow (0), don't shrink (0), stay exactly 280px wide */
+    flex: 0 0 280px; 
+    
+    background-color: var(--bg-light);
+    padding: 25px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.sidebar-title {
+    margin-bottom: 20px;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.filter-group {
+    margin-bottom: 25px;
+}
+
+.filter-group h4 {
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.filter-list {
+    list-style: none; /* Removes bullet points */
+    padding: 0;
+}
+
+.filter-list li {
+    margin-bottom: 10px; /* Box Model: Space between list items */
+}
+
+.filter-list label {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between the checkbox and the text */
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+/* Price Range Inputs */
+.price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.price-input {
+    width: 100%; /* Makes input fill its half of the container */
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-family);
+}
+
+.filter-btn {
+    width: 100%; /* Makes the button fill the whole sidebar width */
+    margin-top: 10px;
+}
+
+/* THE MAIN CONTENT (The Right Side)
+*/
+.main-content {
+    flex: 1; 
+}
+
+/* =========================================
+   Welcome Split Section
+   ========================================= */
+
+/* The outer section container */
+.welcome-section {
+    background-color: #f4f1e9; 
+    margin: 80px 0; 
+}
+
+.welcome-split {
+    display: flex;
+    align-items: stretch; 
+}
+
+.welcome-text-box {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    padding: 60px 10%; 
+    text-align: center; 
+}
+
+.welcome-heading {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.3;
+    margin-bottom: 30px;
+}
+
+.welcome-paragraph {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.8;
+    max-width: 450px; 
+    margin-bottom: 40px; 
+}
+
+.more-link {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 2px; 
+    text-transform: uppercase;
+    
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.2s;
+}
+
+.more-link:hover {
+    color: #d4af37; 
+}
+
+.welcome-image-box {
+    flex: 1; 
+}
+
+.welcome-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    display: block; 
+    min-height: 400px; 
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN (Tablets & Mobile)
+   ========================================= */
+
+/* When the screen gets smaller than 900px (Tablets & Phones) */
+@media (max-width: 900px) {
+    .welcome-split {
+        /* Change the flex direction to stack the text on top of the image */
+        flex-direction: column; 
+    }
+    
+    .welcome-text-box {
+        padding: 60px 24px; /* Reduce padding for smaller screens */
+    }
+    
+    .welcome-image-box {
+        /* Set a fixed height for the image on mobile so it doesn't take over the whole screen */
+        height: 350px; 
+    }
 }
