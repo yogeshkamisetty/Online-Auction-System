@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Golden Hammer Auctions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">G</span>
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="browse.html">Browse Auctions</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="profile.html" class="active">Profile</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="login-link">Log Out</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container page-spacing">
+        
+        <div class="profile-header-wrapper">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-card">
+                <div class="profile-avatar-container">
+                    <div class="avatar-huge">A</div>
+                </div>
+                
+                <div class="profile-title-area">
+                    <h1 class="profile-name">Alex Doe</h1>
+                    <p class="profile-tagline">Avid Collector & Trusted Seller</p>
+                    <div class="profile-metrics">
+                        <span class="metric-item">⭐️ 4.9 (124 Reviews)</span>
+                        <span class="metric-divider">•</span>
+                        <span class="metric-item">Member since Jan 2024</span>
+                        <span class="metric-divider">•</span>
+                        <span class="metric-item">📍 New York, USA</span>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn btn-outline-dark">Share Profile</button>
+                    <button class="btn btn-primary">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-content-grid">
+            
+            <div class="profile-column-left">
+                
+                <div class="profile-card">
+                    <h3 class="profile-card-title">Contact Information</h3>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Email Address</span>
+                        <span class="info-value">alex.doe@example.com</span>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Phone Number</span>
+                        <span class="info-value">+1 (555) 123-4567</span>
+                    </div>
+                    
+                    <div class="info-group">
+                        <span class="info-label">Shipping Address</span>
+                        <span class="info-value">123 Vintage Lane, Suite 4B<br>New York, NY 10001</span>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3 class="profile-card-title">Account Preferences</h3>
+                    
+                    <div class="preference-item">
+                        <div class="pref-text">
+                            <span class="info-value">Email Notifications</span>
+                            <span class="info-label">Receive updates on outbid alerts</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="preference-item">
+                        <div class="pref-text">
+                            <span class="info-value">SMS Alerts</span>
+                            <span class="info-label">Get texts when auctions end</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="profile-column-right">
+                
+                <div class="profile-card">
+                    <h3 class="profile-card-title">About Me</h3>
+                    <p class="profile-bio">
+                        Hello! I am a passionate collector of mid-century modern furniture and rare mechanical watches. I have been buying and selling unique artifacts for over 10 years. I pride myself on fast shipping, secure packaging, and honest descriptions. Always happy to answer questions about any of my active listings!
+                    </p>
+                </div>
+
+                <div class="profile-card">
+                    <div class="card-title-flex">
+                        <h3 class="profile-card-title">Recent Feedback</h3>
+                        <a href="#" class="view-all-link">View All</a>
+                    </div>
+                    
+                    <div class="feedback-list">
+                        <div class="feedback-item">
+                            <div class="feedback-header">
+                                <span class="feedback-rating">⭐️⭐️⭐️⭐️⭐️</span>
+                                <span class="feedback-date">2 days ago</span>
+                            </div>
+                            <p class="feedback-text">"Item arrived exactly as described and incredibly well-packaged. Fast shipping. Highly recommended seller!"</p>
+                            <span class="feedback-auction">Purchased: <a href="#">Vintage 1970s Film Camera</a></span>
+                        </div>
+                        
+                        <div class="feedback-item">
+                            <div class="feedback-header">
+                                <span class="feedback-rating">⭐️⭐️⭐️⭐️⭐️</span>
+                                <span class="feedback-date">1 week ago</span>
+                            </div>
+                            <p class="feedback-text">"Smooth transaction. Alex was very responsive and answered all my questions regarding the provenance of the piece."</p>
+                            <span class="feedback-auction">Purchased: <a href="#">Mid-Century Modern Chair</a></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Golden Hammer Auctions. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
