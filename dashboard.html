@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Online Auction System</title>
+    <title>Dashboard | Golden Hammer Auctions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-
-        <header class="site-header">
+    <header class="site-header">
         <div class="container navbar">
             <div class="nav-left">
                 <a href="index.html" class="logo">
@@ -24,60 +24,169 @@
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="login.html" class="login-link">Log In</a>
-                <a href="register.html" class="btn btn-dark">Get Started</a>
+                <a href="login.html" class="login-link">Log Out</a>
             </div>
         </div>
     </header>
 
-    <nav class="navbar">
-        </nav>
-
-    <main class="container">
-        <h1 class="page-title">Welcome back, User!</h1>
+    <main class="container page-spacing">
+        
+        <div class="dashboard-header">
+            <h1 class="page-title">Welcome back, Yogesh!</h1>
+            
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" onclick="switchTab('buyer')">Buyer Dashboard</button>
+                <button class="tab-btn" onclick="switchTab('seller')">Seller Dashboard</button>
+            </div>
+        </div>
         
         <div class="split-layout">
-            <aside class="sidebar dashboard-menu">
-                <ul>
-                    <li><a href="#" class="active">My Active Bids</a></li>
-                    <li><a href="#">Items Won</a></li>
-                    <li><a href="#">My Listings</a></li>
+            
+            <aside class="sidebar">
+                <div class="user-profile-mini">
+                    <div class="avatar-large">Y</div>
+                    <h3>Yogesh Kamisetty</h3>
+                    <p>Member since 2024</p>
+                </div>
+                
+                <h3 class="sidebar-title">Account Menu</h3>
+                <ul class="dashboard-menu">
+                    <li><a href="#" class="active">Dashboard Home</a></li>
+                    <li><a href="#">Messages <span class="badge-notification">2</span></a></li>
+                    <li><a href="#">Watchlist</a></li>
                     <li><a href="#">Account Settings</a></li>
+                    <li><a href="#">Payment Methods</a></li>
                 </ul>
             </aside>
 
-            <div class="main-content dashboard-panel">
-                <h2>My Active Bids</h2>
-                <table class="dashboard-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>My Highest Bid</th>
-                            <th>Current Top Bid</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Vintage Typewriter</td>
-                            <td>$145.00</td>
-                            <td>$145.00</td>
-                            <td class="status-winning">Winning</td>
-                            <td><a href="item.html">View</a></td>
-                        </tr>
-                        <tr>
-                            <td>Antique Gold Watch</td>
-                            <td>$800.00</td>
-                            <td>$850.00</td>
-                            <td class="status-outbid">Outbid</td>
-                            <td><a href="item.html">Bid Again</a></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="main-content">
+                
+                <div id="buyerView" class="dashboard-panel active-panel">
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4 class="metric-title">Active Bids</h4>
+                            <p class="metric-value">3</p>
+                        </div>
+                        <div class="metric-card">
+                            <h4 class="metric-title">Items Won</h4>
+                            <p class="metric-value">12</p>
+                        </div>
+                        <div class="metric-card">
+                            <h4 class="metric-title">Total Spent</h4>
+                            <p class="metric-value">$4,250</p>
+                        </div>
+                    </div>
+
+                    <h2 class="panel-heading">My Active Bids</h2>
+                    
+                    <div class="table-container">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>My Highest Bid</th>
+                                    <th>Current Top Bid</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Vintage 1970s Film Camera</td>
+                                    <td>$150.00</td>
+                                    <td>$150.00</td>
+                                    <td><span class="status-badge winning">Winning</span></td>
+                                    <td><a href="item.html" class="action-link">View</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Antique Gold Watch</td>
+                                    <td>$800.00</td>
+                                    <td>$850.00</td>
+                                    <td><span class="status-badge outbid">Outbid</span></td>
+                                    <td><a href="item.html" class="btn btn-primary btn-sm">Bid Again</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="sellerView" class="dashboard-panel" style="display: none;">
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4 class="metric-title">Active Listings</h4>
+                            <p class="metric-value">5</p>
+                        </div>
+                        <div class="metric-card">
+                            <h4 class="metric-title">Items Sold</h4>
+                            <p class="metric-value">24</p>
+                        </div>
+                        <div class="metric-card">
+                            <h4 class="metric-title">Total Revenue</h4>
+                            <p class="metric-value">$12,890</p>
+                        </div>
+                    </div>
+
+                    <div class="panel-header-flex">
+                        <h2 class="panel-heading">My Active Listings</h2>
+                        <button class="btn btn-primary">Create New Auction</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th>Starting Price</th>
+                                    <th>Current Bid</th>
+                                    <th>Time Left</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mid-Century Modern Chair</td>
+                                    <td>$200.00</td>
+                                    <td>$420.00 <span class="bid-count">(2 bids)</span></td>
+                                    <td>23h 56m</td>
+                                    <td><a href="item.html" class="action-link">Manage</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Roman Empire Silver Coin</td>
+                                    <td>$50.00</td>
+                                    <td>$50.00 <span class="bid-count">(0 bids)</span></td>
+                                    <td>4d 12h</td>
+                                    <td><a href="item.html" class="action-link">Manage</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
 
+    <script>
+        function switchTab(role) {
+            // Hide both panels
+            document.getElementById('buyerView').style.display = 'none';
+            document.getElementById('sellerView').style.display = 'none';
+            
+            // Remove 'active' class from all buttons
+            let buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show the selected panel and highlight the clicked button
+            if (role === 'buyer') {
+                document.getElementById('buyerView').style.display = 'block';
+                buttons[0].classList.add('active');
+            } else {
+                document.getElementById('sellerView').style.display = 'block';
+                buttons[1].classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
