@@ -3,30 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Online Auction System</title>
+    <title>Login | Golden Hammer Auctions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <nav class="navbar">
-        </nav>
+    <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">G</span>
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="browse.html">Browse Auctions</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="login-link">Log In</a>
+                <a href="register.html" class="btn btn-dark">Get Started</a>
+            </div>
+        </div>
+    </header>
 
-    <main class="container auth-container">
+    <main class="auth-wrapper">
+        
         <div class="auth-card">
-            <h2>Account Login</h2>
+            <h2 class="auth-title">Account Login</h2>
+            
             <form action="#" method="POST" class="auth-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="Enter your email">
+                    <input type="email" id="email" required placeholder="name@example.com">
                 </div>
+                
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" required placeholder="Enter your password">
                 </div>
-                <button type="submit" class="view-details-btn auth-btn">Log In</button>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Log In</button>
             </form>
+            
             <p class="auth-toggle">Don't have an account? <a href="#">Register here</a></p>
         </div>
+
     </main>
 
 </body>
