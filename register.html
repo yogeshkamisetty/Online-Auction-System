@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Golden Hammer Auctions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">G</span>
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="browse.html">Browse Auctions</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="login-link">Log In</a>
+                <a href="register.html" class="btn btn-dark">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-wrapper">
+        
+        <div class="auth-card">
+            <h2 class="auth-title">Create an Account</h2>
+            
+            <form class="auth-form">
+                
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required placeholder="e.g. Jane Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="name@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Create a strong password">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required placeholder="Type your password again">
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                    <input type="checkbox" id="terms" required style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="terms" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
+                        I agree to the <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Terms & Conditions</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">Create Account</button>
+            </form>
+            
+            <p class="auth-toggle">Already have an account? <a href="login.html">Log In here</a></p>
+        </div>
+
+    </main>
+
+</body>
+</html>
