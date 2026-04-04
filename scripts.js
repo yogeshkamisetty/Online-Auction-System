@@ -155,16 +155,16 @@ if (itemDetailsLayout && pid) {
                         <div class="timer-label">TIME REMAINING</div>
                         <div class="countdown">
                             <div class="time-unit">
-                                <span class="time-value">1</span><span class="time-text">DAYS</span>
+                                <span class="time-value" id="days-val">1</span><span class="time-text">DAYS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value">23</span><span class="time-text">HOURS</span>
+                                <span class="time-value" id="hours-val">23</span><span class="time-text">HOURS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value">37</span><span class="time-text">MINS</span>
+                                <span class="time-value" id="mins-val">37</span><span class="time-text">MINS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value">29</span><span class="time-text">SECS</span>
+                                <span class="time-value" id="secs-val">29</span><span class="time-text">SECS</span>
                             </div>
                         </div>
                     </div>
@@ -234,25 +234,54 @@ if (itemDetailsLayout && pid) {
             e.preventDefault();
             placeBid(product.pid);
         });
+
+        // Initialize countdown timer
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 1); // 1 Day
+        targetDate.setHours(targetDate.getHours() + 23); // 23 Hours
+        targetDate.setMinutes(targetDate.getMinutes() + 37); // 37 Mins
+        targetDate.setSeconds(targetDate.getSeconds() + 29); // 29 Secs
+
+        const timerInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const timeleft = targetDate.getTime() - now;
+
+            if (timeleft < 0) {
+                clearInterval(timerInterval);
+                document.getElementById('days-val').innerText = "0";
+                document.getElementById('hours-val').innerText = "0";
+                document.getElementById('mins-val').innerText = "0";
+                document.getElementById('secs-val').innerText = "0";
+                return;
+            }
+
+            const days = Math.floor(timeleft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeleft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
+
+            document.getElementById('days-val').innerText = days;
+            document.getElementById('hours-val').innerText = hours;
+            document.getElementById('mins-val').innerText = minutes;
+            document.getElementById('secs-val').innerText = seconds;
+        }, 1000);
     }
 }
 
 // ============================================
 // LOGIC B: LISTING PAGE (HOME/BROWSE)
 // ============================================
-if (auctionGrid) {
-
-    let filteredProducts = products;
-
-    // Only show featured on home
-    if (isHomePage) {
-        filteredProducts = products.filter(p => p.featured);
+function renderAuctions(productsToRender) {
+    if (!auctionGrid) return;
+    
+    auctionGrid.innerHTML = "";
+    
+    if (productsToRender.length === 0) {
+        auctionGrid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;'>No auctions found matching your criteria.</p>";
+        return;
     }
 
-    auctionGrid.innerHTML = "";
-
-    filteredProducts.forEach(product => {
-
+    productsToRender.forEach(product => {
         const cardHTML = `
             <article class="auction-card">
                 <div class="card-image-wrapper">
@@ -307,6 +336,66 @@ if (auctionGrid) {
         `;
         auctionGrid.innerHTML += cardHTML;
     });
+}
+
+function applyFilters() {
+    let filtered = products;
+
+    if (isHomePage) {
+        filtered = filtered.filter(p => p.featured);
+    }
+
+    // 1. Search Query
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        const queryTokens = searchInput.value.toLowerCase().trim().split(/\s+/).filter(t => t);
+        if (queryTokens.length > 0) {
+            filtered = filtered.filter(p => {
+                const text = (p.cardtitle + " " + p.carddesc + " " + p.category).toLowerCase();
+                // Check if ALL search tokens are present in the text
+                return queryTokens.every(token => text.includes(token));
+            });
+        }
+    }
+
+    // 2. Category Filter
+    const categoryCheckboxes = document.querySelectorAll("#categoryFilters input[type='checkbox']:checked");
+    if (categoryCheckboxes && categoryCheckboxes.length > 0) {
+        const selectedCategories = Array.from(categoryCheckboxes).map(cb => cb.value.toLowerCase());
+        filtered = filtered.filter(p => selectedCategories.includes(p.category.toLowerCase()));
+    }
+
+    // 3. Price Filter
+    const minPriceInput = document.getElementById("minPrice");
+    const maxPriceInput = document.getElementById("maxPrice");
+    if (minPriceInput && maxPriceInput) {
+        const minPrice = parseFloat(minPriceInput.value);
+        const maxPrice = parseFloat(maxPriceInput.value);
+        
+        filtered = filtered.filter(p => {
+            const priceVal = parseFloat(p.bidprice.replace(/[$,]/g, ""));
+            let meetsMin = true;
+            let meetsMax = true;
+            
+            if (!isNaN(minPrice)) {
+                meetsMin = priceVal >= minPrice;
+            }
+            if (!isNaN(maxPrice)) {
+                meetsMax = priceVal <= maxPrice;
+            }
+            return meetsMin && meetsMax;
+        });
+    }
+
+    renderAuctions(filtered);
+}
+
+if (auctionGrid) {
+    let initialProducts = products;
+    if (isHomePage) {
+        initialProducts = products.filter(p => p.featured);
+    }
+    renderAuctions(initialProducts);
 }
 
 function placeBid(pid) {
