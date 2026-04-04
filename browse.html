@@ -32,35 +32,40 @@
 
     <main class="container page-spacing">
         
-        <div class="page-header">
-            <h1 class="page-title">Browse All Categories</h1>
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+            <h1 class="page-title" style="margin: 0;">Browse All Categories</h1>
+            <div class="search-container" style="display: flex; gap: 8px; flex: 0 1 400px; width: 100%;">
+                <input type="text" id="searchInput" placeholder="Search items, categories..." style="flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border-color, #e5e7eb); border-radius: 6px; font-family: inherit; font-size: 0.95rem;">
+                <button class="btn btn-primary" onclick="applyFilters()" style="padding: 0.75rem 1.5rem;">Search</button>
+            </div>
         </div>
         
         <div class="split-layout">
             
             <aside class="sidebar">
                 <h3 class="sidebar-title">Filters</h3>
-                
+            
                 <div class="filter-group">
                     <h4>Categories</h4>
-                    <ul class="filter-list">
-                        <li><label><input type="checkbox"> Ancient</label></li>
-                        <li><label><input type="checkbox"> Modern</label></li>
-                        <li><label><input type="checkbox"> Luxury</label></li>
-                        <li><label><input type="checkbox"> Furniture</label></li>
+                    <ul class="filter-list" id="categoryFilters">
+                        <li><label><input type="checkbox" value="Collections"> Collections</label></li>
+                        <li><label><input type="checkbox" value="Electronics"> Electronics</label></li>
+                        <li><label><input type="checkbox" value="Furniture"> Furniture</label></li>
+                        <li><label><input type="checkbox" value="Accessories"> Accessories</label></li>
+                        <li><label><input type="checkbox" value="Vehicles"> Vehicles</label></li>
                     </ul>
                 </div>
                 
                 <div class="filter-group">
                     <h4>Price Range</h4>
                     <div class="price-inputs">
-                        <input type="number" placeholder="Min $" class="price-input"> 
+                        <input type="number" id="minPrice" placeholder="Min $" class="price-input"> 
                         <span>-</span> 
-                        <input type="number" placeholder="Max $" class="price-input">
+                        <input type="number" id="maxPrice" placeholder="Max $" class="price-input">
                     </div>
                 </div>
                 
-                <button class="btn btn-primary filter-btn">Apply Filters</button>
+                <button class="btn btn-primary filter-btn" onclick="applyFilters()">Apply Filters</button>
             </aside>
 
             <div class="main-content">

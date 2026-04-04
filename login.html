@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,50 +8,96 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-    <header class="site-header">
-        <div class="container navbar">
-            <div class="nav-left">
-                <a href="index.html" class="logo">
-                    <span class="logo-icon">G</span>
-                    <span class="logo-text">Golden Hammer Auctions</span>
-                </a>
-                <nav class="nav-links">
-                    <a href="index.html">Home</a>
-                    <a href="browse.html">Browse Auctions</a>
-                </nav>
-            </div>
-            <div class="nav-right">
-                <a href="login.html" class="login-link">Log In</a>
-                <a href="register.html" class="btn btn-dark">Get Started</a>
-            </div>
+    <div class="b-header">
+        <h1 class="b-title">Golden Hammer Auctions</h1>
+        <div class="b-nav">
+            <a href="index.html" class="b-nav-link-active">Home</a>
+            <a href="browse.html" class="b-nav-link">Browse Auctions</a>
+            <a href="dashboard.html" class="b-nav-link">Dashboard</a>
+            <a href="login.html" class="b-nav-link">Log In</a>
         </div>
-    </header>
+    </div>
 
     <main class="auth-wrapper">
-        
+
         <div class="auth-card">
             <h2 class="auth-title">Account Login</h2>
-            
-            <form action="#" method="POST" class="auth-form">
+
+            <form id="loginForm" class="auth-form">
+
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+                    <label>Email Address</label>
+                    <input type="text" id="email" placeholder="name@example.com">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="Enter your password">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
                 </div>
-                
+
+                <p id="errorMessage"
+                    style="font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; text-align: center; min-height: 20px;">
+                </p>
+
                 <button type="submit" class="btn btn-primary auth-btn">Log In</button>
             </form>
-            
-            <p class="auth-toggle">Don't have an account? <a href="#">Register here</a></p>
+
+            <p class="auth-toggle">Don't have an account? <a href="register.html">Register here</a></p>
         </div>
 
     </main>
 
+    <script>
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function (event) {
+
+            event.preventDefault();
+
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+
+            if (emailInput === "") {
+                errorMessage.textContent = "Please enter your email address.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (!emailRegex.test(emailInput)) {
+                errorMessage.textContent = "Please enter a valid email address (e.g., name@email.com).";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (passwordInput === "") {
+                errorMessage.textContent = "Please enter your password.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (passwordInput.length < 6) {
+                errorMessage.textContent = "Password must be at least 6 characters long.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            errorMessage.textContent = "Login successful! Redirecting...";
+            errorMessage.style.color = "#166534";
+
+            setTimeout(function () {
+                window.location.href = "dashboard.html";
+            }, 1000);
+
+        });
+    </script>
 </body>
+
 </html>

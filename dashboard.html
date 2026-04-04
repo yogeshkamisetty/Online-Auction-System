@@ -32,7 +32,7 @@
     <main class="container page-spacing">
         
         <div class="dashboard-header">
-            <h1 class="page-title">Welcome back, Yogesh!</h1>
+            <h1 class="page-title" id="headerGreeting">Welcome back, Yogesh!</h1>
             
             <div class="dashboard-tabs">
                 <button class="tab-btn active" onclick="switchTab('buyer')">Buyer Dashboard</button>
@@ -44,123 +44,196 @@
             
             <aside class="sidebar">
                 <div class="user-profile-mini">
-                    <div class="avatar-large">Y</div>
-                    <h3>Yogesh Kamisetty</h3>
+                    <div class="avatar-large" id="sidebarAvatar">Y</div>
+                    <h3 id="sidebarUserName">Yogesh Kamisetty</h3>
                     <p>Member since 2024</p>
                 </div>
                 
                 <h3 class="sidebar-title">Account Menu</h3>
-                <ul class="dashboard-menu">
-                    <li><a href="#" class="active">Dashboard Home</a></li>
-                    <li><a href="#">Messages <span class="badge-notification">2</span></a></li>
-                    <li><a href="#">Watchlist</a></li>
-                    <li><a href="#">Account Settings</a></li>
-                    <li><a href="#">Payment Methods</a></li>
+                <ul class="dashboard-menu" id="sidebarMenu">
+                    <li><a href="#" onclick="switchSidebarTab('dashboardHome', this); return false;" class="active">Dashboard Home</a></li>
+                    <li><a href="#" onclick="switchSidebarTab('messagesView', this); return false;">Messages <span class="badge-notification">2</span></a></li>
+                    <li><a href="#" onclick="switchSidebarTab('watchlistView', this); return false;">Watchlist</a></li>
+                    <li><a href="#" onclick="switchSidebarTab('accountSettingsView', this); return false;">Account Settings</a></li>
+                    <li><a href="#" onclick="switchSidebarTab('paymentMethodsView', this); return false;">Payment Methods</a></li>
                 </ul>
             </aside>
 
             <div class="main-content">
                 
-                <div id="buyerView" class="dashboard-panel active-panel">
-                    
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <h4 class="metric-title">Active Bids</h4>
-                            <p class="metric-value">3</p>
+                <div id="dashboardHome" class="sidebar-panel active">
+                    <div id="buyerView" class="dashboard-panel active-panel">
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4 class="metric-title">Active Bids</h4>
+                                <p class="metric-value">3</p>
+                            </div>
+                            <div class="metric-card">
+                                <h4 class="metric-title">Items Won</h4>
+                                <p class="metric-value">12</p>
+                            </div>
+                            <div class="metric-card">
+                                <h4 class="metric-title">Total Spent</h4>
+                                <p class="metric-value">$4,250</p>
+                            </div>
                         </div>
-                        <div class="metric-card">
-                            <h4 class="metric-title">Items Won</h4>
-                            <p class="metric-value">12</p>
-                        </div>
-                        <div class="metric-card">
-                            <h4 class="metric-title">Total Spent</h4>
-                            <p class="metric-value">$4,250</p>
+
+                        <h2 class="panel-heading">My Active Bids</h2>
+                        
+                        <div class="table-container">
+                            <table class="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>My Highest Bid</th>
+                                        <th>Current Top Bid</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vintage 1970s Film Camera</td>
+                                        <td>$150.00</td>
+                                        <td>$150.00</td>
+                                        <td><span class="status-badge winning">Winning</span></td>
+                                        <td><a href="item.html" class="action-link">View</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Antique Gold Watch</td>
+                                        <td>$800.00</td>
+                                        <td>$850.00</td>
+                                        <td><span class="status-badge outbid">Outbid</span></td>
+                                        <td><a href="item.html" class="btn btn-primary btn-sm">Bid Again</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <h2 class="panel-heading">My Active Bids</h2>
-                    
-                    <div class="table-container">
-                        <table class="dashboard-table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>My Highest Bid</th>
-                                    <th>Current Top Bid</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Vintage 1970s Film Camera</td>
-                                    <td>$150.00</td>
-                                    <td>$150.00</td>
-                                    <td><span class="status-badge winning">Winning</span></td>
-                                    <td><a href="item.html" class="action-link">View</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Antique Gold Watch</td>
-                                    <td>$800.00</td>
-                                    <td>$850.00</td>
-                                    <td><span class="status-badge outbid">Outbid</span></td>
-                                    <td><a href="item.html" class="btn btn-primary btn-sm">Bid Again</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div id="sellerView" class="dashboard-panel" style="display: none;">
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4 class="metric-title">Active Listings</h4>
+                                <p class="metric-value">5</p>
+                            </div>
+                            <div class="metric-card">
+                                <h4 class="metric-title">Items Sold</h4>
+                                <p class="metric-value">24</p>
+                            </div>
+                            <div class="metric-card">
+                                <h4 class="metric-title">Total Revenue</h4>
+                                <p class="metric-value">$12,890</p>
+                            </div>
+                        </div>
+
+                        <div class="panel-header-flex">
+                            <h2 class="panel-heading">My Active Listings</h2>
+                            <button class="btn btn-primary">Create New Auction</button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Starting Price</th>
+                                        <th>Current Bid</th>
+                                        <th>Time Left</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Mid-Century Modern Chair</td>
+                                        <td>$200.00</td>
+                                        <td>$420.00 <span class="bid-count">(2 bids)</span></td>
+                                        <td>23h 56m</td>
+                                        <td><a href="item.html" class="action-link">Manage</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Roman Empire Silver Coin</td>
+                                        <td>$50.00</td>
+                                        <td>$50.00 <span class="bid-count">(0 bids)</span></td>
+                                        <td>4d 12h</td>
+                                        <td><a href="item.html" class="action-link">Manage</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div id="sellerView" class="dashboard-panel" style="display: none;">
-                    
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <h4 class="metric-title">Active Listings</h4>
-                            <p class="metric-value">5</p>
+                <!-- Messages View -->
+                <div id="messagesView" class="sidebar-panel" style="display: none;">
+                    <h2 class="panel-heading">Messages</h2>
+                    <div style="background:var(--card-bg, #fff); padding:2rem; border-radius:8px; border:1px solid var(--border-color, #e5e7eb);">
+                        <div style="padding: 1rem; border-bottom: 1px solid var(--border-color, #e5e7eb); display:flex; justify-content:space-between;">
+                            <div><strong>System Admin</strong><p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Welcome to Golden Hammer Auctions! Let us know if you need help.</p></div>
+                            <small>2 hours ago</small>
                         </div>
-                        <div class="metric-card">
-                            <h4 class="metric-title">Items Sold</h4>
-                            <p class="metric-value">24</p>
-                        </div>
-                        <div class="metric-card">
-                            <h4 class="metric-title">Total Revenue</h4>
-                            <p class="metric-value">$12,890</p>
+                        <div style="padding: 1rem; border-bottom: 1px solid var(--border-color, #e5e7eb); display:flex; justify-content:space-between;">
+                            <div><strong>Seller: AntiquitiesRUs</strong><p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Your winning bid on the Ancient Canopic Jar has been processed!</p></div>
+                            <small>1 day ago</small>
                         </div>
                     </div>
+                </div>
 
-                    <div class="panel-header-flex">
-                        <h2 class="panel-heading">My Active Listings</h2>
-                        <button class="btn btn-primary">Create New Auction</button>
+                <!-- Watchlist View -->
+                <div id="watchlistView" class="sidebar-panel" style="display: none;">
+                    <h2 class="panel-heading">My Watchlist</h2>
+                    <div class="metrics-grid">
+                         <div class="metric-card" style="text-align:center; padding:3rem;">
+                             <p style="color:var(--text-muted);">You aren't watching any items yet.</p>
+                             <a href="browse.html" class="btn btn-primary" style="margin-top:1rem; display:inline-block;">Browse Auctions</a>
+                         </div>
                     </div>
-                    
-                    <div class="table-container">
-                        <table class="dashboard-table">
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Starting Price</th>
-                                    <th>Current Bid</th>
-                                    <th>Time Left</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Mid-Century Modern Chair</td>
-                                    <td>$200.00</td>
-                                    <td>$420.00 <span class="bid-count">(2 bids)</span></td>
-                                    <td>23h 56m</td>
-                                    <td><a href="item.html" class="action-link">Manage</a></td>
-                                </tr>
-                                <tr>
-                                    <td>Roman Empire Silver Coin</td>
-                                    <td>$50.00</td>
-                                    <td>$50.00 <span class="bid-count">(0 bids)</span></td>
-                                    <td>4d 12h</td>
-                                    <td><a href="item.html" class="action-link">Manage</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </div>
+
+                <!-- Account Settings View -->
+                <div id="accountSettingsView" class="sidebar-panel" style="display: none;">
+                    <h2 class="panel-heading">Account Settings</h2>
+                    <form id="accountSettingsForm" style="background:var(--card-bg, #fff); padding:2rem; border-radius:8px; border:1px solid var(--border-color, #e5e7eb); max-width: 600px;">
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label for="settingsName" style="display:block; margin-bottom:0.5rem; font-weight:600;">Full Name</label>
+                            <input type="text" id="settingsName" value="Yogesh Kamisetty" style="width:100%; padding:0.5rem; border:1px solid var(--border-color); border-radius:4px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label for="settingsEmail" style="display:block; margin-bottom:0.5rem; font-weight:600;">Email Address</label>
+                            <input type="email" id="settingsEmail" value="yogesh@example.com" style="width:100%; padding:0.5rem; border:1px solid var(--border-color); border-radius:4px;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label for="settingsPassword" style="display:block; margin-bottom:0.5rem; font-weight:600;">Password</label>
+                            <input type="password" id="settingsPassword" placeholder="Leave blank to keep current password" style="width:100%; padding:0.5rem; border:1px solid var(--border-color); border-radius:4px;">
+                        </div>
+                        <p id="settingsMessage" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; min-height: 20px;"></p>
+                        <button type="submit" class="btn btn-primary" onclick="updateProfile(event)">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Payment Methods View -->
+                <div id="paymentMethodsView" class="sidebar-panel" style="display: none;">
+                    <div class="panel-header-flex">
+                         <h2 class="panel-heading">Payment Methods</h2>
+                         <button class="btn btn-primary">Add New Card</button>
+                    </div>
+                    <div style="background:var(--card-bg, #fff); padding:2rem; border-radius:8px; border:1px solid var(--border-color, #e5e7eb); max-width: 600px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--border-color); border-radius:6px; margin-bottom:1rem;">
+                             <div>
+                                  <strong>Visa ending in 4242</strong>
+                                  <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Expires 12/28</p>
+                             </div>
+                             <span class="badge-live" style="background:#166534; color:white; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.75rem;">Default</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; border:1px solid var(--border-color); border-radius:6px;">
+                             <div>
+                                  <strong>Mastercard ending in 8812</strong>
+                                  <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Expires 09/26</p>
+                             </div>
+                             <button class="btn btn-light-primary" style="padding:0.25rem 0.5rem; font-size:0.8rem;">Set Default</button>
+                        </div>
                     </div>
                 </div>
 
@@ -186,6 +259,84 @@
                 document.getElementById('sellerView').style.display = 'block';
                 buttons[1].classList.add('active');
             }
+        }
+
+        function switchSidebarTab(panelId, linkElement) {
+            // Hide all sidebar panels
+            let panels = document.querySelectorAll('.sidebar-panel');
+            panels.forEach(panel => panel.style.display = 'none');
+            
+            // Show the selected panel
+            document.getElementById(panelId).style.display = 'block';
+            
+            // Remove active class from all sidebar links
+            let links = document.querySelectorAll('#sidebarMenu a');
+            links.forEach(link => link.classList.remove('active'));
+            
+            // Add active class to the clicked link
+            linkElement.classList.add('active');
+
+            // Find the horizontal dashboard tabs (Buyer|Seller dashboard view header controls) 
+            // and hide them if we are not on the dashboardHome tab
+            let dashboardTabs = document.querySelector('.dashboard-tabs');
+            if (panelId === 'dashboardHome') {
+                dashboardTabs.style.display = 'flex'; // Restore tabs
+            } else {
+                dashboardTabs.style.display = 'none'; // Hide if in settings/watchlist etc
+            }
+        }
+
+        function updateProfile(event) {
+            event.preventDefault();
+            
+            const nameField = document.getElementById('settingsName').value.trim();
+            const emailField = document.getElementById('settingsEmail').value.trim();
+            const passwordField = document.getElementById('settingsPassword').value;
+            const messageEl = document.getElementById('settingsMessage');
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            // Validations
+            if (nameField === "") {
+                messageEl.textContent = "Full Name cannot be empty.";
+                messageEl.style.color = "#e11d48";
+                return;
+            }
+            if (emailField === "") {
+                messageEl.textContent = "Email Address cannot be empty.";
+                messageEl.style.color = "#e11d48";
+                return;
+            }
+            if (!emailRegex.test(emailField)) {
+                messageEl.textContent = "Please enter a valid email address.";
+                messageEl.style.color = "#e11d48";
+                return;
+            }
+            if (passwordField !== "" && passwordField.length < 6) {
+                messageEl.textContent = "Password must be at least 6 characters long.";
+                messageEl.style.color = "#e11d48";
+                return;
+            }
+            
+            // Live updation of details across dashboard UI
+            document.getElementById('sidebarUserName').textContent = nameField;
+            document.getElementById('sidebarAvatar').textContent = nameField.charAt(0).toUpperCase();
+            
+            // Get just the first name for the welcome message
+            const firstName = nameField.split(' ')[0];
+            document.getElementById('headerGreeting').textContent = "Welcome back, " + firstName + "!";
+            
+            // Show Success Message
+            messageEl.textContent = "Profile updated successfully!";
+            messageEl.style.color = "#166534";
+            
+            // Clear out password field to placeholder state
+            document.getElementById('settingsPassword').value = "";
+            
+            // Fade out message after 3 seconds
+            setTimeout(() => {
+                messageEl.textContent = "";
+            }, 3000);
         }
     </script>
 </body>

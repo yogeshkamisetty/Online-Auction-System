@@ -33,35 +33,37 @@
         <div class="auth-card">
             <h2 class="auth-title">Create an Account</h2>
             
-            <form class="auth-form">
+            <form id="registerForm" class="auth-form">
                 
                 <div class="form-group">
                     <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" required placeholder="e.g. Jane Doe">
+                    <input type="text" id="fullName" placeholder="e.g. Jane Doe">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="name@example.com">
+                    <input type="email" id="email" placeholder="name@example.com">
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="Create a strong password">
+                    <input type="password" id="password" placeholder="Create a strong password">
                 </div>
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" required placeholder="Type your password again">
+                    <input type="password" id="confirmPassword" placeholder="Type your password again">
                 </div>
                 
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                    <input type="checkbox" id="terms" required style="width: 18px; height: 18px; cursor: pointer;">
+                    <input type="checkbox" id="terms" style="width: 18px; height: 18px; cursor: pointer;">
                     <label for="terms" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
                         I agree to the <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 600;">Terms & Conditions</a>
                     </label>
                 </div>
                 
+                <p id="errorMessage" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 15px; text-align: center; min-height: 20px;"></p>
+
                 <button type="submit" class="btn btn-primary auth-btn">Create Account</button>
             </form>
             
@@ -69,6 +71,78 @@
         </div>
 
     </main>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+
+        registerForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            const errorMessage = document.getElementById('errorMessage');
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (fullName === "") {
+                errorMessage.textContent = "Please enter your full name.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (email === "") {
+                errorMessage.textContent = "Please enter your email address.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (!emailRegex.test(email)) {
+                errorMessage.textContent = "Please enter a valid email address (e.g., name@email.com).";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (password === "") {
+                errorMessage.textContent = "Please enter a password.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (password.length < 6) {
+                errorMessage.textContent = "Password must be at least 6 characters long.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (confirmPassword === "") {
+                errorMessage.textContent = "Please confirm your password.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorMessage.textContent = "Passwords do not match.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            if (!terms) {
+                errorMessage.textContent = "Please agree to the Terms & Conditions.";
+                errorMessage.style.color = "#e11d48";
+                return;
+            }
+
+            errorMessage.textContent = "Registration successful! Redirecting...";
+            errorMessage.style.color = "#166534";
+
+            setTimeout(function () {
+                window.location.href = "login.html";
+            }, 1000);
+        });
+    </script>
 
 </body>
 </html>
