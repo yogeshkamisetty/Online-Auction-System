@@ -5,21 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Golden Hammer Auctions</title>
+    <link rel="icon" href="images/logo2.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
 
-    <div class="b-header">
-        <h1 class="b-title">Golden Hammer Auctions</h1>
-        <div class="b-nav">
-            <a href="index.html" class="b-nav-link-active">Home</a>
-            <a href="browse.html" class="b-nav-link">Browse Auctions</a>
-            <a href="dashboard.html" class="b-nav-link">Dashboard</a>
-            <a href="login.html" class="b-nav-link">Log In</a>
+    <header class="site-header">
+        <div class="container navbar">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <img src="images/logo2.png" alt="Logo" class="logo-icon" style="height: 36px; width: 36px; border-radius: 50%; object-fit: contain;">
+                    <span class="logo-text">Golden Hammer Auctions</span>
+                </a>
+                <nav class="nav-links">
+                    <a href="index.html">Home</a>
+                    <a href="browse.html">Browse Auctions</a>
+                    <a href="dashboard.html">Dashboard</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="login.html" class="active login-link">Log In</a>
+                <a href="register.html" class="btn btn-dark">Get Started</a>
+            </div>
         </div>
-    </div>
+    </header>
 
     <main class="auth-wrapper">
 
