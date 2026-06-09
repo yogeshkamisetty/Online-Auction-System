@@ -65,16 +65,13 @@
         const loginForm = document.getElementById('loginForm');
 
         loginForm.addEventListener('submit', function (event) {
-
             event.preventDefault();
 
-            const emailInput = document.getElementById('email').value;
+            const emailInput = document.getElementById('email').value.trim();
             const passwordInput = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
 
             if (emailInput === "") {
                 errorMessage.textContent = "Please enter your email address.";
@@ -100,13 +97,40 @@
                 return;
             }
 
-            errorMessage.textContent = "Login successful! Redirecting...";
-            errorMessage.style.color = "#166534";
+            errorMessage.textContent = "Logging in...";
+            errorMessage.style.color = "var(--primary, #ca8a04)";
 
-            setTimeout(function () {
-                window.location.href = "dashboard.html";
-            }, 1000);
-
+            fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: emailInput,
+                    password: passwordInput
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.error || 'Invalid email or password');
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                errorMessage.textContent = "Login successful! Redirecting...";
+                errorMessage.style.color = "#166534";
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setTimeout(function () {
+                    window.location.href = "dashboard.html";
+                }, 1000);
+            })
+            .catch(err => {
+                errorMessage.textContent = err.message;
+                errorMessage.style.color = "#e11d48";
+            });
         });
     </script>
 </body>
