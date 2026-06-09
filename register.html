@@ -136,12 +136,39 @@
                 return;
             }
 
-            errorMessage.textContent = "Registration successful! Redirecting...";
-            errorMessage.style.color = "#166534";
+            errorMessage.textContent = "Registering...";
+            errorMessage.style.color = "var(--primary, #ca8a04)";
 
-            setTimeout(function () {
-                window.location.href = "login.html";
-            }, 1000);
+            fetch('http://localhost:3001/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: fullName,
+                    email: email,
+                    password: password
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.error || 'Registration failed');
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                errorMessage.textContent = "Registration successful! Redirecting to login...";
+                errorMessage.style.color = "#166534";
+                setTimeout(function () {
+                    window.location.href = "login.html";
+                }, 1500);
+            })
+            .catch(err => {
+                errorMessage.textContent = err.message;
+                errorMessage.style.color = "#e11d48";
+            });
         });
     </script>
 

@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "React Client (Vite)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "client", "run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "API (Express + Socket.io)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "api", "run", "dev"],
+      "port": 3001
+    },
+    {
+      "name": "Legacy Frontend (Static HTML)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", ".", "-l", "3000"],
+      "port": 3000
+    }
+  ]
+}

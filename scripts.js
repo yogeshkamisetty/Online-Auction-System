@@ -1,102 +1,4 @@
-const products = [
-    {
-        pid: 101,
-        featured: true,
-        productimg: {
-            src: "images/Vintagecamera.avif",
-        },
-        category: "Electronics",
-        cardtitle: "Vintage 1970s Film Camera",
-        carddesc: "A pristine condition 35mm film camera. Fully functional with original lens cap and leather strap. Perfect for...",
-        bidprice: "$150",
-        bidcount: 0
-    },
-    {
-        pid: 102,
-        featured: false,
-        productimg: {
-            src: "images/Modernchair1.jpg",
-        },
-        category: "Furniture",
-        cardtitle: "Mid-Century Modern Chair",
-        carddesc: "Authentic teak wood chair with original upholstery. Minor wear consistent with age. A statement piece for...",
-        bidprice: "$420",
-        bidcount: 2
-    },
-    {
-        pid: 103,
-        featured: false,
-        productimg: {
-            src: "images/Antique Gold Watch.webp",
-        },
-        category: "Accessories",
-        cardtitle: "Limited Edition Antique Gold Watch",
-        carddesc: "Swiss movement, sapphire crystal. Number 45 of 500. Comes with box and papers.",
-        bidprice: "$830",
-        bidcount: 1
-    },
-    {
-        pid: 104,
-        featured: true,
-        productimg: {
-            src: "images/1965-ford-mustang-gt-fastback.jpeg",
-            src1: "images/Ford-Mustang-Fastback-Grey-Red-1.jpg",
-        },
-        category: "Vehicles",
-        cardtitle: "Classic 1965 Mustang Fastback",
-        carddesc: "Restored to original specs. V8 engine, manual transmission. Runs perfectly and looks stunning.",
-        bidprice: "$25,000",
-        bidcount: 3
-    },
-    {
-        pid: 105,
-        featured: true,
-        productimg: {
-            src: "images/ancientproduct.jpg",
-        },
-        category: "Collections",
-        cardtitle: "Dancing Shiva and Parvati statue",
-        carddesc: "A statue of Dancing Shiva and Parvati represents the harmonious union of the divine masculine and feminine energies that govern the universe. While Lord Shiva is most famous for his solo cosmic dance as Nataraja, his joint dance with Goddess Parvati symbolizes the perfect balance of creation, preservation, and destruction.",
-        bidprice: "$2,500",
-        bidcount: 3
-    },
-    {
-        pid: 106,
-        featured: false,
-        productimg: {
-            src: "images/ancientproduct1.jpg",
-        },
-        category: "Collections",
-        cardtitle: "Goddess Durga statue standing on a lion",
-        carddesc: "A statue of Goddess Durga standing on a lion is a powerful representation of Shakti (divine feminine energy) and the triumph of righteousness (Dharma) over evil. While she is frequently shown seated (Simhavahini), standing poses typically emphasize her active warrior role as Mahishasuramardini, the slayer of the buffalo demon Mahishasura.",
-        bidprice: "$1,200",
-        bidcount: 1
-    },
-    {
-        pid: 107,
-        featured: false,
-        productimg: {
-            src: "images/EgyptianAntiquities1.jpg",
-        },
-        category: "Collections",
-        cardtitle: "Ancient Egyptian Canopic Jars",
-        carddesc: "Ancient Egyptian canopic jars were specialized funerary vessels used to store and protect the internal organs of the deceased for the afterlife. These jars were an integral part of the mummification process from the Old Kingdom (c. 2575 BCE) until the Ptolemaic Period (30 BCE). ",
-        bidprice: "$3,000",
-        bidcount: 6
-    },
-    {
-        pid: 108,
-        featured: false,
-        productimg: {
-            src: "images/EgyptianAntiquities2.jpg",
-        },
-        category: "Collections",
-        cardtitle: "Egyptian-inspired porcelain or ceramic vases",
-        carddesc: "The listing describes the item as a collection of rare artifacts from the 18th Dynasty, though it mentions other items not pictured in the main frame, such as a golden mask and a ceremonial staff.",
-        bidprice: "$1,200",
-        bidcount: 2
-    }
-];
+let products = [];
 
 // Select Elements (These might be null depending on the page)
 const auctionGrid = document.querySelector(".auction-grid");
@@ -110,27 +12,132 @@ const isBrowsePage = path.includes("browse.html");
 const params = new URLSearchParams(window.location.search);
 const pid = params.get("pid");
 
+async function fetchProducts() {
+    try {
+        const res = await fetch('http://localhost:3001/api/auctions');
+        if (!res.ok) throw new Error('Failed to fetch auctions');
+        products = await res.json();
+    } catch (err) {
+        console.error('Error fetching auctions:', err);
+    }
+}
 
-if (itemDetailsLayout && pid) {
+function formatTimeLeft(endTimeStr) {
+    const endTime = new Date(endTimeStr).getTime();
+    const now = new Date().getTime();
+    const timeLeft = endTime - now;
+    if (timeLeft <= 0) return "Closed";
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    if (days > 0) {
+        return `${days}d ${hours}h`;
+    }
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+}
 
-    const product = products.find(p => p.pid == pid);
+function renderAuctions(productsToRender) {
+    if (!auctionGrid) return;
+    
+    auctionGrid.innerHTML = "";
+    
+    if (productsToRender.length === 0) {
+        auctionGrid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;'>No auctions found matching your criteria.</p>";
+        return;
+    }
 
-    if (!product) {
-        itemDetailsLayout.innerHTML = "<h2>Product not found</h2>";
-    } else {
+    productsToRender.forEach(product => {
+        const cardHTML = `
+            <article class="auction-card">
+                <div class="card-image-wrapper">
+                    <img src="${product.imageUrl || 'images/camera-1.avif'}" 
+                         alt="${product.title}" 
+                         class="card-image">
+
+                    <span class="badge category-badge">
+                        ${product.category}
+                    </span>
+
+                    <span class="badge timer-badge left">
+                        Ends in:
+                    </span>
+
+                    <span class="badge timer-badge right">
+                        ${formatTimeLeft(product.endTime)}
+                    </span>
+                </div>
+
+                <div class="card-content">
+                    <h3 class="card-title">
+                        ${product.title}
+                    </h3>
+
+                    <p class="card-desc">
+                        ${product.description.substring(0, 100)}${product.description.length > 100 ? '...' : ''}
+                    </p>
+
+                    <div class="card-footer">
+                        <div class="bid-info">
+                            <span class="bid-label">CURRENT BID</span>
+                            <span class="bid-price">
+                                $${Number(product.currentBid).toLocaleString()}
+                            </span>
+                        </div>
+
+                        <div class="action-info">
+                            <span class="bid-count">
+                                ${product.bidCount} bids
+                            </span>
+
+                            <button 
+                                onclick="location.href='product.html?pid=${product.id}'"
+                                class="btn btn-light-primary">
+                                Bid Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        `;
+        auctionGrid.innerHTML += cardHTML;
+    });
+}
+
+async function renderProductDetails(productId) {
+    if (!itemDetailsLayout) return;
+
+    try {
+        const res = await fetch(`http://localhost:3001/api/auctions/${productId}`);
+        if (!res.ok) {
+            itemDetailsLayout.innerHTML = "<h2>Product not found</h2>";
+            return;
+        }
+        const product = await res.json();
+
+        const bidsHTML = product.bids.map(bid => `
+            <div class="history-item">
+                <div class="bidder-info">
+                    <div class="avatar">${bid.user.name.charAt(0).toUpperCase()}</div>
+                    <div class="bidder-details">
+                        <span class="bidder-name">${bid.user.name}</span>
+                        <span class="bid-time">${new Date(bid.createdAt).toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <div class="bid-amount">$${Number(bid.amount).toLocaleString()}</div>
+            </div>
+        `).join('');
 
         const productHTML = `
             <div class="item-gallery">
                 <div class="main-image-container">
-                    <img src="${product.productimg.src}" 
-                         alt="${product.cardtitle}" 
+                    <img src="${product.imageUrl || 'images/camera-1.avif'}" 
+                         alt="${product.title}" 
                          class="main-item-image">
                 </div>
                 <div class="thumbnail-list">
-                    ${product.productimg.src1 
-                        ? `<img src="${product.productimg.src1}" class="thumbnail active">`
-                        : ""
-                    }
                     <div class="thumbnail placeholder"></div>
                     <div class="thumbnail placeholder"></div>
                 </div>
@@ -139,32 +146,32 @@ if (itemDetailsLayout && pid) {
             <div class="item-info-col">
                 <div class="detail-card">
                     <div class="detail-header">
-                        <h1 class="item-title">${product.cardtitle}</h1>
-                        <span class="badge-live">LIVE</span>
+                        <h1 class="item-title">${product.title}</h1>
+                        <span class="badge-live">${product.status}</span>
                     </div>
 
                     <p class="item-meta">
-                        Seller: <a href="#" class="seller-link">ProSeller</a> • ${product.category}
+                        Seller: <a href="#" class="seller-link">${product.seller?.name || 'ProSeller'}</a> • ${product.category}
                     </p>
 
                     <p class="item-description">
-                        ${product.carddesc}
+                        ${product.description}
                     </p>
 
                     <div class="timer-box">
                         <div class="timer-label">TIME REMAINING</div>
                         <div class="countdown">
                             <div class="time-unit">
-                                <span class="time-value" id="days-val">1</span><span class="time-text">DAYS</span>
+                                <span class="time-value" id="days-val">0</span><span class="time-text">DAYS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value" id="hours-val">23</span><span class="time-text">HOURS</span>
+                                <span class="time-value" id="hours-val">0</span><span class="time-text">HOURS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value" id="mins-val">37</span><span class="time-text">MINS</span>
+                                <span class="time-value" id="mins-val">0</span><span class="time-text">MINS</span>
                             </div>
                             <div class="time-unit">
-                                <span class="time-value" id="secs-val">29</span><span class="time-text">SECS</span>
+                                <span class="time-value" id="secs-val">0</span><span class="time-text">SECS</span>
                             </div>
                         </div>
                     </div>
@@ -172,11 +179,11 @@ if (itemDetailsLayout && pid) {
                     <div class="price-row">
                         <div class="price-col">
                             <span class="price-label">Current Price</span>
-                            <span class="price-current">${product.bidprice}</span>
+                            <span class="price-current">$${Number(product.currentBid).toLocaleString()}</span>
                         </div>
                         <div class="price-col">
                             <span class="price-label">Starting Price</span>
-                            <span class="price-starting">${product.bidprice}</span>
+                            <span class="price-starting">$${Number(product.startPrice).toLocaleString()}</span>
                         </div>
                     </div>
 
@@ -190,7 +197,8 @@ if (itemDetailsLayout && pid) {
                             <div class="input-wrapper">
                                 <span class="currency-symbol">$</span>
                                 <input type="number" 
-                                       value="${product.bidprice.replace(/[$,]/g,'')}">
+                                       id="bidAmountInput"
+                                       value="${Math.floor(Number(product.currentBid)) + 10}">
                             </div>
                             <button type="submit" 
                                     class="btn btn-primary bid-submit-btn">
@@ -198,8 +206,10 @@ if (itemDetailsLayout && pid) {
                             </button>
                         </form>
 
-                        <div class="alert alert-success" style="display:none;">
+                        <div class="alert alert-success" style="display:none; margin-top: 15px;">
                             Bid placed successfully!
+                        </div>
+                        <div class="alert alert-danger" style="display:none; margin-top: 15px; color: #e11d48; font-weight: 600;">
                         </div>
                     </div>
                 </div>
@@ -207,44 +217,77 @@ if (itemDetailsLayout && pid) {
                 <div class="bid-history">
                     <h3 class="history-title">Bid History</h3>
                     <div class="history-list">
-                        <div class="history-item">
-                            <div class="bidder-info">
-                                <div class="avatar">D</div>
-                                <div class="bidder-details">
-                                    <span class="bidder-name">DemoBuyer</span>
-                                    <span class="bid-time">${new Date().toLocaleDateString()}</span>
-                                </div>
-                            </div>
-                            <div class="bid-amount">${product.bidprice}</div>
-                        </div>
+                        ${bidsHTML || '<p style="padding: 1rem; color: var(--text-muted);">No bids yet. Be the first to bid!</p>'}
                     </div>
                 </div>
             </div>
         `;
 
         itemDetailsLayout.innerHTML = productHTML;
+        document.title = `${product.title} | Golden Hammer Auctions`;
 
-        //  Update browser tab title dynamically
-        document.title = `${product.cardtitle} | Golden Hammer Auctions`;
-
-        // Prevent page reload + attach bid logic
         const form = document.querySelector(".bid-form");
-
         form.addEventListener("submit", function (e) {
             e.preventDefault();
-            placeBid(product.pid);
+            placeBid(product.id);
         });
 
-        // Initialize countdown timer
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 1); // 1 Day
-        targetDate.setHours(targetDate.getHours() + 23); // 23 Hours
-        targetDate.setMinutes(targetDate.getMinutes() + 37); // 37 Mins
-        targetDate.setSeconds(targetDate.getSeconds() + 29); // 29 Secs
+        // ── Socket.io: join this auction's room for live bid updates ──────────
+        if (typeof io !== 'undefined') {
+            const socket = io('http://localhost:3001', { transports: ['websocket'] });
+            socket.emit('join:auction', product.id);
 
+            socket.on('bid:new', (data) => {
+                // Update current price display
+                const priceEl = document.querySelector('.price-current');
+                if (priceEl) priceEl.textContent = '$' + Number(data.currentBid).toLocaleString();
+
+                // Update bid input minimum
+                const bidInput = document.getElementById('bidAmountInput');
+                if (bidInput) bidInput.value = Math.floor(Number(data.currentBid)) + 10;
+
+                // Prepend new bid to history list
+                const historyList = document.querySelector('.history-list');
+                if (historyList) {
+                    const newItem = document.createElement('div');
+                    newItem.className = 'history-item';
+                    newItem.innerHTML = `
+                        <div class="bidder-info">
+                            <div class="avatar">${data.bidder.charAt(0).toUpperCase()}</div>
+                            <div class="bidder-details">
+                                <span class="bidder-name">${data.bidder}</span>
+                                <span class="bid-time">${new Date(data.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <div class="bid-amount">$${Number(data.amount).toLocaleString()}</div>
+                    `;
+                    historyList.prepend(newItem);
+                }
+            });
+
+            socket.on('auction:closed', () => {
+                // Disable bid form and show closed message
+                const bidSection = document.querySelector('.bidding-section');
+                if (bidSection) {
+                    bidSection.innerHTML = `
+                        <div style="padding: 1.5rem; background: #fef2f2; border-radius: 8px;
+                                    border: 1px solid #fecaca; text-align: center;">
+                            <strong style="color:#b91c1c;">This auction has ended.</strong>
+                            <p style="margin:0.5rem 0 0; color:#78716c; font-size:0.9rem;">
+                                Check <a href="dashboard.html" style="color:var(--primary);">your dashboard</a>
+                                to see if you won.
+                            </p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Initialize countdown timer
+        const targetDate = new Date(product.endTime).getTime();
         const timerInterval = setInterval(() => {
             const now = new Date().getTime();
-            const timeleft = targetDate.getTime() - now;
+            const timeleft = targetDate - now;
 
             if (timeleft < 0) {
                 clearInterval(timerInterval);
@@ -265,77 +308,60 @@ if (itemDetailsLayout && pid) {
             document.getElementById('mins-val').innerText = minutes;
             document.getElementById('secs-val').innerText = seconds;
         }, 1000);
+
+    } catch (err) {
+        console.error(err);
+        itemDetailsLayout.innerHTML = "<h2>Failed to load product details</h2>";
     }
 }
 
-// ============================================
-// LOGIC B: LISTING PAGE (HOME/BROWSE)
-// ============================================
-function renderAuctions(productsToRender) {
-    if (!auctionGrid) return;
-    
-    auctionGrid.innerHTML = "";
-    
-    if (productsToRender.length === 0) {
-        auctionGrid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;'>No auctions found matching your criteria.</p>";
+async function placeBid(auctionId) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert("Please log in to place a bid.");
+        window.location.href = "login.html";
         return;
     }
 
-    productsToRender.forEach(product => {
-        const cardHTML = `
-            <article class="auction-card">
-                <div class="card-image-wrapper">
-                    <img src="${product.productimg.src}" 
-                         alt="${product.cardtitle}" 
-                         class="card-image">
+    const input = document.getElementById("bidAmountInput");
+    const alertSuccess = document.querySelector(".alert-success");
+    const alertDanger = document.querySelector(".alert-danger");
 
-                    <span class="badge category-badge">
-                        ${product.category}
-                    </span>
+    alertSuccess.style.display = "none";
+    alertDanger.style.display = "none";
 
-                    <span class="badge timer-badge left">
-                        Ends in:
-                    </span>
+    const bidAmount = parseFloat(input.value);
 
-                    <span class="badge timer-badge right">
-                        1d 23h
-                    </span>
-                </div>
+    try {
+        const res = await fetch('http://localhost:3001/api/bids', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                auctionId: auctionId,
+                amount: bidAmount
+            })
+        });
 
-                <div class="card-content">
-                    <h3 class="card-title">
-                        ${product.cardtitle}
-                    </h3>
+        const data = await res.json();
 
-                    <p class="card-desc">
-                        ${product.carddesc}
-                    </p>
+        if (!res.ok) {
+            throw new Error(data.error || 'Failed to place bid');
+        }
 
-                    <div class="card-footer">
-                        <div class="bid-info">
-                            <span class="bid-label">CURRENT BID</span>
-                            <span class="bid-price">
-                                ${product.bidprice}
-                            </span>
-                        </div>
+        alertSuccess.style.display = "block";
+        
+        // Reload details to update UI values and history
+        setTimeout(() => {
+            renderProductDetails(auctionId);
+        }, 1000);
 
-                        <div class="action-info">
-                            <span class="bid-count">
-                                ${product.bidcount} bids
-                            </span>
-
-                            <button 
-                                onclick="location.href='product.html?pid=${product.pid}'"
-                                class="btn btn-light-primary">
-                                Bid Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        `;
-        auctionGrid.innerHTML += cardHTML;
-    });
+    } catch (err) {
+        alertDanger.textContent = err.message;
+        alertDanger.style.display = "block";
+    }
 }
 
 function applyFilters() {
@@ -345,27 +371,23 @@ function applyFilters() {
         filtered = filtered.filter(p => p.featured);
     }
 
-    // 1. Search Query
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
         const queryTokens = searchInput.value.toLowerCase().trim().split(/\s+/).filter(t => t);
         if (queryTokens.length > 0) {
             filtered = filtered.filter(p => {
-                const text = (p.cardtitle + " " + p.carddesc + " " + p.category).toLowerCase();
-                // Check if ALL search tokens are present in the text
+                const text = (p.title + " " + p.description + " " + p.category).toLowerCase();
                 return queryTokens.every(token => text.includes(token));
             });
         }
     }
 
-    // 2. Category Filter
     const categoryCheckboxes = document.querySelectorAll("#categoryFilters input[type='checkbox']:checked");
     if (categoryCheckboxes && categoryCheckboxes.length > 0) {
         const selectedCategories = Array.from(categoryCheckboxes).map(cb => cb.value.toLowerCase());
         filtered = filtered.filter(p => selectedCategories.includes(p.category.toLowerCase()));
     }
 
-    // 3. Price Filter
     const minPriceInput = document.getElementById("minPrice");
     const maxPriceInput = document.getElementById("maxPrice");
     if (minPriceInput && maxPriceInput) {
@@ -373,7 +395,7 @@ function applyFilters() {
         const maxPrice = parseFloat(maxPriceInput.value);
         
         filtered = filtered.filter(p => {
-            const priceVal = parseFloat(p.bidprice.replace(/[$,]/g, ""));
+            const priceVal = parseFloat(p.currentBid);
             let meetsMin = true;
             let meetsMax = true;
             
@@ -390,55 +412,54 @@ function applyFilters() {
     renderAuctions(filtered);
 }
 
-if (auctionGrid) {
-    let initialProducts = products;
-    if (isHomePage) {
-        initialProducts = products.filter(p => p.featured);
+function updateHeaderNav() {
+    const navRight = document.querySelector('.nav-right');
+    if (!navRight) return;
+
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    
+    if (token && userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            navRight.innerHTML = `
+                <span class="user-greeting" style="margin-right: 15px; font-weight: 500; color: var(--text-main, #1f2937);">
+                    Hi, ${user.name.split(' ')[0]}
+                </span>
+                <a href="#" class="btn btn-dark" id="logoutBtn">Log Out</a>
+            `;
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    } else {
+        navRight.innerHTML = `
+            <a href="login.html" class="login-link">Log In</a>
+            <a href="register.html" class="btn btn-dark">Get Started</a>
+        `;
     }
-    renderAuctions(initialProducts);
 }
 
-function placeBid(pid) {
+async function init() {
+    updateHeaderNav();
+    await fetchProducts();
 
-    const product = products.find(p => p.pid == pid);
-    const input = document.querySelector(".bid-form input");
-    const alertBox = document.querySelector(".alert-success");
-    const historyList = document.querySelector(".history-list");
-
-    const newBid = parseFloat(input.value);
-    const currentPrice = parseFloat(product.bidprice.replace(/[$,]/g, ""));
-
-    if (isNaN(newBid) || newBid <= currentPrice) {
-        alert("Bid must be higher than current price.");
-        return;
+    if (itemDetailsLayout && pid) {
+        await renderProductDetails(pid);
     }
 
-    // Update product data
-    product.bidprice = "$" + newBid.toLocaleString();
-    product.bidcount = parseInt(product.bidcount) + 1;
-
-    // Update price in UI
-    document.querySelector(".price-current").textContent = product.bidprice;
-
-    // Add new bid to history (top entry)
-    const newHistoryItem = `
-        <div class="history-item">
-            <div class="bidder-info">
-                <div class="avatar">Y</div>
-                <div class="bidder-details">
-                    <span class="bidder-name">You</span>
-                    <span class="bid-time">${new Date().toLocaleDateString()}</span>
-                </div>
-            </div>
-            <div class="bid-amount">${product.bidprice}</div>
-        </div>
-    `;
-
-    historyList.innerHTML = newHistoryItem + historyList.innerHTML;
-
-    // Show success message
-    alertBox.style.display = "block";
-
-    // Reset input to new price
-    input.value = newBid;
+    if (auctionGrid) {
+        let initialProducts = products;
+        if (isHomePage) {
+            initialProducts = products.filter(p => p.featured);
+        }
+        renderAuctions(initialProducts);
+    }
 }
+
+init();

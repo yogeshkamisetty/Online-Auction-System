@@ -64,77 +64,64 @@
                 
                 <div id="dashboardHome" class="sidebar-panel active">
                     <div id="buyerView" class="dashboard-panel active-panel">
-                        
+
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <h4 class="metric-title">Active Bids</h4>
-                                <p class="metric-value">3</p>
+                                <p class="metric-value" id="metricActiveBids">—</p>
                             </div>
                             <div class="metric-card">
                                 <h4 class="metric-title">Items Won</h4>
-                                <p class="metric-value">12</p>
+                                <p class="metric-value" id="metricItemsWon">—</p>
                             </div>
                             <div class="metric-card">
                                 <h4 class="metric-title">Total Spent</h4>
-                                <p class="metric-value">$4,250</p>
+                                <p class="metric-value" id="metricTotalSpent">—</p>
                             </div>
                         </div>
 
                         <h2 class="panel-heading">My Active Bids</h2>
-                        
+
                         <div class="table-container">
                             <table class="dashboard-table">
                                 <thead>
                                     <tr>
                                         <th>Item</th>
-                                        <th>My Highest Bid</th>
+                                        <th>My Bid</th>
                                         <th>Current Top Bid</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Vintage 1970s Film Camera</td>
-                                        <td>$150.00</td>
-                                        <td>$150.00</td>
-                                        <td><span class="status-badge winning">Winning</span></td>
-                                        <td><a href="item.html" class="action-link">View</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Antique Gold Watch</td>
-                                        <td>$800.00</td>
-                                        <td>$850.00</td>
-                                        <td><span class="status-badge outbid">Outbid</span></td>
-                                        <td><a href="item.html" class="btn btn-primary btn-sm">Bid Again</a></td>
-                                    </tr>
+                                <tbody id="buyerBidsTableBody">
+                                    <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Loading your bids...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <div id="sellerView" class="dashboard-panel" style="display: none;">
-                        
+
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <h4 class="metric-title">Active Listings</h4>
-                                <p class="metric-value">5</p>
+                                <p class="metric-value" id="metricActiveListings">—</p>
                             </div>
                             <div class="metric-card">
                                 <h4 class="metric-title">Items Sold</h4>
-                                <p class="metric-value">24</p>
+                                <p class="metric-value" id="metricItemsSold">—</p>
                             </div>
                             <div class="metric-card">
-                                <h4 class="metric-title">Total Revenue</h4>
-                                <p class="metric-value">$12,890</p>
+                                <h4 class="metric-title">Total GMV</h4>
+                                <p class="metric-value" id="metricTotalGMV">—</p>
                             </div>
                         </div>
 
                         <div class="panel-header-flex">
-                            <h2 class="panel-heading">My Active Listings</h2>
-                            <button class="btn btn-primary">Create New Auction</button>
+                            <h2 class="panel-heading">My Listings</h2>
+                            <a href="sell.html" class="btn btn-primary">Create New Auction</a>
                         </div>
-                        
+
                         <div class="table-container">
                             <table class="dashboard-table">
                                 <thead>
@@ -146,21 +133,8 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Mid-Century Modern Chair</td>
-                                        <td>$200.00</td>
-                                        <td>$420.00 <span class="bid-count">(2 bids)</span></td>
-                                        <td>23h 56m</td>
-                                        <td><a href="item.html" class="action-link">Manage</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Roman Empire Silver Coin</td>
-                                        <td>$50.00</td>
-                                        <td>$50.00 <span class="bid-count">(0 bids)</span></td>
-                                        <td>4d 12h</td>
-                                        <td><a href="item.html" class="action-link">Manage</a></td>
-                                    </tr>
+                                <tbody id="sellerListingsTableBody">
+                                    <tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Loading your listings...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -243,6 +217,41 @@
     </main>
 
     <script>
+        // Authentication Check
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        if (!token || !userStr) {
+            alert("Please log in to view the dashboard.");
+            window.location.href = "login.html";
+        }
+
+        let currentUser = {};
+        try {
+            currentUser = JSON.parse(userStr);
+        } catch(err) {
+            console.error(err);
+        }
+
+        // Populate initial profile values from logged in user
+        if (currentUser && currentUser.name) {
+            document.getElementById('sidebarUserName').textContent = currentUser.name;
+            document.getElementById('sidebarAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('settingsName').value = currentUser.name;
+            document.getElementById('settingsEmail').value = currentUser.email;
+            
+            const firstName = currentUser.name.split(' ')[0];
+            document.getElementById('headerGreeting').textContent = "Welcome back, " + firstName + "!";
+        }
+
+        // Logout trigger
+        const logoutLink = document.querySelector('.login-link');
+        if (logoutLink && logoutLink.textContent.trim() === 'Log Out') {
+            logoutLink.addEventListener('click', (e) => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            });
+        }
+
         function switchTab(role) {
             // Hide both panels
             document.getElementById('buyerView').style.display = 'none';
@@ -287,6 +296,118 @@
             }
         }
 
+        // ── Dashboard Data ──────────────────────────────────────────────────
+        const API = 'http://localhost:3001';
+
+        function timeLeft(endTimeStr) {
+            const diff = new Date(endTimeStr) - new Date();
+            if (diff <= 0) return 'Ended';
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            if (d > 0) return `${d}d ${h}h`;
+            if (h > 0) return `${h}h ${m}m`;
+            return `${m}m`;
+        }
+
+        async function loadBuyerData() {
+            try {
+                const res = await fetch(`${API}/api/bids/my`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) throw new Error('Failed to load bids');
+                const bids = await res.json();
+
+                const activeBids  = bids.filter(b => b.auction.status === 'ACTIVE');
+                const wonBids     = bids.filter(b => b.auction.status === 'SETTLED' && b.isWinning);
+                const totalSpent  = wonBids.reduce((sum, b) => sum + parseFloat(b.amount), 0);
+
+                document.getElementById('metricActiveBids').textContent  = activeBids.length;
+                document.getElementById('metricItemsWon').textContent    = wonBids.length;
+                document.getElementById('metricTotalSpent').textContent  = '$' + totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+                const tbody = document.getElementById('buyerBidsTableBody');
+                if (bids.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No bids yet. <a href="browse.html" style="color:var(--primary);">Browse auctions</a></td></tr>`;
+                    return;
+                }
+
+                // Deduplicate — show only the highest bid per auction
+                const latestByAuction = {};
+                bids.forEach(b => {
+                    if (!latestByAuction[b.auctionId] || parseFloat(b.amount) > parseFloat(latestByAuction[b.auctionId].amount)) {
+                        latestByAuction[b.auctionId] = b;
+                    }
+                });
+
+                tbody.innerHTML = Object.values(latestByAuction).map(bid => {
+                    const isActive  = bid.auction.status === 'ACTIVE';
+                    const winning   = bid.isWinning;
+                    const statusBadge = winning
+                        ? `<span class="status-badge winning">Winning</span>`
+                        : `<span class="status-badge outbid">Outbid</span>`;
+                    const action = isActive && !winning
+                        ? `<a href="product.html?pid=${bid.auctionId}" class="btn btn-primary btn-sm">Bid Again</a>`
+                        : `<a href="product.html?pid=${bid.auctionId}" class="action-link">View</a>`;
+                    return `
+                        <tr>
+                            <td>${bid.auction.title}</td>
+                            <td>$${Number(bid.amount).toLocaleString()}</td>
+                            <td>$${Number(bid.auction.currentBid).toLocaleString()}</td>
+                            <td>${statusBadge}</td>
+                            <td>${action}</td>
+                        </tr>`;
+                }).join('');
+            } catch (err) {
+                document.getElementById('buyerBidsTableBody').innerHTML =
+                    `<tr><td colspan="5" style="text-align:center; color:#e11d48; padding:1.5rem;">Could not load bids. Is the API running?</td></tr>`;
+            }
+        }
+
+        async function loadSellerData() {
+            try {
+                const res = await fetch(`${API}/api/auctions?sellerId=${currentUser.id}&status=ACTIVE`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const closedRes = await fetch(`${API}/api/auctions?sellerId=${currentUser.id}&status=SETTLED`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const activeListings = res.ok ? await res.json() : [];
+                const settledListings = closedRes.ok ? await closedRes.json() : [];
+
+                const totalGMV = settledListings.reduce((sum, a) => sum + parseFloat(a.currentBid), 0);
+
+                document.getElementById('metricActiveListings').textContent = activeListings.length;
+                document.getElementById('metricItemsSold').textContent      = settledListings.length;
+                document.getElementById('metricTotalGMV').textContent       = '$' + totalGMV.toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+                const tbody = document.getElementById('sellerListingsTableBody');
+                if (activeListings.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:1.5rem;">No active listings. <a href="sell.html" style="color:var(--primary);">Create one</a></td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = activeListings.map(a => `
+                    <tr>
+                        <td>${a.title}</td>
+                        <td>$${Number(a.startPrice).toLocaleString()}</td>
+                        <td>$${Number(a.currentBid).toLocaleString()} <span class="bid-count">(${a.bidCount} bids)</span></td>
+                        <td>${timeLeft(a.endTime)}</td>
+                        <td><a href="product.html?pid=${a.id}" class="action-link">Manage</a></td>
+                    </tr>`).join('');
+            } catch (err) {
+                document.getElementById('sellerListingsTableBody').innerHTML =
+                    `<tr><td colspan="5" style="text-align:center; color:#e11d48; padding:1.5rem;">Could not load listings. Is the API running?</td></tr>`;
+            }
+        }
+
+        // Load dashboard data on page load
+        if (currentUser && currentUser.id) {
+            loadBuyerData();
+            loadSellerData();
+        }
+
         function updateProfile(event) {
             event.preventDefault();
             
@@ -319,25 +440,41 @@
                 return;
             }
             
-            // Live updation of details across dashboard UI
-            document.getElementById('sidebarUserName').textContent = nameField;
-            document.getElementById('sidebarAvatar').textContent = nameField.charAt(0).toUpperCase();
-            
-            // Get just the first name for the welcome message
-            const firstName = nameField.split(' ')[0];
-            document.getElementById('headerGreeting').textContent = "Welcome back, " + firstName + "!";
-            
-            // Show Success Message
-            messageEl.textContent = "Profile updated successfully!";
-            messageEl.style.color = "#166534";
-            
-            // Clear out password field to placeholder state
-            document.getElementById('settingsPassword').value = "";
-            
-            // Fade out message after 3 seconds
-            setTimeout(() => {
-                messageEl.textContent = "";
-            }, 3000);
+            messageEl.textContent = "Saving...";
+            messageEl.style.color = "var(--primary, #ca8a04)";
+
+            const body = { name: nameField };
+            if (passwordField) body.password = passwordField;
+
+            fetch(`${API}/api/auth/me`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+                if (!ok) throw new Error(data.error || 'Update failed');
+
+                // Live update across dashboard UI
+                document.getElementById('sidebarUserName').textContent = data.user.name;
+                document.getElementById('sidebarAvatar').textContent   = data.user.name.charAt(0).toUpperCase();
+                document.getElementById('headerGreeting').textContent  = `Welcome back, ${data.user.name.split(' ')[0]}!`;
+
+                currentUser.name = data.user.name;
+                localStorage.setItem('user', JSON.stringify(currentUser));
+
+                messageEl.textContent = "Profile updated successfully!";
+                messageEl.style.color = "#166534";
+                document.getElementById('settingsPassword').value = "";
+                setTimeout(() => { messageEl.textContent = ""; }, 3000);
+            })
+            .catch(err => {
+                messageEl.textContent = err.message;
+                messageEl.style.color = "#e11d48";
+            });
         }
     </script>
 </body>

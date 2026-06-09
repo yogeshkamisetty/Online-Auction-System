@@ -155,5 +155,57 @@
         </div>
     </footer>
 
+    <script src="scripts.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert("You must be logged in to create an auction.");
+            window.location.href = "login.html";
+        }
+
+        const form = document.querySelector(".sell-form");
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById("itemTitle").value;
+            const categorySelect = document.getElementById("category").value;
+            const description = document.getElementById("description").value;
+            const startPrice = parseFloat(document.getElementById("startPrice").value);
+            const duration = parseInt(document.getElementById("duration").value);
+            
+            const endTime = new Date();
+            endTime.setDate(endTime.getDate() + duration);
+            
+            const imageUrl = ""; // Default empty for now, will connect Cloudinary in Phase 3
+            
+            try {
+                const res = await fetch("http://localhost:3001/api/auctions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title,
+                        category: categorySelect,
+                        description,
+                        startPrice,
+                        endTime,
+                        imageUrl
+                    })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || "Failed to create listing");
+                }
+                
+                alert("Auction launched successfully!");
+                window.location.href = `product.html?pid=${data.id}`;
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    </script>
 </body>
 </html>
