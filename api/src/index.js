@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const authRoutes    = require('./routes/auth');
 const auctionRoutes = require('./routes/auctions');
 const bidRoutes     = require('./routes/bids');
+const adminRoutes   = require('./routes/admin');
 const { startAuctionCloser } = require('./jobs/auctionCloser');
 
 const app        = express();
@@ -30,6 +31,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISO
 app.use('/api/auth',     authRoutes);
 app.use('/api/auctions', auctionRoutes);
 app.use('/api/bids',     bidRoutes);
+app.use('/api/admin',    adminRoutes);
 
 // ── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
