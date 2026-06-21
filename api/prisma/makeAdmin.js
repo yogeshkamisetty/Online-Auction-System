@@ -24,11 +24,15 @@ async function main() {
   const existing = await prisma.user.findUnique({ where: { email } });
 
   if (existing) {
+    const data = { role: 'ADMIN', suspended: false };
+    if (password) {
+      data.passwordHash = await bcrypt.hash(password, 10);
+    }
     const updated = await prisma.user.update({
       where: { email },
-      data: { role: 'ADMIN', suspended: false },
+      data,
     });
-    console.log(`Promoted existing user to ADMIN: ${updated.email}`);
+    console.log(`Promoted existing user to ADMIN and updated password: ${updated.email}`);
   } else {
     if (!password) {
       console.error('User does not exist — provide a password to create the admin.');
