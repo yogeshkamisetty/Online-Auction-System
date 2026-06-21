@@ -99,6 +99,22 @@ d:/Yogesh/Coding/FSD - Auction System/
    - **Demo & Products Refresh**: Redesigned `seed.js` to build 12 live active auctions with future closing times, authentic bid history arrays, and multi-user configurations.
    - **Official Logo Integration**: Replaced placeholder vector outlines in `Navbar.jsx` with the official custom `logo2.png` graphics paired with polished, display-spaced typography.
 
+6. **Expert Design-System Audit & Remediation (Phase 0 + Phase 1)**:
+   A brutal 10-persona design review scored the system 42/100 — strong tokens, weak enforcement. The following remediations were executed and verified against `npm run build`:
+   - **Phase 0 — Critical fixes (42 → ~62):**
+     - **Icon font loaded**: `material-symbols-outlined` was used in 7 pages but the font was never imported, so 16 icons rendered as literal words ("dashboard", "gavel"). Added Material Symbols + Geist/Inter/JetBrains links to `index.html` and removed the render-blocking `@import` from `styles.css`.
+     - **Button/input states**: Added shared `:disabled` + `.is-loading` (spinner) button states (previously zero, despite `disabled=` used 8×) and `.is-error` / `[aria-invalid]` input states + `.form-error` helper.
+     - **Color unification**: Purged all 13 stray hardcoded hex values from JSX (killed the legacy `#d4af37` gold that competed with token `--primary-container #ffd45f`; fixed `Spinner.jsx`/`ErrorBoundary.jsx` which referenced non-existent token names).
+     - **Token gap closed**: Added missing `--warning` / `--info` / `--on-success` semantic tokens.
+   - **Phase 1 — Missing components (~62 → ~72):**
+     - **Toast system** (`context/ToastContext.jsx`): non-blocking, tokenized, animated, `aria-live` notifications with `success/error/warning/info` variants. Replaced all 4 native `alert()` calls in `AdminDashboard.jsx`; wired into `Login.jsx` and `Sell.jsx` submit outcomes.
+     - **Pagination** (`components/Pagination.jsx`): windowed page numbers + "N–M of total"; replaced two hand-rolled prev/next blocks in the admin user & auction tables.
+     - **Tooltip** (`components/Tooltip.jsx`): accessible CSS tooltip (`aria-describedby`, focus-reveal).
+     - **Status pills**: reusable `.status-pill--{success,warning,info,neutral}` classes replacing inline-styled verification/role badges.
+     - **Layout utilities**: `.stack`, `.row`, `.cluster`, `.gap-*`, `.text-muted` etc. to begin retiring the ~340 inline `style={{}}` objects (AdminDashboard reduced 52 → 41).
+   - **Backend bug fixed**: the bid `SELECT … FOR UPDATE` query referenced snake_case columns (`current_bid`, `end_time`) while Prisma generated camelCase (`"currentBid"`, `"endTime"`), causing every bid to 500. Corrected the identifiers; verified bidding returns 201 with working row-lock validation.
+   - **Real-time transport fixed**: `ProductDetails.jsx` previously used a native `WebSocket` to `/ws`, incompatible with the Socket.io backend. Switched to `socket.io-client` with the `join:auction` / `bid:new` / `auction:closed` contract; verified live broadcast end-to-end.
+
 ## Issues Faced & Resolutions
 
 1. **Accessibility and Contrast Compliances**:

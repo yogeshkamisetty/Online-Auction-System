@@ -2,12 +2,14 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState({ text: '', type: '' });
     const { login } = useContext(AuthContext);
+    const toast = useToast();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -27,16 +29,16 @@ const Login = () => {
 
         try {
             const res = await api.post('/auth/login', { email, password });
-            setMessage({ text: 'Session authenticated. Redirecting...', type: 'success' });
             login(res.data.user, res.data.token);
+            toast.success('Welcome back. Redirecting to your workspace…');
+            setMessage({ text: '', type: '' });
             setTimeout(() => {
                 navigate('/dashboard');
-            }, 1000);
+            }, 800);
         } catch (err) {
-            setMessage({ 
-                text: err.response?.data?.error || err.message || 'Invalid email or password', 
-                type: 'error' 
-            });
+            const text = err.response?.data?.error || err.message || 'Invalid email or password';
+            setMessage({ text: '', type: '' });
+            toast.error(text);
         }
     };
 

@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Sell = () => {
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
+    const toast = useToast();
     
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
@@ -76,9 +78,12 @@ const Sell = () => {
                 endTime,
                 imageUrl
             });
+            toast.success('Auction launched successfully.');
             navigate(`/product/${res.data.id}`);
         } catch (err) {
-            setErrorMessage(err.response?.data?.error || err.message || 'Failed to create listing');
+            const text = err.response?.data?.error || err.message || 'Failed to create listing';
+            setErrorMessage(text);
+            toast.error(text);
         } finally {
             setUploading(false);
         }
