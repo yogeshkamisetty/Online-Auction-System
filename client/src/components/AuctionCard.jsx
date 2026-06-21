@@ -9,11 +9,22 @@ const AuctionCard = ({ product }) => {
     return (
         <article className="auction-card">
             <div className="card-image-wrapper">
-                <img 
-                    src={product.imageUrl || '/images/camera-1.avif'} 
-                    alt={product.title} 
+                <img
+                    src={product.imageUrl || '/images/camera-1.avif'}
+                    alt={product.title}
                     className="card-image"
+                    loading="lazy"
                 />
+                {product.status === 'ACTIVE' && (
+                    <span className="card-live-pill meta-table" aria-label="Live auction">
+                        <span className="pulse-indicator" aria-hidden="true"></span> LIVE
+                    </span>
+                )}
+                {product.verificationStatus === 'VERIFIED' && (
+                    <span className="card-verified-pill meta-table" aria-label="Expert verified">
+                        <span className="material-symbols-outlined" aria-hidden="true">verified</span> VERIFIED
+                    </span>
+                )}
                 <span className="card-badge label-caps">
                     {product.category}
                 </span>

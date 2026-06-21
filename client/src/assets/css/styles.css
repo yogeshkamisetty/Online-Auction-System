@@ -637,7 +637,7 @@ textarea:focus-visible {
 
 .card-badge {
     position: absolute;
-    top: var(--space-md);
+    bottom: var(--space-md);
     left: var(--space-md);
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid var(--outline-variant);
@@ -646,6 +646,37 @@ textarea:focus-visible {
     border-radius: var(--rounded-sm);
     box-shadow: var(--shadow-hard);
     z-index: 5;
+}
+
+/* Live + Verified signals (top corners) */
+.card-live-pill,
+.card-verified-pill {
+    position: absolute;
+    top: var(--space-md);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    border-radius: var(--rounded-full);
+    z-index: 6;
+}
+.card-live-pill {
+    left: var(--space-md);
+    background: rgba(16, 185, 129, 0.16);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.card-verified-pill {
+    right: var(--space-md);
+    background: rgba(255, 212, 95, 0.18);
+    color: var(--on-warning, #78350f);
+    border: 1px solid rgba(255, 212, 95, 0.45);
+}
+.card-verified-pill .material-symbols-outlined {
+    font-size: 13px;
 }
 
 .timer-badge {
