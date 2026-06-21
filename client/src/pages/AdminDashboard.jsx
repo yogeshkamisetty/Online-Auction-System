@@ -205,12 +205,12 @@ const AdminDashboard = () => {
                                     <div className="metrics-grid">
                                         <div className="metric-card">
                                             <p className="metric-title">Gross Volume (GMV)</p>
-                                            <p className="metric-value font-mono">${stats.gmv.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                                            <p className="metric-value font-mono">${stats.gmv.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
                                         </div>
                                         <div className="metric-card">
                                             <p className="metric-title">Platform Revenue (Est)</p>
                                             <p className="metric-value font-mono" style={{ color: 'var(--success)' }}>
-                                                ${stats.platformRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                ${stats.platformRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                                             </p>
                                         </div>
                                         <div className="metric-card">
@@ -277,7 +277,7 @@ const AdminDashboard = () => {
                                                         <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{auc.title}</td>
                                                         <td>{auc.seller?.name}</td>
                                                         <td>{auc.category}</td>
-                                                        <td className="font-mono">${Number(auc.startPrice).toLocaleString()}</td>
+                                                        <td className="font-mono">${Number(auc.startPrice).toLocaleString('en-US')}</td>
                                                         <td>
                                                             <span className="status-pill status-pill--warning">
                                                                 {auc.verificationStatus}
@@ -451,7 +451,7 @@ const AdminDashboard = () => {
                                                             </Link>
                                                         </td>
                                                         <td>{auc.seller?.name}</td>
-                                                        <td className="font-mono">${Number(auc.currentBid).toLocaleString()} <span style={{ fontSize: '11px', color: 'var(--outline)' }}>({auc._count?.bids})</span></td>
+                                                        <td className="font-mono">${Number(auc.currentBid).toLocaleString('en-US')} <span style={{ fontSize: '11px', color: 'var(--outline)' }}>({auc._count?.bids})</span></td>
                                                         <td>
                                                             <span className={`status-badge ${auc.status.toLowerCase()}`}>{auc.status}</span>
                                                         </td>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
@@ -9,6 +10,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [terms, setTerms] = useState(false);
     const [message, setMessage] = useState({ text: '', type: '' });
+    const toast = useToast();
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -30,15 +32,15 @@ const Register = () => {
                 email,
                 password
             });
-            setMessage({ text: 'Profile registered successfully! Redirecting to login...', type: 'success' });
+            setMessage({ text: '', type: '' });
+            toast.success('Account created. Redirecting to login…');
             setTimeout(() => {
                 navigate('/login');
-            }, 1500);
+            }, 1200);
         } catch (err) {
-            setMessage({ 
-                text: err.response?.data?.error || err.message || 'Registration failed', 
-                type: 'error' 
-            });
+            const text = err.response?.data?.error || err.message || 'Registration failed';
+            setMessage({ text: '', type: '' });
+            toast.error(text);
         }
     };
 

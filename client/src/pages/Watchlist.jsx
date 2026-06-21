@@ -94,7 +94,7 @@ const Watchlist = () => {
                 </div>
                 <div className="metric-card">
                     <p className="metric-title">Aggregate Value (Est)</p>
-                    <p className="metric-value">${estimatedValue.toLocaleString()}</p>
+                    <p className="metric-value">${estimatedValue.toLocaleString('en-US')}</p>
                     <p className="meta-table" style={{ color: 'var(--success)', marginTop: 'var(--space-xs)' }}>
                         ▲ Portfolio asset sum
                     </p>

@@ -192,7 +192,7 @@ const Dashboard = () => {
                                         </div>
                                         <div className="metric-card">
                                             <p className="metric-title">Escrow Capital Spent</p>
-                                            <p className="metric-value font-mono">${totalSpent.toLocaleString()}</p>
+                                            <p className="metric-value font-mono">${totalSpent.toLocaleString('en-US')}</p>
                                         </div>
                                     </div>
 
@@ -224,8 +224,8 @@ const Dashboard = () => {
                                                         uniqueBids.map(bid => (
                                                             <tr key={bid.auctionId}>
                                                                 <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{bid.auction.title}</td>
-                                                                <td className="font-mono">${Number(bid.amount).toLocaleString()}</td>
-                                                                <td className="font-mono">${Number(bid.auction.currentBid).toLocaleString()}</td>
+                                                                <td className="font-mono">${Number(bid.amount).toLocaleString('en-US')}</td>
+                                                                <td className="font-mono">${Number(bid.auction.currentBid).toLocaleString('en-US')}</td>
                                                                 <td>
                                                                     {bid.auction.status === 'ACTIVE' ? (
                                                                         bid.isWinning ? (
@@ -288,7 +288,7 @@ const Dashboard = () => {
                                         </div>
                                         <div className="metric-card">
                                             <p className="metric-title">Gross Merchandise Value (GMV)</p>
-                                            <p className="metric-value font-mono">${totalGMV.toLocaleString()}</p>
+                                            <p className="metric-value font-mono">${totalGMV.toLocaleString('en-US')}</p>
                                         </div>
                                     </div>
 
@@ -324,9 +324,9 @@ const Dashboard = () => {
                                                         allListings.map(a => (
                                                             <tr key={a.id}>
                                                                 <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{a.title}</td>
-                                                                <td className="font-mono">${Number(a.startPrice).toLocaleString()}</td>
+                                                                <td className="font-mono">${Number(a.startPrice).toLocaleString('en-US')}</td>
                                                                 <td className="font-mono">
-                                                                    ${Number(a.currentBid).toLocaleString()} <span style={{ color: 'var(--outline)', fontSize: '11px' }}>({a.bidCount} bids)</span>
+                                                                    ${Number(a.currentBid).toLocaleString('en-US')} <span style={{ color: 'var(--outline)', fontSize: '11px' }}>({a.bidCount} bids)</span>
                                                                 </td>
                                                                 <td>
                                                                     <span className={`status-badge ${a.status.toLowerCase()}`}>{a.status}</span>

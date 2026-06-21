@@ -40,7 +40,7 @@ const AuctionCard = ({ product }) => {
                     <div className="bid-info">
                         <span className="bid-label label-caps">Current Bid</span>
                         <span className="bid-price font-mono">
-                            ${Number(product.currentBid).toLocaleString()}
+                            ${Number(product.currentBid).toLocaleString('en-US')}
                         </span>
                     </div>
 

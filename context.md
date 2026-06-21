@@ -115,6 +115,11 @@ d:/Yogesh/Coding/FSD - Auction System/
    - **Backend bug fixed**: the bid `SELECT … FOR UPDATE` query referenced snake_case columns (`current_bid`, `end_time`) while Prisma generated camelCase (`"currentBid"`, `"endTime"`), causing every bid to 500. Corrected the identifiers; verified bidding returns 201 with working row-lock validation.
    - **Real-time transport fixed**: `ProductDetails.jsx` previously used a native `WebSocket` to `/ws`, incompatible with the Socket.io backend. Switched to `socket.io-client` with the `join:auction` / `bid:new` / `auction:closed` contract; verified live broadcast end-to-end.
 
+7. **UX Consistency & Trust Polish (quick-win batch)**:
+   - **Currency localization**: Pinned all 25 `toLocaleString()` calls across 7 files to `'en-US'` so prices render with Western grouping (`$350,050`) instead of the machine-locale `en-IN` form (`$3,50,050`) that read as a bug.
+   - **Honest data labeling**: The landing-page `StatsBand` KPIs are demonstration figures, so added an explicit "Illustrative platform figures shown for demonstration." caption to avoid presenting them as real platform metrics.
+   - **App-wide toast adoption**: Extended the toast system to `ProductDetails` (bid + watchlist outcomes — removed the dead inline `bidMessage` block), `Register` (submit success/error), and `Checkout` (settlement success/error). Every mutation/submit outcome in the app now surfaces through the consistent toast layer rather than inline divs or `alert()`. Inline state is retained only for field-level validation hints.
+
 ## Issues Faced & Resolutions
 
 1. **Accessibility and Contrast Compliances**:
@@ -138,4 +143,6 @@ d:/Yogesh/Coding/FSD - Auction System/
 - **`client/src/assets/css/styles.css`**: Check this file to add new UI color variables or animations.
 - **`client/src/pages/ProductDetails.jsx`**: Reference this file to examine WebSocket events or real-time ticker integrations.
 - **`client/src/pages/Checkout.jsx`**: Reference this file to modify tax brackets, delivery steps, or escrow hooks.
-- **PostgreSQL Migration**: The sqlite DB database fits local tests; migrate Prisma schemas to postgres for production scaling.
+- **Database**: Runs on PostgreSQL (hosted on Neon, serverless) via Prisma with the `@prisma/adapter-pg` driver. Connection pool is capped at `max: 3` to stay within Neon's free-tier connection limit.
+- **Remaining design-system work**: ~330 inline `style={{}}` objects still to migrate onto utility/component classes (heaviest: Checkout, ProductDetails, Home, Watchlist); mobile breakpoints below 720px; WCAG AA contrast audit on gold; re-introduce route-level code-splitting (`React.lazy`).
+- **Pending integrations**: Cloudinary signed upload, Resend transactional emails (outbid/won), Upstash rate limiting, provenance-document upload + cultural-property compliance.

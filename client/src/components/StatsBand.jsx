@@ -3,7 +3,7 @@ import useCountUp from '../hooks/useCountUp';
 function Stat({ end, suffix = '', prefix = '', decimals = 0, label, bars }) {
   const [ref, val] = useCountUp(end, {
     decimals,
-    format: (v) => prefix + Number(v).toLocaleString(undefined, {
+    format: (v) => prefix + Number(v).toLocaleString('en-US', {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }) + suffix,
@@ -41,6 +41,9 @@ export default function StatsBand() {
         <Stat end={38} suffix="ms" label="Avg. Bid Latency"
               bars={[90, 70, 75, 55, 60, 48, 42, 38]} />
       </div>
+      <p className="stats-band__note font-mono">
+        Illustrative platform figures shown for demonstration.
+      </p>
     </div>
   );
 }

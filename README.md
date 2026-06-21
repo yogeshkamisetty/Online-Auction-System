@@ -1,180 +1,173 @@
-# Golden Hammer Auctions
+<div align="center">
 
-A full-stack, **real-time online auction marketplace** for niche, high-value collectibles — rare antiquities, numismatics, luxury watches, vintage furniture, and vehicles. Buyers bid live, sellers consign lots, and auctions close automatically on a server-authoritative timer.
+# 🔨 Golden Hammer Auctions
 
-> **Category:** Real-time C2C marketplace (commission-based two-sided platform) · **Stack:** PERN + WebSockets
+### A real-time, full-stack auction marketplace for rare & high-value collectibles
+
+*Bid live. Settle securely. Built for antiquities, numismatics, luxury watches, fine art, and classic vehicles.*
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?logo=postgresql&logoColor=white)](https://neon.tech)
+[![Socket.io](https://img.shields.io/badge/Socket.io-4.8-010101?logo=socket.io&logoColor=white)](https://socket.io)
+
+</div>
 
 ---
 
 ## Table of Contents
-1. [Overview](#1-overview)
-2. [Tech Stack](#2-tech-stack)
-3. [Architecture](#3-architecture)
-4. [Features](#4-features)
-5. [Project Structure](#5-project-structure)
-6. [Getting Started](#6-getting-started)
-7. [API Reference](#7-api-reference)
-8. [Data Model](#8-data-model)
-9. [Test Results](#9-test-results)
-10. [Known Issues & Roadmap](#10-known-issues--roadmap)
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [System Architecture](#system-architecture)
+- [Data Model](#data-model)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Reference](#api-reference)
+- [Real-Time Events](#real-time-events)
+- [Design System](#design-system)
+- [Project Structure](#project-structure)
+- [Verification & Test Results](#verification--test-results)
+- [Roadmap](#roadmap)
+- [Author](#author)
 
 ---
 
-## 1. Overview
+## Overview
 
-Traditional auction houses limit participation through geography, rigid schedules, and high entry barriers. Golden Hammer democratizes this by providing a globally accessible, real-time bidding platform with:
+Traditional auction houses gatekeep participation through geography, rigid schedules, and steep entry barriers. **Golden Hammer Auctions** is a globally accessible web platform that brings live, competitive bidding to a discerning collector audience — engineered with the rigor a financial-grade marketplace demands.
 
-- **Live bidding** synchronized across all viewers of an auction
-- **Server-authoritative timers** — auctions close via a cron job, not the client clock
-- **Concurrency-safe bids** — PostgreSQL row-level locking prevents two bidders "winning" simultaneously
-- **Role-based access** — buyers, sellers, and admins, with a dedicated admin operations console
-- **Monetization model** — 10% seller commission + 5% buyer's premium calculated at settlement
+The platform handles the **hard problems of real auctions**: concurrent bids that must never both "win," server-authoritative timers that can't be gamed by a client clock, and a full lifecycle from listing through settlement — with a dedicated admin console for curation, verification, and dispute resolution.
+
+| | |
+|---|---|
+| **Category** | Real-time C2C marketplace (commission-based, two-sided) |
+| **Monetization** | 10% seller commission + 5% buyer's premium, computed at settlement |
+| **Differentiators** | Live bidding · expert verification · server-side auction closing |
 
 ---
 
-## 2. Tech Stack
+## Key Features
+
+### 🛒 For Buyers
+- Browse and filter a curated catalog (category, search, price)
+- **Real-time bidding** — current price and bid history update live across every viewer
+- Watchlist to track lots of interest
+- Personal dashboard: active bids, items won, total spent
+- Secure checkout & settlement on won lots (buyer's premium, escrow-style flow)
+
+### 🏷️ For Sellers
+- Create consignment listings with image upload
+- Seller dashboard: active listings, items sold, gross merchandise value (GMV)
+
+### 🛡️ For Administrators *(dedicated console)*
+- Platform KPIs — GMV, revenue, users, pending verifications
+- Manage any auction — edit, feature, force-close, take down
+- **Expert verification queue** — approve/reject lots to award a "Verified" badge
+- User management — suspend, promote/demote (with self-lockout safeguards)
+- Full per-auction bid audit log for dispute resolution
+
+### ⚙️ Engineering Highlights
+- **Concurrency-safe bids** — PostgreSQL `SELECT … FOR UPDATE` row-level locking inside a transaction
+- **Server-authoritative timers** — a `node-cron` job closes expired auctions every minute and broadcasts closure
+- **Stateless JWT auth** with role-based access control and bcrypt password hashing
+- **Real-time layer** — Socket.io rooms scoped per auction
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 19 (Vite), React Router DOM, Axios, TanStack React Query |
-| **Styling** | Custom CSS design system ("Technical Precision" — 8px grid, Inter / JetBrains Mono) |
-| **Backend** | Node.js, Express 5, Prisma 7 ORM |
-| **Database** | PostgreSQL (hosted on Neon, serverless) |
-| **Real-time** | Socket.io (WebSocket rooms per auction) |
-| **Auth** | JWT (stateless, 7-day expiry) + bcryptjs hashing |
-| **Scheduled jobs** | node-cron (auction auto-closer, runs every minute) |
-| **Security** | helmet, CORS, role-gated middleware |
-| **Image uploads** | Cloudinary (direct unsigned upload from client) |
+| **Frontend** | React 19 · Vite · React Router · TanStack React Query · Axios |
+| **Real-time (client)** | `socket.io-client` |
+| **Styling** | Custom CSS design system ("Technical Precision") — design tokens, 8px grid, Geist / Inter / JetBrains Mono |
+| **Backend** | Node.js · Express 5 · Prisma 7 ORM |
+| **Database** | PostgreSQL (Neon serverless) via `@prisma/adapter-pg` |
+| **Real-time (server)** | Socket.io 4.8 |
+| **Auth & Security** | JWT · bcryptjs · Helmet · CORS · role-gated middleware |
+| **Scheduled jobs** | node-cron |
+| **Media** | Cloudinary (image upload) |
 
 ---
 
-## 3. Architecture
+## System Architecture
 
 ```
-┌─────────────────────────────┐         ┌──────────────────────────────┐
-│   React SPA (Vite) :5173    │         │   Express API :3001          │
-│                             │  REST   │                              │
-│  Navbar · Routes (lazy)     │◄───────►│  /auth /auctions /bids       │
-│  AuthContext · React Query  │ (JWT)   │  /admin /watchlist           │
-│  lib/api.js (axios+JWT)     │         │                              │
-│                             │ Socket  │  Socket.io rooms             │
-│  ProductDetails (live bids) │◄═══════►│  bid:new · auction:closed    │
-└─────────────────────────────┘         │            │                 │
-                                         │  Prisma (adapter-pg, pool=3) │
-                                         │            ▼                 │
-                                         │  node-cron: closes expired   │
-                                         │  auctions every minute       │
-                                         └────────────┬─────────────────┘
-                                                      ▼
-                                         ┌──────────────────────────────┐
-                                         │  Neon PostgreSQL             │
-                                         │  User · Auction · Bid ·      │
-                                         │  Watchlist                   │
-                                         └──────────────────────────────┘
+┌──────────────────────────────┐         ┌───────────────────────────────┐
+│   React SPA (Vite)            │  REST   │   Express API                 │
+│                               │ ◄─────► │                               │
+│  • Pages (Home, Browse,       │  (JWT)  │  /auth    /auctions   /bids   │
+│    Product, Dashboard, Sell,  │         │  /admin   /watchlist          │
+│    Checkout, Admin …)         │         │                               │
+│  • AuthContext · ToastContext │ Socket  │  Socket.io rooms              │
+│  • React Query cache          │ ◄═════► │  bid:new · auction:closed     │
+│  • lib/api.js (JWT interceptor)│        │            │                  │
+└──────────────────────────────┘         │  Prisma (adapter-pg, pool=3)  │
+                                          │            ▼                  │
+                                          │  node-cron — closes expired   │
+                                          │  auctions every minute        │
+                                          └────────────┬──────────────────┘
+                                                       ▼
+                                          ┌───────────────────────────────┐
+                                          │   Neon PostgreSQL              │
+                                          │   User · Auction · Bid ·       │
+                                          │   Watchlist                    │
+                                          └───────────────────────────────┘
 ```
 
-**Auction lifecycle:** `ACTIVE → CLOSED (cron, at endTime) → SETTLED (winner confirms purchase)`
-
----
-
-## 4. Features
-
-### Buyer
-- Browse & filter the catalog (category, search, price)
-- Real-time bidding with live price + bid-history updates
-- Watchlist (save/track lots)
-- Dashboard: active bids, items won, total spent
-- Confirm purchase (settlement) on won lots
-
-### Seller
-- Create consignment listings with image upload
-- Dashboard: active listings, items sold, total GMV
-
-### Admin (dedicated console)
-- Platform KPIs (GMV, revenue, users, pending verifications)
-- Manage any auction (edit, feature, force-close, take down)
-- **Expert verification queue** (approve/reject lots → "Verified" badge)
-- User management (suspend, promote/demote)
-- Full bid audit log per auction (dispute resolution)
-
-### Visual Overhaul & Interactive Motion Design (Technical Precision 2.0)
-- **Cohesive Color Palette & Grid Alignment**: Swiss-bank-inspired Deep Midnight structural elements and Vibrant Gold premium badges built on a strict 8px grid.
-- **StatsBand KPI Infographic**: Implements a high-quality glassmorphism dashboard overlay on the landing page with animated count-up numbers and custom sparkbars.
-- **Scroll-Triggered Reveals & Staggers**: Custom `IntersectionObserver`-based stagger effects (`Reveal.jsx`) for seamless, fluid scroll reveals.
-- **Advanced Micro-Interactions**: Real-time price flashes, card-lifting hover zooms, button sheen sweeps, and brushed-metal shimmer skeletons.
-- **Accessibility & Motion Compliance**: Fully supports and respects `prefers-reduced-motion` media queries.
-- **Official Brand Logo**: Replaced placeholder vector outlines in `Navbar.jsx` with the official custom `logo2.png` graphics paired with polished, display-spaced typography.
-
-### Seeding & Demo Content
-- **12 Active Seeded Lots**: Diverse categories (Luxury Watches, Fine Art, Classic Vehicles, Rare Numismatics) with future closing times.
-- **Simulated Bid Activity**: Real-time bid histories featuring an active ladder of ascending bids across 5 distinct dummy collectors.
-- **Idempotency**: The seeding engine runs cleanly and securely resets DB states without duplicate collisions.
-
----
-
-## 5. Project Structure
+**Auction lifecycle:**
 
 ```
-FSD - Auction System/
-├── api/                          # Backend (Express + Prisma + Socket.io)
-│   ├── prisma/
-│   │   ├── schema.prisma         # User · Auction · Bid · Watchlist models
-│   │   ├── seed.js               # Seeds demo seller + 8 auctions
-│   │   └── makeAdmin.js          # Bootstrap/promote an admin user
-│   └── src/
-│       ├── index.js              # Server entry — Express + Socket.io + cron
-│       ├── lib/prisma.js         # Prisma client (pg adapter, pool max 3)
-│       ├── middleware/auth.js    # requireAuth + requireAdmin
-│       ├── routes/               # auth · auctions · bids · admin · watchlist
-│       └── jobs/auctionCloser.js # Cron: closes expired auctions
-│
-├── client/                       # Frontend (React + Vite)
-│   ├── public/images/            # Catalog & UI images
-│   └── src/
-│       ├── config.js             # API_BASE (env-driven)
-│       ├── lib/api.js            # Axios instance w/ JWT interceptor + 401 logout
-│       ├── context/AuthContext.jsx
-│       ├── assets/css/
-│       │   ├── styles.css        # Technical Precision 2.0 styles
-│       │   └── animations.css    # Motion & layout visualization animations
-│       ├── components/           # Navbar · Footer · AuctionCard · CountdownTimer · Spinner · StatsBand · Reveal
-│       ├── hooks/                # useCountUp (animated stats counter hook)
-│       └── pages/                # Home · Browse · ProductDetails · Dashboard ·
-│                                 #   Sell · Watchlist · Checkout · Login · Register · NotFound
-│
-├── DESIGN.md                     # Design system & color tokens
-├── context.md                    # Development log
-└── README.md                     # This file
+PENDING ──▶ ACTIVE ──▶ CLOSED ──▶ SETTLED
+            (live)   (cron @end)  (winner confirms purchase)
 ```
 
 ---
 
-## 6. Getting Started
+## Data Model
+
+```
+User 1───∞ Auction      a user can sell many auctions
+User 1───∞ Bid          a user can place many bids
+Auction 1───∞ Bid       an auction receives many bids
+User 1───∞ Watchlist    a user can watch many auctions
+```
+
+**Notes for contributors**
+- Monetary fields are `Decimal(12,2)` and serialized as **strings** — parse before arithmetic.
+- Enums: `AuctionStatus` (PENDING · ACTIVE · CLOSING · CLOSED · SETTLED), `VerificationStatus` (UNVERIFIED · PENDING · VERIFIED), `Role` (USER · ADMIN).
+- Indexes on `(status, featured)`, `sellerId`, and `verificationStatus` for query performance.
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- Node.js 20+
-- A PostgreSQL connection string (Neon free tier recommended)
+- **Node.js 20+**
+- A **PostgreSQL** connection string ([Neon](https://neon.tech) free tier recommended)
 
-### Backend
+### 1 · Backend API
+
 ```bash
 cd api
 npm install
 
-# Configure api/.env:
-#   DATABASE_URL="postgresql://..."
-#   DIRECT_URL="postgresql://..."
-#   JWT_SECRET="<long-random-string>"
-#   JWT_EXPIRES_IN="7d"
-#   PORT=3001
+# Configure api/.env (see Environment Variables below)
 
 npx prisma migrate dev      # apply schema to the database
-node prisma/seed.js         # seed demo seller + 8 auctions
+node prisma/seed.js         # seed demo seller, bidders, and 12 live auctions
 npm run make:admin admin@goldenhammer.com "StrongPass123"   # create an admin
 
-npm run dev                 # http://localhost:3001
+npm run dev                 # API → http://localhost:3001
 ```
 
-### Frontend
+### 2 · Frontend Client
+
 ```bash
 cd client
 npm install
@@ -182,130 +175,185 @@ npm install
 # Configure client/.env.local:
 #   VITE_API_BASE=http://localhost:3001
 
-npm run dev                 # http://localhost:5173
+npm run dev                 # App → http://localhost:5173
 ```
 
-**Demo seller login** (from seed): `demo@goldenhammer.com` / `demo1234`
+### Demo Credentials *(after seeding)*
+
+| Role | Email | Password |
+|---|---|---|
+| Seller | `demo@goldenhammer.com` | `demo1234` |
+| Bidder | `bidder1@goldenhammer.com` | `demo1234` |
 
 ---
 
-## 7. API Reference
+## Environment Variables
+
+### `api/.env`
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | Pooled PostgreSQL connection string (Neon) |
+| `DIRECT_URL` | Direct connection string (used for migrations) |
+| `JWT_SECRET` | Long random secret for signing tokens |
+| `JWT_EXPIRES_IN` | Token lifetime, e.g. `7d` |
+| `PORT` | API port (default `3001`) |
+
+### `client/.env.local`
+| Variable | Description |
+|---|---|
+| `VITE_API_BASE` | Base URL of the API (e.g. `http://localhost:3001`) |
+| `VITE_CLOUDINARY_CLOUD_NAME` | *(optional)* enables real image upload |
+| `VITE_CLOUDINARY_UPLOAD_PRESET` | *(optional)* unsigned upload preset |
+
+> 🔒 `.env` files are git-ignored. Never commit credentials.
+
+---
+
+## API Reference
 
 ### Auth — `/api/auth`
 | Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| POST | `/register` | — | Create account → `{ token, user }` |
-| POST | `/login` | — | Authenticate → `{ token, user }` |
-| PUT | `/me` | ✅ | Update own name / password |
+|---|---|:---:|---|
+| `POST` | `/register` | — | Create account → `{ token, user }` |
+| `POST` | `/login` | — | Authenticate → `{ token, user }` |
+| `PUT` | `/me` | ✅ | Update own name / password |
 
 ### Auctions — `/api/auctions`
 | Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| GET | `/` | — | List with filters (`category`, `featured`, `search`, `status`, `sellerId`) |
-| GET | `/:id` | — | Detail + seller + recent bids |
-| POST | `/` | ✅ | Create a listing |
-| PATCH | `/:id/settle` | ✅ (winner) | Confirm purchase → `SETTLED` + fee breakdown |
+|---|---|:---:|---|
+| `GET` | `/` | — | List with filters: `category`, `featured`, `search`, `status`, `sellerId` |
+| `GET` | `/:id` | — | Auction detail + seller + recent bids |
+| `POST` | `/` | ✅ | Create a listing |
+| `PATCH` | `/:id/settle` | ✅ | Winner confirms purchase → `SETTLED` + fee breakdown |
 
 ### Bids — `/api/bids`
 | Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| GET | `/my` | ✅ | Caller's bids + `isWinning` flag |
-| POST | `/` | ✅ | Place a bid (row-locked, rate-limited) → emits `bid:new` |
+|---|---|:---:|---|
+| `GET` | `/my` | ✅ | Caller's bids + `isWinning` flag |
+| `POST` | `/` | ✅ | Place a bid (row-locked transaction) → emits `bid:new` |
 
 ### Watchlist — `/api/watchlist`
 | Method | Endpoint | Auth | Purpose |
-|---|---|---|---|
-| GET | `/` | ✅ | Caller's watched lots |
-| POST | `/` | ✅ | Add lot |
-| DELETE | `/:id` | ✅ | Remove lot |
+|---|---|:---:|---|
+| `GET` | `/` | ✅ | Caller's watched lots |
+| `POST` | `/` | ✅ | Add a lot |
+| `DELETE` | `/:id` | ✅ | Remove a lot |
 
-### Admin — `/api/admin` (requires `role = ADMIN`)
+### Admin — `/api/admin` *(requires `role = ADMIN`)*
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/stats` | Platform KPIs (GMV, revenue, counts) |
-| GET | `/auctions` | All auctions (any status) + pagination |
-| PATCH | `/auctions/:id` | Edit status / featured / fields |
-| DELETE | `/auctions/:id` | Take down a listing |
-| PATCH | `/auctions/:id/verify` | Set verification status + notes |
-| GET | `/auctions/:id/bids` | Full bid audit log |
-| GET | `/users` | List / search users |
-| PATCH | `/users/:id` | Suspend / promote / demote |
+| `GET` | `/stats` | Platform KPIs (GMV, revenue, counts) |
+| `GET` | `/auctions` | All auctions (any status) + pagination |
+| `PATCH` | `/auctions/:id` | Edit status / featured / fields |
+| `DELETE` | `/auctions/:id` | Take down a listing |
+| `PATCH` | `/auctions/:id/verify` | Set verification status + notes |
+| `GET` | `/auctions/:id/bids` | Full bid audit log |
+| `GET` | `/users` | List / search users |
+| `PATCH` | `/users/:id` | Suspend / promote / demote |
 
-### Real-time (Socket.io)
+---
+
+## Real-Time Events
+
+Socket.io rooms are scoped per auction id.
+
 | Event | Direction | Purpose |
 |---|---|---|
-| `join:auction` / `leave:auction` | client → server | Room subscription |
-| `bid:new` | server → client | Live price + new bid |
-| `auction:closed` | server → client | Auction ended |
+| `join:auction` / `leave:auction` | client → server | Subscribe / unsubscribe from a lot |
+| `bid:new` | server → client | Broadcast new high bid (price, count, bidder) |
+| `auction:closed` | server → client | Auction has ended |
 
 ---
 
-## 8. Data Model
+## Design System
 
-```
-User 1───∞ Auction        (a user sells many auctions)
-User 1───∞ Bid            (a user places many bids)
-Auction 1───∞ Bid         (an auction receives many bids)
-```
+A custom token-driven system ("Technical Precision") — a Swiss-bank-meets-auction-house aesthetic.
 
-- **Money** is stored as `Decimal(12,2)` and returned as **strings** — parse before arithmetic.
-- **Enums:** `AuctionStatus` (PENDING · ACTIVE · CLOSING · CLOSED · SETTLED), `VerificationStatus` (UNVERIFIED · PENDING · VERIFIED), `Role` (USER · ADMIN).
-- Indexes on `(status, featured)`, `sellerId`, `verificationStatus` for query performance.
+- **Palette** — Deep Midnight (`#012C4E`) structure · Vibrant Gold (`#FFD45F`) prestige accents · high-key neutral surfaces · semantic success/warning/error/info tokens
+- **Typography** — Geist (display) · Inter (body) · JetBrains Mono (data & metadata)
+- **Spacing** — strict 8px grid
+- **Components** — buttons (4 variants + disabled/loading), inputs (focus/error), cards, modal, tabs, status pills, toasts, pagination, tooltip, skeleton shimmer
+- **Motion** — scroll-triggered reveals, count-up infographics, micro-interactions; fully honors `prefers-reduced-motion`
+
+See [`DESIGN.md`](DESIGN.md) for the full token reference.
 
 ---
 
-## 9. Test Results
+## Project Structure
 
-All checks below were executed against the live Neon database on **2026-06-21**.
+```
+FSD - Auction System/
+├── api/                              # Backend — Express + Prisma + Socket.io
+│   ├── prisma/
+│   │   ├── schema.prisma             # User · Auction · Bid · Watchlist
+│   │   ├── seed.js                   # Demo seller + bidders + 12 live auctions
+│   │   └── makeAdmin.js              # Bootstrap / promote an admin
+│   └── src/
+│       ├── index.js                  # Server entry — Express + Socket.io + cron
+│       ├── lib/prisma.js             # Prisma client (pg adapter, pool max 3)
+│       ├── middleware/auth.js        # requireAuth + requireAdmin
+│       ├── routes/                   # auth · auctions · bids · admin · watchlist
+│       └── jobs/auctionCloser.js     # Cron — closes expired auctions
+│
+├── client/                           # Frontend — React + Vite
+│   ├── public/images/                # Catalog & UI imagery
+│   └── src/
+│       ├── config.js                 # API_BASE (env-driven)
+│       ├── lib/api.js                # Axios instance w/ JWT interceptor + 401 logout
+│       ├── context/                  # AuthContext · ToastContext
+│       ├── hooks/                    # useCountUp
+│       ├── components/               # Navbar · Footer · AuctionCard · CountdownTimer
+│       │                             #   · Spinner · StatsBand · Reveal · Pagination · Tooltip
+│       ├── assets/css/               # styles.css · animations.css
+│       └── pages/                    # Home · Browse · ProductDetails · Dashboard ·
+│                                     #   Sell · Watchlist · Checkout · AdminDashboard ·
+│                                     #   Login · Register · NotFound
+│
+├── DESIGN.md                         # Design system & tokens
+├── context.md                        # Development log
+└── README.md
+```
 
-### Build & Module Integrity
+---
+
+## Verification & Test Results
+
+Validated against the live Neon database:
+
 | Check | Result |
 |---|---|
-| Client production build (`vite build`) | ✅ 143 modules, ~409 KB JS (121 KB gzip), built in ~0.6s |
-| Backend module load (all routes/middleware/jobs) | ✅ All modules load OK |
-| Prisma schema validation | ✅ Valid |
-
-### API Endpoint Tests (live)
-| Test | Expected | Result |
-|---|---|---|
-| `GET /health` | 200 | ✅ `{ status: "ok" }` |
-| `GET /api/auctions?status=ACTIVE` | live data | ✅ returns seeded lots |
-| `POST /api/auth/register` | 201 + JWT | ✅ token issued, **carries `role` claim** |
-| JWT payload | includes role | ✅ `user.role = "USER"` |
-| `GET /api/bids/my` (authed) | 200 `[]` | ✅ empty array |
-| `GET /api/admin/stats` (no token) | 401 | ✅ 401 |
-| `GET /api/admin/stats` (non-admin) | 403 | ✅ 403 |
-| `POST /api/bids` (valid: $100→$150) | 201 | ✅ `currentBid $150, bidCount 1` |
-| `POST /api/bids` (below current) | 400 | ✅ "Bid must be higher than current bid of $150" |
-| `POST /api/bids` (no token) | 401 | ✅ 401 |
-
-### Scheduled Job (cron)
-| Test | Result |
-|---|---|
-| Auction auto-closer | ✅ **Verified** — 8 seeded auctions past their `endTime` were automatically moved `ACTIVE → CLOSED` (0 active / 8 closed at test time) |
-
-### Bug Found & Fixed During Testing
-> **Bid placement was silently broken (HTTP 500).** The `SELECT ... FOR UPDATE` raw query referenced snake_case columns (`current_bid`, `end_time`) while Prisma generated camelCase columns (`"currentBid"`, `"endTime"`). Fixed by correcting the column identifiers; bidding now returns `201` and the row-lock validation works as designed.
+| Client production build | ✅ Clean (Vite, ~135 KB gzip JS) |
+| Backend module load + Prisma schema | ✅ Valid |
+| `POST /auth/register` issues JWT with `role` claim | ✅ |
+| Admin routes gated | ✅ `401` (no token) · `403` (non-admin) |
+| Place valid bid (`$100 → $150`) | ✅ `201`, row-lock validation enforced |
+| Reject low / unauthenticated bid | ✅ `400` / `401` |
+| Cron auction-closer | ✅ Expired auctions auto-transition `ACTIVE → CLOSED` |
+| Real-time `bid:new` broadcast | ✅ Verified end-to-end across a subscribed client |
 
 ---
 
-## 10. Known Issues & Roadmap
+## Roadmap
 
-### Known Issues
-- ⚠️ **Frontend auth header:** ensure all authenticated calls go through `lib/api.js` (which injects the JWT) rather than raw `axios`.
-- ℹ️ Cloudinary uploads fall back to curated placeholder images if `VITE_CLOUDINARY_CLOUD_NAME` is unset.
-
-### Recently Fixed
-- ✅ **Real-time bidding restored** — `ProductDetails.jsx` now uses `socket.io-client` with the backend's `join:auction` / `bid:new` / `auction:closed` contract (previously used an incompatible native `WebSocket` to `/ws`). Verified end-to-end: a subscribed client receives `bid:new` broadcasts live.
-- ✅ **Bid race-condition query fixed** — `SELECT ... FOR UPDATE` column identifiers corrected to match Prisma's camelCase columns.
-
-### Roadmap
-- [ ] Admin frontend console (backend APIs already complete)
 - [ ] Transactional emails (outbid / won) via Resend
 - [ ] Bid rate-limiting via Upstash Redis
-- [ ] Provenance document upload + compliance review (cultural-property law)
-- [ ] Deploy: API → Render, client → Vercel, DB → Neon
+- [ ] Cloudinary signed uploads + provenance-document attachments
+- [ ] Cultural-property / compliance review workflow
+- [ ] Proxy ("max") bidding
+- [ ] Complete migration of remaining inline styles onto design-system classes
+- [ ] Mobile breakpoint pass (320–414px) + WCAG AA contrast audit
+- [ ] Production deployment — Render (API) · Vercel (client) · Neon (DB)
 
 ---
 
-*Golden Hammer Auctions — a real-time full-stack auction marketplace built on the PERN stack with WebSocket live bidding, concurrency-safe transactions, and role-based administration.*
+## Author
+
+**Yogesh Kamisetty** — [GitHub](https://github.com/yogeshkamisetty)
+
+> Built as a full-stack engineering project demonstrating real-time systems, transactional integrity, role-based access control, and design-system discipline.
+
+---
+
+<div align="center">
+<sub>Golden Hammer Auctions — real-time full-stack auction marketplace on the PERN + Socket.io stack.</sub>
+</div>

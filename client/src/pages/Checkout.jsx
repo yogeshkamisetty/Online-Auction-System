@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
 
 const Checkout = () => {
@@ -10,6 +11,7 @@ const Checkout = () => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const toast = useToast();
     const [settledSuccess, setSettledSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -33,9 +35,12 @@ const Checkout = () => {
             setSettledSuccess(true);
             queryClient.invalidateQueries(['auctionCheckout', id]);
             queryClient.invalidateQueries(['myBids']);
+            toast.success('Purchase settled securely. Thank you.');
         },
         onError: (err) => {
-            setErrorMessage(err.message || 'Payment settlement failed.');
+            const text = err.message || 'Payment settlement failed.';
+            setErrorMessage(text);
+            toast.error(text);
         }
     });
 
@@ -173,26 +178,26 @@ const Checkout = () => {
                         <div className="space-y-sm" style={{ marginTop: 'var(--space-md)', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-md)' }}>
                             <div className="flex-between body-md">
                                 <span style={{ color: 'var(--on-surface-variant)' }}>Hammer Bid Price</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${bidAmount.toLocaleString()}</span>
+                                <span className="font-mono" style={{ fontWeight: 600 }}>${bidAmount.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
                                 <span style={{ color: 'var(--on-surface-variant)' }}>Buyer's Premium (15%)</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${buyersPremium.toLocaleString()}</span>
+                                <span className="font-mono" style={{ fontWeight: 600 }}>${buyersPremium.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
                                 <span style={{ color: 'var(--on-surface-variant)' }}>Taxes & Duties (Est.)</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${taxes.toLocaleString()}</span>
+                                <span className="font-mono" style={{ fontWeight: 600 }}>${taxes.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
                                 <span style={{ color: 'var(--on-surface-variant)' }}>White Glove Courier Shipping</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${shipping.toLocaleString()}</span>
+                                <span className="font-mono" style={{ fontWeight: 600 }}>${shipping.toLocaleString('en-US')}</span>
                             </div>
                         </div>
 
                         <div className="flex-between" style={{ marginTop: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
                             <span className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Total Due</span>
                             <span className="display-lg" style={{ fontSize: '24px', color: 'var(--primary)' }}>
-                                ${totalDue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                ${totalDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 

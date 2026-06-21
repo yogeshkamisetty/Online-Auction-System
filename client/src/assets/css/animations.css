@@ -75,6 +75,14 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
 }
+.stats-band__note {
+  position: relative;
+  margin-top: 20px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: right;
+}
 /* Mini bar-spark visualization */
 .sparkbars { display: flex; align-items: flex-end; gap: 3px; height: 28px; margin-top: 8px; }
 .sparkbars span {

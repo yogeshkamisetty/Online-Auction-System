@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { io } from 'socket.io-client';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { API_BASE } from '../config';
 import Spinner from '../components/Spinner';
 
@@ -59,9 +60,9 @@ const ProductDetails = () => {
     const { id } = useParams();
     const { user, token } = useContext(AuthContext);
     const queryClient = useQueryClient();
-    
+    const toast = useToast();
+
     const [bidAmount, setBidAmount] = useState('');
-    const [bidMessage, setBidMessage] = useState({ text: '', type: '' });
 
     // Fetch product details
     const { data: product, isLoading, isError, refetch } = useQuery({
@@ -103,13 +104,13 @@ const ProductDetails = () => {
             queryClient.invalidateQueries({ queryKey: ['watchlist'] });
         },
         onError: (err) => {
-            setBidMessage({ text: err.message || 'Failed to update watchlist', type: 'error' });
+            toast.error(err.message || 'Failed to update watchlist');
         }
     });
 
     const handleWatchToggle = () => {
         if (!token) {
-            setBidMessage({ text: 'Please log in to watch items.', type: 'error' });
+            toast.error('Please log in to watch items.');
             return;
         }
         watchMutation.mutate();
@@ -162,10 +163,9 @@ const ProductDetails = () => {
 
     const handleBid = async (e) => {
         e.preventDefault();
-        setBidMessage({ text: '', type: '' });
 
         if (!token) {
-            setBidMessage({ text: 'Please log in to place a bid.', type: 'error' });
+            toast.error('Please log in to place a bid.');
             return;
         }
 
@@ -174,13 +174,10 @@ const ProductDetails = () => {
                 auctionId: id,
                 amount: parseFloat(bidAmount)
             });
-            setBidMessage({ text: 'Bid placed successfully!', type: 'success' });
+            toast.success('Bid placed successfully.');
             refetch();
         } catch (err) {
-            setBidMessage({ 
-                text: err.message || 'Failed to place bid', 
-                type: 'error' 
-            });
+            toast.error(err.message || 'Failed to place bid');
         }
     };
 
@@ -294,11 +291,11 @@ const ProductDetails = () => {
                         <div className="price-row">
                             <div className="price-col">
                                 <span className="price-label">Current High Bid</span>
-                                <span className="price-current font-mono">${Number(product.currentBid).toLocaleString()}</span>
+                                <span className="price-current font-mono">${Number(product.currentBid).toLocaleString('en-US')}</span>
                             </div>
                             <div className="price-col">
                                 <span className="price-label">Opening Est. Valuation</span>
-                                <span className="price-starting font-mono">${Number(product.startPrice).toLocaleString()}</span>
+                                <span className="price-starting font-mono">${Number(product.startPrice).toLocaleString('en-US')}</span>
                             </div>
                         </div>
 
@@ -327,12 +324,6 @@ const ProductDetails = () => {
                                             Place Bid
                                         </button>
                                     </form>
-
-                                    {bidMessage.text && (
-                                        <div className={`alert ${bidMessage.type === 'error' ? 'alert-error' : 'alert-success'}`} style={{ marginTop: 'var(--space-sm)' }}>
-                                            {bidMessage.text}
-                                        </div>
-                                    )}
                                 </>
                             ) : product.status === 'CLOSED' ? (
                                 isWinner ? (
@@ -354,14 +345,14 @@ const ProductDetails = () => {
                                     <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
                                         <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Asset Auction Ended</h3>
                                         <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
-                                            Sold for <strong className="font-mono">${Number(product.currentBid).toLocaleString()}</strong>. Awaiting winning buyer settlement checkouts.
+                                            Sold for <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>. Awaiting winning buyer settlement checkouts.
                                         </p>
                                     </div>
                                 ) : (
                                     <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
                                         <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--on-surface-variant)' }}>Auction Concluded</h3>
                                         <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
-                                            Sold to the highest bidder for <strong className="font-mono">${Number(product.currentBid).toLocaleString()}</strong>.
+                                            Sold to the highest bidder for <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>.
                                         </p>
                                     </div>
                                 )
@@ -383,7 +374,7 @@ const ProductDetails = () => {
                                         <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
                                             Winner has completed settlement. Platform commission deducted. Net earnings released: 
                                             <strong className="font-mono" style={{ color: 'var(--success)', display: 'block', fontSize: '18px', marginTop: 'var(--space-xs)' }}>
-                                                ${(Number(product.currentBid) - Number(product.platformFee)).toLocaleString()}
+                                                ${(Number(product.currentBid) - Number(product.platformFee)).toLocaleString('en-US')}
                                             </strong>
                                         </p>
                                     </div>
@@ -391,7 +382,7 @@ const ProductDetails = () => {
                                     <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
                                         <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--on-surface-variant)' }}>Transaction Finalized</h3>
                                         <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
-                                            This asset was sold and settled at <strong className="font-mono">${Number(product.currentBid).toLocaleString()}</strong>.
+                                            This asset was sold and settled at <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>.
                                         </p>
                                     </div>
                                 )
@@ -427,7 +418,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                         <div className="bid-amount-time">
-                                            <span className="bid-history-amount font-mono">${Number(bid.amount).toLocaleString()}</span>
+                                            <span className="bid-history-amount font-mono">${Number(bid.amount).toLocaleString('en-US')}</span>
                                             <span className="bid-history-time font-mono">{new Date(bid.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
