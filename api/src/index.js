@@ -12,10 +12,12 @@ const adminRoutes   = require('./routes/admin');
 const watchlistRoutes = require('./routes/watchlist');
 const { startAuctionCloser } = require('./jobs/auctionCloser');
 
+const corsOrigin = process.env.CORS_ORIGIN || '*';
+
 const app        = express();
 const httpServer = http.createServer(app);
 const io         = new Server(httpServer, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
+  cors: { origin: corsOrigin, methods: ['GET', 'POST'] },
   transports: ['websocket', 'polling'],
 });
 
@@ -24,7 +26,7 @@ app.set('io', io);
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false })); // CSP off — static HTML served separately
-app.use(cors({ origin: '*' }));                    // Tighten to Vercel URL after deploy
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 // ── Routes ───────────────────────────────────────────────────────────────────
