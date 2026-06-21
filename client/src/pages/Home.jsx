@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import StatsBand from '../components/StatsBand';
+import Reveal from '../components/Reveal';
 
 const Home = () => {
     return (
@@ -58,6 +60,13 @@ const Home = () => {
                     </div>
                 </div>
             </header>
+
+            {/* Animated Stats Infographic */}
+            <section className="container" style={{ marginTop: '-40px', position: 'relative', zIndex: 5 }}>
+                <Reveal>
+                    <StatsBand />
+                </Reveal>
+            </section>
 
             {/* Category Grid Section */}
             <main className="categories section-padding" id="categories">
@@ -138,7 +147,7 @@ const Home = () => {
                             <p className="section-subtitle">A step-by-step framework to buy or list luxury assets.</p>
                         </div>
                     </div>
-                    <div className="grid-12" style={{ marginTop: '20px' }}>
+                    <Reveal stagger className="grid-12" style={{ marginTop: '20px' }}>
                         <div className="detail-card" style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             <span className="font-mono" style={{ fontSize: '24px', color: 'var(--primary)', fontWeight: 700 }}>01</span>
                             <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Create Account</h3>
@@ -160,7 +169,7 @@ const Home = () => {
                                 Won items are secured in credit-backed bank escrows. Armored courier transports directly to your vault.
                             </p>
                         </div>
-                    </div>
+                    </Reveal>
                 </div>
             </section>
 

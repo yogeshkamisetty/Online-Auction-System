@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './context/AuthContext'
 import App from './App.jsx'
 import './assets/css/styles.css' // Import global styles
+ import './assets/css/animations.css' // Motion & visualization layer
 
 const queryClient = new QueryClient();
 

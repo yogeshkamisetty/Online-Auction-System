@@ -97,6 +97,18 @@ Traditional auction houses limit participation through geography, rigid schedule
 - User management (suspend, promote/demote)
 - Full bid audit log per auction (dispute resolution)
 
+### Visual Overhaul & Interactive Motion Design (Technical Precision 2.0)
+- **Cohesive Color Palette & Grid Alignment**: Swiss-bank-inspired Deep Midnight structural elements and Vibrant Gold premium badges built on a strict 8px grid.
+- **StatsBand KPI Infographic**: Implements a high-quality glassmorphism dashboard overlay on the landing page with animated count-up numbers and custom sparkbars.
+- **Scroll-Triggered Reveals & Staggers**: Custom `IntersectionObserver`-based stagger effects (`Reveal.jsx`) for seamless, fluid scroll reveals.
+- **Advanced Micro-Interactions**: Real-time price flashes, card-lifting hover zooms, button sheen sweeps, and brushed-metal shimmer skeletons.
+- **Accessibility & Motion Compliance**: Fully supports and respects `prefers-reduced-motion` media queries.
+
+### Seeding & Demo Content
+- **12 Active Seeded Lots**: Diverse categories (Luxury Watches, Fine Art, Classic Vehicles, Rare Numismatics) with future closing times.
+- **Simulated Bid Activity**: Real-time bid histories featuring an active ladder of ascending bids across 5 distinct dummy collectors.
+- **Idempotency**: The seeding engine runs cleanly and securely resets DB states without duplicate collisions.
+
 ---
 
 ## 5. Project Structure
@@ -121,7 +133,11 @@ FSD - Auction System/
 │       ├── config.js             # API_BASE (env-driven)
 │       ├── lib/api.js            # Axios instance w/ JWT interceptor + 401 logout
 │       ├── context/AuthContext.jsx
-│       ├── components/           # Navbar · Footer · AuctionCard · CountdownTimer · Spinner
+│       ├── assets/css/
+│       │   ├── styles.css        # Technical Precision 2.0 styles
+│       │   └── animations.css    # Motion & layout visualization animations
+│       ├── components/           # Navbar · Footer · AuctionCard · CountdownTimer · Spinner · StatsBand · Reveal
+│       ├── hooks/                # useCountUp (animated stats counter hook)
 │       └── pages/                # Home · Browse · ProductDetails · Dashboard ·
 │                                 #   Sell · Watchlist · Checkout · Login · Register · NotFound
 │
