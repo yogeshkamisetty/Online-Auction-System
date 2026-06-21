@@ -32,9 +32,7 @@ const CountdownTimer = ({ endTime, onComplete }) => {
     }, [endTime, onComplete]);
 
     return (
-        <span className="badge timer-badge right">
-            {formatTimeLeft(timeLeft)}
-        </span>
+        <>{formatTimeLeft(timeLeft)}</>
     );
 };
 

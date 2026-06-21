@@ -1,0 +1,608 @@
+import React, { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../lib/api';
+import { AuthContext } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
+
+const AdminDashboard = () => {
+    const { user } = useContext(AuthContext);
+    const queryClient = useQueryClient();
+
+    const [activeTab, setActiveTab] = useState('overview');
+    
+    // Pagination & Search States
+    const [userSearch, setUserSearch] = useState('');
+    const [userPage, setUserPage] = useState(0);
+    const [auctionSearch, setAuctionSearch] = useState('');
+    const [auctionPage, setAuctionPage] = useState(0);
+    const [statusFilter, setStatusFilter] = useState('');
+    const [verificationFilter, setVerificationFilter] = useState('');
+
+    // Verification Modal States
+    const [verifyingAuction, setVerifyingAuction] = useState(null);
+    const [verificationNotes, setVerificationNotes] = useState('');
+    const [verificationStatus, setVerificationStatus] = useState('VERIFIED');
+    const [verifyingError, setVerifyingError] = useState('');
+
+    const limit = 20;
+
+    // Queries
+    const { data: stats, isLoading: statsLoading, isError: statsError } = useQuery({
+        queryKey: ['adminStats'],
+        queryFn: async () => {
+            const res = await api.get('/admin/stats');
+            return res.data;
+        },
+        enabled: activeTab === 'overview'
+    });
+
+    const { data: usersData, isLoading: usersLoading, isError: usersError } = useQuery({
+        queryKey: ['adminUsers', userSearch, userPage],
+        queryFn: async () => {
+            const res = await api.get(`/admin/users?search=${userSearch}&take=${limit}&skip=${userPage * limit}`);
+            return res.data;
+        },
+        enabled: activeTab === 'users'
+    });
+
+    const { data: auctionsData, isLoading: auctionsLoading, isError: auctionsError } = useQuery({
+        queryKey: ['adminAuctions', auctionSearch, auctionPage, statusFilter, verificationFilter],
+        queryFn: async () => {
+            let url = `/admin/auctions?search=${auctionSearch}&take=${limit}&skip=${auctionPage * limit}`;
+            if (statusFilter) url += `&status=${statusFilter}`;
+            if (verificationFilter) url += `&verificationStatus=${verificationFilter}`;
+            const res = await api.get(url);
+            return res.data;
+        },
+        enabled: activeTab === 'auctions' || activeTab === 'verification'
+    });
+
+    // Mutations
+    const suspendMutation = useMutation({
+        mutationFn: async ({ userId, suspended }) => {
+            const res = await api.patch(`/admin/users/${userId}`, { suspended });
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+        },
+        onError: (err) => {
+            alert(err.message || 'Failed to update user status');
+        }
+    });
+
+    const verifyMutation = useMutation({
+        mutationFn: async ({ auctionId, verificationStatus, verificationNotes }) => {
+            const res = await api.patch(`/admin/auctions/${auctionId}/verify`, {
+                verificationStatus,
+                verificationNotes
+            });
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminAuctions'] });
+            queryClient.invalidateQueries({ queryKey: ['adminStats'] });
+            setVerifyingAuction(null);
+            setVerificationNotes('');
+            setVerificationStatus('VERIFIED');
+            setVerifyingError('');
+        },
+        onError: (err) => {
+            setVerifyingError(err.message || 'Failed to verify auction');
+        }
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (auctionId) => {
+            const res = await api.delete(`/admin/auctions/${auctionId}`);
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminAuctions'] });
+            queryClient.invalidateQueries({ queryKey: ['adminStats'] });
+            alert('Listing removed successfully.');
+        },
+        onError: (err) => {
+            alert(err.message || 'Failed to delete auction');
+        }
+    });
+
+    // Handlers
+    const handleSuspendToggle = (targetUser) => {
+        if (targetUser.id === user?.id) {
+            alert('Security Safeguard: You cannot suspend your own admin account.');
+            return;
+        }
+        const confirmMsg = `Are you sure you want to ${targetUser.suspended ? 'unsuspend' : 'suspend'} ${targetUser.name}?`;
+        if (window.confirm(confirmMsg)) {
+            suspendMutation.mutate({ userId: targetUser.id, suspended: !targetUser.suspended });
+        }
+    };
+
+    const handleDeleteAuction = (auctionId, title) => {
+        if (window.confirm(`CRITICAL COMPLIANCE ACTION: Are you sure you want to permanently delete "${title}"? This will also purge all bids attached to it.`)) {
+            deleteMutation.mutate(auctionId);
+        }
+    };
+
+    const submitVerification = (e) => {
+        e.preventDefault();
+        setVerifyingError('');
+        if (!verifyingAuction) return;
+        verifyMutation.mutate({
+            auctionId: verifyingAuction.id,
+            verificationStatus,
+            verificationNotes
+        });
+    };
+
+    return (
+        <main className="container py-xl">
+            {/* Header Title */}
+            <div className="section-header-flex">
+                <div>
+                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>Platform Administration</h1>
+                    <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
+                        Executive command console. Monitor core KPIs, verify lots, and moderate users.
+                    </p>
+                </div>
+                <div>
+                    <span className="badge-live" style={{ background: 'var(--secondary)', color: 'white', borderColor: 'rgba(255,255,255,0.1)' }}>
+                        Operator: {user?.name}
+                    </span>
+                </div>
+            </div>
+
+            {/* Split Sidebar Layout */}
+            <div className="split-layout">
+                {/* Sidebar Navigation */}
+                <aside className="sidebar">
+                    <h3 className="sidebar-title">Admin Console</h3>
+                    <ul className="dashboard-menu">
+                        <li>
+                            <a href="#" className={activeTab === 'overview' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('overview'); }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>monitoring</span>
+                                System KPIs
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className={activeTab === 'verification' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('verification'); setVerificationFilter('PENDING'); setStatusFilter(''); }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>verified_user</span>
+                                Verification Queue
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className={activeTab === 'users' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('users'); }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>group</span>
+                                User Directory
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className={activeTab === 'auctions' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('auctions'); setVerificationFilter(''); setStatusFilter(''); }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>gavel</span>
+                                Auction Audit Log
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                {/* Main Console Content */}
+                <div className="main-content">
+                    {/* Tab 1: System Overview */}
+                    {activeTab === 'overview' && (
+                        <div className="space-y-lg">
+                            <h2 className="panel-heading">Platform Financial KPIs</h2>
+                            {statsLoading ? (
+                                <div className="flex-center" style={{ padding: '40px' }}><Spinner /></div>
+                            ) : statsError || !stats ? (
+                                <div className="alert alert-error text-center">Failed to retrieve administration metrics.</div>
+                            ) : (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                    <div className="metrics-grid">
+                                        <div className="metric-card">
+                                            <p className="metric-title">Gross Volume (GMV)</p>
+                                            <p className="metric-value font-mono">${stats.gmv.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+                                        </div>
+                                        <div className="metric-card">
+                                            <p className="metric-title">Platform Revenue (Est)</p>
+                                            <p className="metric-value font-mono" style={{ color: 'var(--success)' }}>
+                                                ${stats.platformRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            </p>
+                                        </div>
+                                        <div className="metric-card">
+                                            <p className="metric-title">Registered Accounts</p>
+                                            <p className="metric-value">{stats.users}</p>
+                                        </div>
+                                    </div>
+                                    <div className="metrics-grid">
+                                        <div className="metric-card">
+                                            <p className="metric-title">Total Placed Lots</p>
+                                            <p className="metric-value">{stats.auctions?.total}</p>
+                                        </div>
+                                        <div className="metric-card">
+                                            <p className="metric-title">Active / Closed / Settled</p>
+                                            <p className="metric-value" style={{ fontSize: '20px', marginTop: '8px' }}>
+                                                {stats.auctions?.active} / {stats.auctions?.closed} / {stats.auctions?.settled}
+                                            </p>
+                                        </div>
+                                        <div className="metric-card">
+                                            <p className="metric-title">Bidding Activity Ratio</p>
+                                            <p className="metric-value font-mono">{stats.bidToListingRatio}x</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Tab 2: Verification Queue */}
+                    {activeTab === 'verification' && (
+                        <div className="space-y-lg">
+                            <h2 className="panel-heading">Expert Verification Queue</h2>
+                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: '-8px' }}>
+                                Review unverified consignment entries and assign authentication stamps.
+                            </p>
+
+                            <div className="table-container table-scroll-container">
+                                {auctionsLoading ? (
+                                    <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
+                                ) : auctionsError ? (
+                                    <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve verification lists.</div>
+                                ) : (
+                                    <table className="dashboard-table" aria-label="Consignments awaiting verification">
+                                        <thead>
+                                            <tr>
+                                                <th>Asset Item</th>
+                                                <th>Seller Profile</th>
+                                                <th>Category</th>
+                                                <th>Start Val Est</th>
+                                                <th>State</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {auctionsData.items?.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="6" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: '24px' }}>
+                                                        No pending assets in verification queue.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                auctionsData.items.map(auc => (
+                                                    <tr key={auc.id}>
+                                                        <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{auc.title}</td>
+                                                        <td>{auc.seller?.name}</td>
+                                                        <td>{auc.category}</td>
+                                                        <td className="font-mono">${Number(auc.startPrice).toLocaleString()}</td>
+                                                        <td>
+                                                            <span className="status-badge outbid" style={{ background: '#fef3c7', color: '#78350f' }}>
+                                                                {auc.verificationStatus}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <button 
+                                                                className="btn btn-primary" 
+                                                                style={{ padding: '6px 12px', fontSize: '11px' }}
+                                                                onClick={() => { setVerifyingAuction(auc); setVerificationStatus('VERIFIED'); }}
+                                                            >
+                                                                Stamp
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tab 3: User Directory */}
+                    {activeTab === 'users' && (
+                        <div className="space-y-lg">
+                            <div className="panel-header-flex">
+                                <h2 className="panel-heading" style={{ margin: 0 }}>User Directory</h2>
+                                <input 
+                                    type="text" 
+                                    className="form-input"
+                                    placeholder="Search users..." 
+                                    value={userSearch} 
+                                    onChange={(e) => { setUserSearch(e.target.value); setUserPage(0); }}
+                                    style={{ width: '250px', backgroundColor: 'var(--surface-container-lowest)', padding: '6px 12px' }}
+                                />
+                            </div>
+
+                            <div className="table-container table-scroll-container">
+                                {usersLoading ? (
+                                    <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
+                                ) : usersError ? (
+                                    <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve user accounts.</div>
+                                ) : (
+                                    <table className="dashboard-table" aria-label="System user directory">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>System Role</th>
+                                                <th>Consigns / Bids</th>
+                                                <th>Status</th>
+                                                <th>Moderate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {usersData.items?.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="6" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: '24px' }}>
+                                                        No user accounts found.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                usersData.items.map(u => (
+                                                    <tr key={u.id}>
+                                                        <td style={{ fontWeight: 600 }}>{u.name}</td>
+                                                        <td>{u.email}</td>
+                                                        <td>
+                                                            <span className="status-badge" style={{
+                                                                backgroundColor: u.role === 'ADMIN' ? '#dbeafe' : '#f3f4f6',
+                                                                color: u.role === 'ADMIN' ? '#1e40af' : '#4b5563'
+                                                            }}>{u.role}</span>
+                                                        </td>
+                                                        <td className="font-mono">{u._count?.auctions} / {u._count?.bids}</td>
+                                                        <td>
+                                                            {u.suspended ? (
+                                                                <span className="status-badge outbid">Suspended</span>
+                                                            ) : (
+                                                                <span className="status-badge winning">Active</span>
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            <button 
+                                                                onClick={() => handleSuspendToggle(u)}
+                                                                disabled={u.id === user?.id}
+                                                                className={`btn ${u.suspended ? 'btn-primary' : 'btn-danger'}`}
+                                                                style={{ 
+                                                                    padding: '4px 8px', 
+                                                                    fontSize: '10px',
+                                                                    cursor: u.id === user?.id ? 'not-allowed' : 'pointer'
+                                                                }}
+                                                            >
+                                                                {u.suspended ? 'Unsuspend' : 'Suspend'}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+
+                            {/* Pagination */}
+                            {usersData?.total > limit && (
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1.5rem' }}>
+                                    <button 
+                                        className="btn btn-ghost" 
+                                        disabled={userPage === 0}
+                                        onClick={() => setUserPage(prev => Math.max(0, prev - 1))}
+                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                    >
+                                        &larr; Prev
+                                    </button>
+                                    <span style={{ alignSelf: 'center', fontSize: '13px', color: 'var(--outline)' }}>
+                                        Page {userPage + 1} of {Math.ceil(usersData.total / limit)}
+                                    </span>
+                                    <button 
+                                        className="btn btn-ghost" 
+                                        disabled={(userPage + 1) * limit >= usersData.total}
+                                        onClick={() => setUserPage(prev => prev + 1)}
+                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                    >
+                                        Next &rarr;
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Tab 4: Auction Audit Log */}
+                    {activeTab === 'auctions' && (
+                        <div className="space-y-lg">
+                            <div className="panel-header-flex">
+                                <h2 className="panel-heading" style={{ margin: 0 }}>Auction Audit Log</h2>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <select 
+                                        className="form-input"
+                                        value={statusFilter} 
+                                        onChange={(e) => { setStatusFilter(e.target.value); setAuctionPage(0); }}
+                                        style={{ width: '130px', padding: '4px 8px', backgroundColor: 'var(--surface-container-lowest)' }}
+                                    >
+                                        <option value="">Statuses</option>
+                                        <option value="PENDING">PENDING</option>
+                                        <option value="ACTIVE">ACTIVE</option>
+                                        <option value="CLOSED">CLOSED</option>
+                                        <option value="SETTLED">SETTLED</option>
+                                    </select>
+                                    <input 
+                                        type="text" 
+                                        className="form-input"
+                                        placeholder="Search title..." 
+                                        value={auctionSearch} 
+                                        onChange={(e) => { setAuctionSearch(e.target.value); setAuctionPage(0); }}
+                                        style={{ width: '180px', padding: '4px 8px', backgroundColor: 'var(--surface-container-lowest)' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="table-container table-scroll-container">
+                                {auctionsLoading ? (
+                                    <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
+                                ) : auctionsError ? (
+                                    <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve auction logs.</div>
+                                ) : (
+                                    <table className="dashboard-table" aria-label="Platform auction audit log">
+                                        <thead>
+                                            <tr>
+                                                <th>Asset Lot</th>
+                                                <th>Seller Name</th>
+                                                <th>Current High</th>
+                                                <th>State</th>
+                                                <th>Authentication</th>
+                                                <th>Moderate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {auctionsData.items?.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="6" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: '24px' }}>
+                                                        No auctions found.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                auctionsData.items.map(auc => (
+                                                    <tr key={auc.id}>
+                                                        <td>
+                                                            <Link to={`/product/${auc.id}`} style={{ fontWeight: 600, color: 'var(--secondary)' }}>
+                                                                {auc.title}
+                                                            </Link>
+                                                        </td>
+                                                        <td>{auc.seller?.name}</td>
+                                                        <td className="font-mono">${Number(auc.currentBid).toLocaleString()} <span style={{ fontSize: '11px', color: 'var(--outline)' }}>({auc._count?.bids})</span></td>
+                                                        <td>
+                                                            <span className={`status-badge ${auc.status.toLowerCase()}`}>{auc.status}</span>
+                                                        </td>
+                                                        <td>
+                                                            <span className="status-badge" style={{
+                                                                backgroundColor: auc.verificationStatus === 'VERIFIED' ? '#d1fae5' : auc.verificationStatus === 'PENDING' ? '#fef3c7' : '#f3f4f6',
+                                                                color: auc.verificationStatus === 'VERIFIED' ? '#065f46' : auc.verificationStatus === 'PENDING' ? '#78350f' : '#4b5563'
+                                                            }}>{auc.verificationStatus}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                                <button 
+                                                                    onClick={() => { setVerifyingAuction(auc); setVerificationStatus(auc.verificationStatus); setVerificationNotes(auc.verificationNotes || ''); }}
+                                                                    className="btn btn-ghost"
+                                                                    style={{ padding: '4px 8px', fontSize: '10px' }}
+                                                                >
+                                                                    Stamp
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => handleDeleteAuction(auc.id, auc.title)}
+                                                                    className="btn btn-danger"
+                                                                    style={{ padding: '4px 8px', fontSize: '10px' }}
+                                                                >
+                                                                    Purge
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+
+                            {/* Pagination */}
+                            {auctionsData?.total > limit && (
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1.5rem' }}>
+                                    <button 
+                                        className="btn btn-ghost" 
+                                        disabled={auctionPage === 0}
+                                        onClick={() => setAuctionPage(prev => Math.max(0, prev - 1))}
+                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                    >
+                                        &larr; Prev
+                                    </button>
+                                    <span style={{ alignSelf: 'center', fontSize: '13px', color: 'var(--outline)' }}>
+                                        Page {auctionPage + 1} of {Math.ceil(auctionsData.total / limit)}
+                                    </span>
+                                    <button 
+                                        className="btn btn-ghost" 
+                                        disabled={(auctionPage + 1) * limit >= auctionsData.total}
+                                        onClick={() => setAuctionPage(prev => prev + 1)}
+                                        style={{ padding: '6px 12px', fontSize: '12px' }}
+                                    >
+                                        Next &rarr;
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Verification Stamp Modal Overlay */}
+            <div className={`modal-overlay ${verifyingAuction ? 'active' : ''}`} aria-hidden={!verifyingAuction}>
+                {verifyingAuction && (
+                    <div className="detail-card glass-panel modal-content-container" style={{
+                        width: '100%',
+                        maxWidth: '500px',
+                        padding: 'var(--space-lg)',
+                        backgroundColor: '#ffffff'
+                    }}>
+                        <h3 className="panel-heading" style={{ fontSize: '18px', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-xs)' }}>
+                            Verify: {verifyingAuction.title}
+                        </h3>
+                        <form onSubmit={submitVerification} className="space-y-md" style={{ marginTop: 'var(--space-md)' }}>
+                            <div className="form-group">
+                                <label htmlFor="verification-status-select">Verification Stamp Action</label>
+                                <select 
+                                    id="verification-status-select"
+                                    className="form-input"
+                                    value={verificationStatus} 
+                                    onChange={(e) => setVerificationStatus(e.target.value)}
+                                >
+                                    <option value="VERIFIED">VERIFIED (Approve Registry)</option>
+                                    <option value="PENDING">PENDING (Review Queue)</option>
+                                    <option value="UNVERIFIED">UNVERIFIED (Decline Consignment)</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="verification-notes-textarea">Expert Appraisal notes</label>
+                                <textarea 
+                                    id="verification-notes-textarea"
+                                    rows="4"
+                                    className="form-input"
+                                    placeholder="Enter physical checks, metal tests, or authenticity details..."
+                                    value={verificationNotes}
+                                    onChange={(e) => setVerificationNotes(e.target.value)}
+                                    style={{ resize: 'vertical' }}
+                                ></textarea>
+                            </div>
+
+                            {verifyingError && (
+                                <div className="alert alert-error">
+                                    {verifyingError}
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: 'var(--space-base)', justifyContent: 'flex-end', paddingTop: 'var(--space-base)' }}>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-ghost" 
+                                    onClick={() => setVerifyingAuction(null)}
+                                    aria-label="Cancel verification"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={verifyMutation.isPending}
+                                    className="btn btn-primary"
+                                    aria-label="Submit verification stamp"
+                                >
+                                    {verifyMutation.isPending ? 'Stamping...' : 'Apply Stamp'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                )}
+            </div>
+        </main>
+    );
+};
+
+export default AdminDashboard;

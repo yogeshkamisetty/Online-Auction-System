@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
@@ -23,11 +23,11 @@ const Login = () => {
             return;
         }
 
-        setMessage({ text: 'Logging in...', type: 'info' });
+        setMessage({ text: 'Verifying credentials...', type: 'info' });
 
         try {
-            const res = await axios.post('http://localhost:3001/api/auth/login', { email, password });
-            setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
+            const res = await api.post('/auth/login', { email, password });
+            setMessage({ text: 'Session authenticated. Redirecting...', type: 'success' });
             login(res.data.user, res.data.token);
             setTimeout(() => {
                 navigate('/dashboard');
@@ -41,43 +41,51 @@ const Login = () => {
     };
 
     return (
-        <main className="auth-wrapper">
-            <div className="auth-card">
-                <h2 className="auth-title">Account Login</h2>
-                <form onSubmit={handleLogin} className="auth-form">
+        <main className="container flex-center" style={{ minHeight: '80vh', padding: '40px 0' }}>
+            <div className="detail-card" style={{ width: '100%', maxWidth: '440px', padding: '32px', boxShadow: 'var(--shadow-combined)' }}>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                    <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: '4px' }}>
+                        Collector Portal
+                    </span>
+                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Portal Authentication</h2>
+                </div>
+
+                <form onSubmit={handleLogin} className="space-y-md">
                     <div className="form-group">
-                        <label>Email Address</label>
+                        <label>Registered Email</label>
                         <input 
-                            type="text" 
+                            type="email" 
+                            className="form-input"
                             placeholder="name@example.com" 
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                     <div className="form-group">
-                        <label>Password</label>
+                        <label>Private Key Password</label>
                         <input 
                             type="password" 
-                            placeholder="Enter your password" 
+                            className="form-input"
+                            placeholder="Enter password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
                     
-                    <p style={{ 
-                        fontSize: '0.85rem', 
-                        fontWeight: '600', 
-                        marginBottom: '15px', 
-                        textAlign: 'center', 
-                        minHeight: '20px',
-                        color: message.type === 'error' ? '#e11d48' : message.type === 'success' ? '#166534' : 'var(--primary)'
-                    }}>
-                        {message.text}
-                    </p>
+                    {message.text && (
+                        <div className={`alert ${message.type === 'error' ? 'alert-error' : message.type === 'success' ? 'alert-success' : 'alert-info'}`} style={{ fontSize: '13px', padding: '8px 12px' }}>
+                            {message.text}
+                        </div>
+                    )}
 
-                    <button type="submit" className="btn btn-primary auth-btn">Log In</button>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px', marginTop: '16px' }}>
+                        Authenticate Account
+                    </button>
                 </form>
-                <p className="auth-toggle">Don't have an account? <Link to="/register">Register here</Link></p>
+
+                <p className="body-sm text-center" style={{ marginTop: '20px', color: 'var(--on-surface-variant)' }}>
+                    New collector? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create an account</Link>
+                </p>
             </div>
         </main>
     );

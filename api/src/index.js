@@ -9,6 +9,7 @@ const authRoutes    = require('./routes/auth');
 const auctionRoutes = require('./routes/auctions');
 const bidRoutes     = require('./routes/bids');
 const adminRoutes   = require('./routes/admin');
+const watchlistRoutes = require('./routes/watchlist');
 const { startAuctionCloser } = require('./jobs/auctionCloser');
 
 const app        = express();
@@ -28,10 +29,11 @@ app.use(express.json());
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
-app.use('/api/auth',     authRoutes);
-app.use('/api/auctions', auctionRoutes);
-app.use('/api/bids',     bidRoutes);
-app.use('/api/admin',    adminRoutes);
+app.use('/api/auth',      authRoutes);
+app.use('/api/auctions',  auctionRoutes);
+app.use('/api/bids',      bidRoutes);
+app.use('/api/admin',     adminRoutes);
+app.use('/api/watchlist', watchlistRoutes);
 
 // ── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

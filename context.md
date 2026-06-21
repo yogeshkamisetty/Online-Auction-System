@@ -1,14 +1,17 @@
 # Golden Hammer Auctions - Project Context
 
 ## Overview
-Golden Hammer Auctions is a full-stack, real-time bidding application designed to mimic a professional auction house experience. Users can register, list their items for auction, browse and search through existing listings, and place real-time bids on items.
+Golden Hammer Auctions is a full-stack, real-time bidding application designed to mimic a professional, high-stakes auction house experience. Users can register, list items for consignment, browse active catalog logs, track watched lots in real-time, and place bids under WebSocket synchronization. 
+
+The application is built on the **Technical Precision 2.0** design guidelines—balancing Deep Midnight Blue structures, light grey canvas backgrounds, and Vibrant Gold accent triggers for a prestigious, Swiss-bank-inspired digital catalog.
 
 ## Technologies Used
-- **Frontend**: React (Vite), React Router DOM, Axios, Socket.io-client
-- **Backend**: Node.js, Express.js
-- **Database**: Prisma ORM with SQLite (can be migrated to PostgreSQL)
-- **Real-time Communication**: Socket.io
-- **Authentication**: JSON Web Tokens (JWT), bcryptjs
+- **Frontend Core**: React (Vite), React Router DOM, Axios, @tanstack/react-query (React Query)
+- **Styling**: Custom CSS (Vanilla stylesheets structured on an 8px grid token scale)
+- **Backend Node.js Server**: Express.js, Prisma ORM, SQLite
+- **Real-time Synchronization**: Native WebSockets (`ws://`)
+- **Asset Storage & Uploads**: Cloudinary API Integration
+- **Authentication**: JWT (JSON Web Tokens), bcryptjs
 
 ## Folder Structure
 
@@ -21,72 +24,83 @@ d:/Yogesh/Coding/FSD - Auction System/
 │   │   ├── controllers/        # Route controllers (auth, auctions, bids)
 │   │   ├── middleware/         # Custom middleware (auth checking)
 │   │   ├── routes/             # Express API routes
-│   │   └── index.js            # Main server entry point (Socket.io config)
-│   └── .env                    # Backend environment variables (JWT_SECRET)
+│   │   └── index.js            # Main server entry point (WebSocket setup)
+│   └── .env                    # Backend environment variables
 │
 ├── client/                     # Frontend React Application (Vite)
 │   ├── public/                 # Static assets
 │   │   └── images/             # Product and UI images
 │   ├── src/                    # Frontend source code
-│   │   ├── assets/             # CSS styles
-│   │   │   └── css/styles.css  # Global styling ported from Vanilla project
-│   │   ├── components/         # Reusable React components (Navbar, Footer, AuctionCard)
-│   │   ├── context/            # React Contexts (AuthContext for global state)
-│   │   ├── pages/              # React route components (Home, Browse, Dashboard, etc.)
-│   │   ├── App.jsx             # Main router configuration
+│   │   ├── assets/             # Global CSS styles
+│   │   │   └── css/styles.css  # Technical Precision 2.0 stylesheet
+│   │   ├── components/         # Reusable React components
+│   │   │   ├── Navbar.jsx      # Navigation header with mobile drawer menu
+│   │   │   ├── Footer.jsx      # Structural Deep Midnight footer
+│   │   │   ├── AuctionCard.jsx # High-contrast lot cards with hover scales
+│   │   │   ├── CountdownTimer.jsx # Live time display component
+│   │   │   └── Spinner.jsx     # Glass loading spinners
+│   │   ├── context/            # React Contexts (AuthContext for JWT handling)
+│   │   ├── lib/                # API communication layers
+│   │   │   └── api.js          # Axios interceptor setups
+│   │   ├── pages/              # React route components
+│   │   │   ├── Home.jsx        # Landing hero with Q3 Volume statistics
+│   │   │   ├── Browse.jsx      # Catalog lists with sidebar filters
+│   │   │   ├── ProductDetails.jsx # WS ledger and pulse auction details
+│   │   │   ├── Dashboard.jsx   # Workspace for Buyers/Sellers
+│   │   │   ├── AdminDashboard.jsx # Administration command board
+│   │   │   ├── Checkout.jsx    # Invoice checkout and courier tracking
+│   │   │   ├── Watchlist.jsx   # Portfolio monitor and market ticker
+│   │   │   ├── Sell.jsx        # Consignment creation forms
+│   │   │   ├── Login.jsx       # Portal authentication
+│   │   │   └── Register.jsx    # Collector onboarding forms
+│   │   ├── App.jsx             # Router endpoints
 │   │   └── main.jsx            # Application entry point
-│   ├── package.json            # Frontend dependencies
-│   └── vite.config.js          # Vite bundler configuration
+│   ├── package.json            # Client packages and build scripts
+│   └── vite.config.js          # Bundling settings
 │
-├── .gitignore                  # Git ignore rules
-└── context.md                  # This file
+├── DESIGN.md                   # Style guide, typography, and color tokens
+└── context.md                  # This context file
 ```
 
 ## What We Have Done
 
-1. **Initial Evaluation & Decisions**:
-   - The user had an existing frontend written in Vanilla HTML/CSS/JS.
-   - We determined that for a "professional, production-ready application", the frontend should be migrated to **React (Vite)** to ensure better maintainability, component reusability, and state management.
+1. **Initial Migration**:
+   - Ported the Vanilla HTML/CSS/JS frontend into a modern React (Vite) template.
+   - Set up an `AuthContext` to centralize token headers in an Axios interceptor.
 
-2. **Backend Security Enhancements**:
-   - Generated a secure, 64-byte `JWT_SECRET` for the backend.
-   - Extended the `JWT_EXPIRES_IN` to `365d` so users don't have to frequently re-authenticate.
+2. **Stitch Design Integration**:
+   - Added new routes `/watchlist` and `/checkout/:id`.
+   - Created the Checkout page supporting 15% Buyer's Premium calculators, local tax rates, Insured White Glove Courier Delivery steps, and secure Escrow settlement.
+   - Built the Watchlist control center listing monitored lots, portfolio valuations, and real-time market activity feed timelines.
 
-3. **React Migration - Scaffolding**:
-   - Initialized a new Vite React application in the `client/` directory.
-   - Migrated the global styling `styles.css` and all `images/` to the React environment.
-   - Configured `React Router` for declarative routing.
+3. **Technical Precision 2.0 Style Overhaul**:
+   - Defined strict color tokens (`--surface`, `--secondary` for Midnight Blue, and `--primary-container` for Gold) matching [DESIGN.md](file:///d:/Yogesh/Coding/FSD%20-%20Auction%20System/DESIGN.md).
+   - Enforced Inter, Geist (with tight display tracking), and JetBrains Mono monospace typography pairings.
+   - Removed muddy shadows and replaced them with `1px solid var(--outline-variant)` structural borders.
 
-4. **React Migration - Core Implementation**:
-   - Implemented an `AuthContext` to globally manage user login state and the JWT token.
-   - Set up an `axios` interceptor inside `AuthContext` to automatically attach the `Authorization: Bearer <token>` header to all outgoing API requests.
-   - Ported the shared `Navbar` and `Footer`. The `Navbar` automatically changes links (e.g., hiding "Log In" and showing "Log Out") based on the `AuthContext`.
-
-5. **React Migration - Page Porting**:
-   - **Home**: Replicated the landing page HTML to JSX.
-   - **Login & Register**: Hooked up forms to `axios.post` endpoints with error handling.
-   - **Browse**: Implemented client-side filtering for search terms, categories, and price ranges. Created reusable `AuctionCard` and `CountdownTimer` components.
-   - **ProductDetails**: Fully integrated `Socket.io` client to listen for real-time `bid:new` and `auction:closed` events. The page instantly updates the current bid and adds to the bid history without refreshing.
-   - **Dashboard**: Created conditional rendering for "Buyer" and "Seller" tabs, fetching data using the protected `/api/bids/my` and `/api/auctions` endpoints.
-   - **Sell**: A protected route that allows authenticated users to create new auction listings.
+4. **Design Audit & Polishing Refinements**:
+   - **Interactive Hamburger Nav Menu**: Overhauled the navbar to include responsive navigation panel dropdowns with clean ARIA tags.
+   - **Keyboard Focus Contrast**: Refactored focus rings to use high-contrast golden outlines on dark panels (headers/footers) to comply with WCAG AA.
+   - **Mobile Scroll Safety**: Wrapped all tables in `.table-scroll-container` wrappers to avoid viewports stretching horizontally.
+   - **Appraiser Modal Spring Transitions**: Added hardware-accelerated cubic-bezier fade-in and scale-in transforms for appraisal modals.
+   - **WebSocket announcements**: Connected inputs to labels and assigned `aria-live="polite"` to WebSocket bid feeds.
+   - **Image Upload Integration**: Integrated Cloudinary API direct uploads in `Sell.jsx` with category fallbacks.
 
 ## Issues Faced & Resolutions
 
-1. **Authentication State Management**:
-   - *Issue*: In Vanilla JS, the token and user data were manually retrieved from `localStorage` in every file, and requests manually appended the authorization header.
-   - *Resolution*: Created `AuthContext.jsx` to centralize user state, and configured an `axios` interceptor. Now, importing `axios` directly handles authentication automatically.
-
-2. **Socket.io Integration in React**:
-   - *Issue*: Real-time updates required a persistent socket connection attached to the specific auction ID (`join:auction`).
-   - *Resolution*: Initialized the `socket.io-client` inside a `useEffect` hook in `ProductDetails.jsx`, ensuring it connects and joins the room on mount, and gracefully `socket.disconnect()`s on unmount to prevent memory leaks. Updates correctly set React state so the UI rerenders automatically.
-
-3. **Migrating Vanilla DOM Manipulation to React State**:
-   - *Issue*: The old `scripts.js` heavily relied on `document.getElementById` and `innerHTML` to render tables and products.
-   - *Resolution*: Refactored all data fetching into `useEffect` hooks and used JSX to declaratively map over arrays (`.map()`) for rendering tables and lists.
+1. **Accessibility and Contrast Compliances**:
+   - *Issue*: Low outline focus contrasts on Midnight background panels failed auditor scans.
+   - *Resolution*: Defined target focus selectors specifying white/gold outlines strictly on dark layouts.
+2. **Mobile Overflows**:
+   - *Issue*: Metric tables in the admin audit lists and bidder ledgers forced viewports wider than 375px.
+   - *Resolution*: Wrapped tables in overflow scroll boxes to safely constraint layouts.
+3. **Double Badge Nesting**:
+   - *Issue*: Countdown spans nested inside card spans resulted in duplicated badge layouts.
+   - *Resolution*: Configured `CountdownTimer.jsx` to return plain text string fragments.
 
 ## Future Recommendations & Files to Reference
 
-- **`client/src/pages/ProductDetails.jsx`**: Reference this file if you need to add more real-time features using Socket.io (e.g., chat, notifications).
-- **`client/src/context/AuthContext.jsx`**: Reference this file if you add new authentication features like password resets or role-based access control (Admin vs User).
-- **Image Uploads**: Currently, the `Sell.jsx` component leaves `imageUrl` empty. In the future, integrate a service like **Cloudinary** or **AWS S3**. You will need to modify the `/api/auctions` POST route and the frontend form to accept file uploads.
-- **Database Scalability**: If the application grows, consider migrating the Prisma schema (`api/prisma/schema.prisma`) from SQLite to PostgreSQL.
+- **`client/src/assets/css/styles.css`**: Check this file to add new UI color variables or animations.
+- **`client/src/pages/ProductDetails.jsx`**: Reference this file to examine WebSocket events or real-time ticker integrations.
+- **`client/src/pages/Checkout.jsx`**: Reference this file to modify tax brackets, delivery steps, or escrow hooks.
+- **PostgreSQL Migration**: The sqlite DB database fits local tests; migrate Prisma schemas to postgres for production scaling.

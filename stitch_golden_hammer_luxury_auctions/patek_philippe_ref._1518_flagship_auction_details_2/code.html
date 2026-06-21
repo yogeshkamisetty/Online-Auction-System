@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Golden Hammer - Product Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-background": "#191c1d",
+                "error": "#ba1a1a",
+                "outline-variant": "#d1c5b0",
+                "secondary-fixed-dim": "#a8c9f3",
+                "inverse-on-surface": "#f0f1f2",
+                "on-secondary-fixed-variant": "#27496c",
+                "on-secondary": "#ffffff",
+                "primary-container": "#ffd45f",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "background": "#f8f9fa",
+                "surface-dim": "#d9dadb",
+                "surface": "#f8f9fa",
+                "on-surface-variant": "#4d4636",
+                "on-surface": "#191c1d",
+                "error-container": "#ffdad6",
+                "surface-tint": "#755b00",
+                "on-secondary-container": "#3b5c80",
+                "on-tertiary-container": "#b22a21",
+                "tertiary-container": "#ffcdc6",
+                "on-tertiary-fixed-variant": "#900e0c",
+                "outline": "#7f7663",
+                "on-tertiary-fixed": "#410001",
+                "secondary": "#406185",
+                "primary-fixed-dim": "#ebc24f",
+                "on-primary-fixed": "#241a00",
+                "surface-container-high": "#e7e8e9",
+                "on-error": "#ffffff",
+                "surface-container-highest": "#e1e3e4",
+                "primary-fixed": "#ffdf91",
+                "surface-bright": "#f8f9fa",
+                "on-primary-fixed-variant": "#594400",
+                "primary": "#755b00",
+                "on-secondary-fixed": "#001d36",
+                "inverse-primary": "#ebc24f",
+                "on-tertiary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#ffdad5",
+                "surface-container-low": "#f3f4f5",
+                "surface-container": "#edeeef",
+                "tertiary-fixed-dim": "#ffb4aa",
+                "tertiary": "#b22a21",
+                "on-primary-container": "#755b00",
+                "secondary-container": "#b3d4ff",
+                "inverse-surface": "#2e3132",
+                "secondary-fixed": "#d1e4ff",
+                "surface-variant": "#e1e3e4"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "base": "8px",
+                "sm": "12px",
+                "container-max": "1440px",
+                "xl": "40px",
+                "xs": "4px",
+                "lg": "24px",
+                "md": "16px"
+        },
+        "fontFamily": {
+                "display-lg": [
+                        "Geist"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "meta-table": [
+                        "JetBrains Mono"
+                ],
+                "label-caps": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Geist"
+                ],
+                "headline-lg": [
+                        "Geist"
+                ],
+                "body-sm": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.04em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "letterSpacing": "0em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "meta-table": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-caps": [
+                        "11px",
+                        {
+                                "lineHeight": "12px",
+                                "letterSpacing": "0.08em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0em",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-panel {
+            background: rgba(1, 44, 78, 0.85); /* Deep Midnight approximation */
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pulse-live {
+            animation: pulse-emerald 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-emerald {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.05); }
+        }
+        .shimmer-bg {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm transition-transform">
+<div class="flex justify-between items-center h-20 px-lg md:px-xl max-w-container-max mx-auto">
+<div class="flex items-center gap-lg">
+<a class="font-display-lg text-display-lg text-primary tracking-tight" href="#">Golden Hammer</a>
+<nav class="hidden md:flex items-center gap-md ml-lg">
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md hover:text-primary transition-colors" href="#">Auctions</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Private Sales</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Valuations</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Analytics</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:block relative">
+<input class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container w-64" placeholder="Search..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant" style="font-size: 20px;">search</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-100"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors scale-95 active:scale-100"><span class="material-symbols-outlined">account_circle</span></button>
+<button class="ml-sm bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-meta-table hover:opacity-90 transition-opacity">Sign In</button>
+</div>
+</div>
+</header>
+<main class="flex-grow pt-28 pb-xl px-lg md:px-xl max-w-container-max mx-auto w-full">
+<div class="mb-md">
+<nav class="text-on-surface-variant font-body-sm mb-4">
+<a class="hover:text-primary" href="#">Auctions</a> &gt; 
+                <a class="hover:text-primary" href="#">Fine Watches</a> &gt; 
+                <span class="text-on-surface font-semibold">Lot #142</span>
+</nav>
+</div>
+<!-- 12-column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl relative">
+<!-- Left Column: Media & Details (60% ~ 7 cols) -->
+<div class="lg:col-span-7 space-y-xl">
+<!-- Media Showcase -->
+<div class="space-y-4">
+<div class="relative w-full aspect-[4/3] bg-surface-container rounded-xl overflow-hidden group cursor-crosshair border border-outline-variant">
+<img alt="Patek Philippe Ref. 1518" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A highly detailed, photorealistic close-up of a luxury Patek Philippe Ref. 1518 watch movement. The intricate gears, rubies, and golden bridges are sharply focused against a dark, moody background, showcasing exceptional technical precision and high-end horological craftsmanship. The lighting is dramatic studio quality, highlighting the metallic textures and polished surfaces." src="https://lh3.googleusercontent.com/aida/AP1WRLs4aWYWSCVmUcC3xzU4LUzr__N7XlbwY2_UQhjUOGIjKmU0mIcXpaclW1_vR_7ST8nniFY8W8mM4qoTuR8KxklWNZPQd87LIghFlYO9ZxcLf-E_tvAe9iuBWnvQmcS3qPsX3h4kfIN_GpjpwF8Q2VJDHtdYAvWCIOGz-sh_cw0EbL62C1CGLjIYh_aXrhVyo03o-ZzG9ecNbpOLuoD2ZbdnMY3RjZuKXxhq4EkZf2AuvP4zocSYqOyckxs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+<!-- Hover Magnifier Hint -->
+<div class="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-2 text-on-surface font-meta-table text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined" style="font-size: 16px;">zoom_in</span> Hover to zoom
+                        </div>
+</div>
+<!-- Thumbnails -->
+<div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+<button class="w-24 h-24 flex-shrink-0 rounded-lg border-2 border-primary overflow-hidden relative">
+<img alt="Thumb 1" class="w-full h-full object-cover" data-alt="Thumbnail view of the Patek Philippe watch movement, brightly lit and detailed." src="https://lh3.googleusercontent.com/aida/AP1WRLs4aWYWSCVmUcC3xzU4LUzr__N7XlbwY2_UQhjUOGIjKmU0mIcXpaclW1_vR_7ST8nniFY8W8mM4qoTuR8KxklWNZPQd87LIghFlYO9ZxcLf-E_tvAe9iuBWnvQmcS3qPsX3h4kfIN_GpjpwF8Q2VJDHtdYAvWCIOGz-sh_cw0EbL62C1CGLjIYh_aXrhVyo03o-ZzG9ecNbpOLuoD2ZbdnMY3RjZuKXxhq4EkZf2AuvP4zocSYqOyckxs"/>
+</button>
+<button class="w-24 h-24 flex-shrink-0 rounded-lg border border-outline-variant hover:border-primary/50 overflow-hidden relative transition-colors opacity-70 hover:opacity-100">
+<img alt="Thumb 2" class="w-full h-full object-cover" data-alt="Thumbnail showing the front dial of the Patek Philippe Ref. 1518, featuring moon phase and chronograph dials in soft studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiOo8UJvbq3TNdeBBaEPObiQI0Z6vee-PVy9msvmXGmuDCJ3_xjqgnVhvqmbgelEUd51BCHz0W8bE5ZuXylxEYp2zzbILCIrLOKaLFLan-Zrtmhb3zD65mX6tOthUUUngJrJ5SKfRkG-c2OsqURlV_8fCsVF94yMwReqsWEWuSY8GNYgq50yHAHlts9fBe08HQUi7-aVx_3eTklrFSOiJ4yeKgfXxhIFmlI_AOY_INJQoWR4oUjR4TquJhh9axoboq4g-CkK8xDuY"/>
+</button>
+<button class="w-24 h-24 flex-shrink-0 rounded-lg border border-outline-variant hover:border-primary/50 overflow-hidden relative transition-colors opacity-70 hover:opacity-100 flex items-center justify-center bg-surface-container-low">
+<img alt="Thumb 3" class="w-full h-full object-cover absolute inset-0 opacity-50" data-alt="Thumbnail showing the leather strap and clasp of the luxury watch, focused on material texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEG4-vIPCJ4uPE9z2qxMKDScXA-WWCU3rCx-yaJQiOqqt9UxAgqePxphKn6WM0DhsrCY8Npz10fskfT-FXmXUY-1DVSwUonvvYXTdrGlPcN6NnzwQHCuLNbEoR7GFDyQcFaBcPaPNlYAhtKYLUIAqLk99l1VXPwHBi-pS4GMq0OhqerzNxFbBizvx2imWyWqstov9Xa_elT_qqqIqnv54bAS9W8oMzNbCxyUT6B_V2iIy2TokQ_58abACqUBVvtcSNFspUPJGLyeo"/>
+<span class="material-symbols-outlined text-on-surface z-10" style="font-size: 32px;">play_circle</span>
+</button>
+<button class="w-24 h-24 flex-shrink-0 rounded-lg border border-outline-variant hover:border-primary/50 overflow-hidden relative transition-colors opacity-70 hover:opacity-100 flex items-center justify-center bg-surface-container-low">
+<span class="material-symbols-outlined text-on-surface z-10" style="font-size: 32px;">3d_rotation</span>
+</button>
+</div>
+</div>
+<!-- Header Details -->
+<div class="border-b border-outline-variant pb-md">
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Patek Philippe Ref. 1518</h1>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                        An exceptionally rare and historically significant 18k pink gold perpetual calendar chronograph wristwatch with moon phases, circa 1948. One of only 58 known examples in pink gold.
+                    </p>
+</div>
+<!-- Accordions -->
+<div class="space-y-2">
+<div class="border border-outline-variant rounded-lg overflow-hidden">
+<button class="w-full flex justify-between items-center p-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<span class="font-meta-table text-on-surface uppercase tracking-wider">Technical Specifications</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</button>
+<div class="p-md bg-surface-container-lowest border-t border-outline-variant/50 hidden">
+<!-- Content would go here in actual implementation -->
+</div>
+</div>
+<div class="border border-outline-variant rounded-lg overflow-hidden">
+<button class="w-full flex justify-between items-center p-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<span class="font-meta-table text-on-surface uppercase tracking-wider">Provenance &amp; Condition</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Market Intelligence -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-meta-table text-on-surface uppercase tracking-wider">Market Intelligence</h3>
+<span class="px-2 py-1 bg-surface-container-low rounded text-xs font-meta-table text-on-surface-variant">Last 24h</span>
+</div>
+<div class="h-48 w-full rounded-lg relative overflow-hidden bg-surface-container border border-outline-variant/30 flex items-end p-4">
+<!-- Placeholder for chart -->
+<div class="w-full h-full flex items-end gap-2 opacity-50">
+<div class="w-1/6 h-1/4 bg-primary/20 rounded-t"></div>
+<div class="w-1/6 h-2/4 bg-primary/40 rounded-t"></div>
+<div class="w-1/6 h-1/3 bg-primary/30 rounded-t"></div>
+<div class="w-1/6 h-3/4 bg-primary/60 rounded-t"></div>
+<div class="w-1/6 h-2/3 bg-primary/50 rounded-t"></div>
+<div class="w-1/6 h-full bg-primary rounded-t"></div>
+</div>
+</div>
+</div>
+<!-- Seller Profile -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex items-center gap-md">
+<div class="w-16 h-16 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img alt="Seller" class="w-full h-full object-cover" data-alt="Professional headshot of an elite auction house specialist, wearing a sharp suit against a neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbvrGRRIJlexc2dRkzp5Q_d6kBa3NDYiGNjt0cyYozUk573wtChblAf3_Kp6DqDzBhL0OPWZwUEvMYFbBxg6-8wCO2kLMefjn_pKDXtpgN9Zw_r3uxzaHE8Uwxe5Q1wG0-k3j_2qW0L29j5QIbjQSmu_zKthgIu2ft2pl-B2KGxD3UqFhHclmEZ9aWvCS3VqR_I9Drww3cgATuUTRi6TbXTA0xGKg8CBFxaSosDeKvlXptlTpQWg6SBeHpWz0e4ru32KIfSeQlr3g"/>
+</div>
+<div class="flex-grow">
+<div class="flex items-center gap-2">
+<h4 class="font-headline-lg text-lg text-on-surface">Geneva Heritage Consignments</h4>
+<span class="material-symbols-outlined text-primary" style="font-size: 18px;" title="Verified Institutional Seller">verified</span>
+</div>
+<p class="font-body-sm text-on-surface-variant">Member since 2018 • 100% Fulfillment Rate</p>
+</div>
+<div class="text-right">
+<div class="font-meta-table text-2xl text-on-surface">99.8</div>
+<div class="font-label-caps text-on-surface-variant uppercase">Trust Score</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Bidding Console (40% ~ 5 cols) -->
+<div class="lg:col-span-5 relative">
+<!-- Sticky Container -->
+<div class="sticky top-28 space-y-md">
+<!-- Live Console Card -->
+<div class="glass-panel rounded-xl p-lg text-on-secondary shadow-xl overflow-hidden relative">
+<!-- Background Accent -->
+<div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Header: Status & Timer -->
+<div class="flex justify-between items-start mb-8 relative z-10">
+<div class="flex items-center gap-2 bg-[#001d36]/50 px-3 py-1.5 rounded-full border border-white/10">
+<div class="w-2 h-2 rounded-full bg-emerald-400 pulse-live"></div>
+<span class="font-label-caps text-white tracking-widest uppercase">Live Auction</span>
+</div>
+<div class="text-right">
+<div class="font-meta-table text-on-surface-variant text-white/70 uppercase text-xs mb-1">Ends In</div>
+<div class="font-meta-table text-2xl text-white tracking-tight tabular-nums">04:12:39</div>
+</div>
+</div>
+<!-- Price Value -->
+<div class="mb-8 relative z-10">
+<div class="font-meta-table text-white/70 uppercase text-xs mb-2">Current Highest Bid</div>
+<div class="font-display-lg text-display-lg text-primary-container tabular-nums tracking-tighter">
+                                $2,450,000
+                            </div>
+<div class="font-body-sm text-white/50 mt-1">Reserve Met</div>
+</div>
+<!-- Action Area -->
+<div class="space-y-4 relative z-10">
+<!-- Quick Bid Chips -->
+<div class="grid grid-cols-3 gap-2">
+<button class="py-2 border border-white/20 rounded-lg font-meta-table text-sm text-white hover:bg-white/10 transition-colors">+50k</button>
+<button class="py-2 border border-white/20 rounded-lg font-meta-table text-sm text-white hover:bg-white/10 transition-colors">+100k</button>
+<button class="py-2 border border-white/20 rounded-lg font-meta-table text-sm text-white hover:bg-white/10 transition-colors">+250k</button>
+</div>
+<!-- Primary CTA -->
+<button class="w-full py-4 bg-primary-container text-on-primary-container rounded-lg font-meta-table font-bold text-lg hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(234,210,146,0.3)] flex justify-center items-center gap-2">
+                                Place Bid <span class="font-normal opacity-80">($2,500,000)</span>
+</button>
+<div class="text-center">
+<a class="font-body-sm text-white/60 underline hover:text-white transition-colors" href="#">Log in to enable 1-Click Bidding</a>
+</div>
+</div>
+<!-- Mini Activity Feed -->
+<div class="mt-8 pt-4 border-t border-white/10 relative z-10">
+<div class="font-meta-table text-white/50 text-xs mb-3 uppercase">Live Activity</div>
+<div class="space-y-2 h-20 overflow-hidden relative">
+<div class="flex items-center gap-2 text-sm text-white/80 animate-fade-in-up">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 16px;">gavel</span>
+<span>User_8X9A placed a bid of $2.45m</span>
+<span class="text-white/40 text-xs ml-auto font-meta-table">Just now</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-white/60">
+<span class="material-symbols-outlined" style="font-size: 16px;">visibility</span>
+<span>Item added to 48 watchlists</span>
+<span class="text-white/40 text-xs ml-auto font-meta-table">2m ago</span>
+</div>
+<!-- Fade out gradient -->
+<div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[#012c4e] to-transparent"></div>
+</div>
+</div>
+</div>
+<!-- Trust Signals -->
+<div class="grid grid-cols-2 gap-md pt-4">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant mb-2" style="font-size: 24px;">local_shipping</span>
+<div class="font-meta-table text-xs text-on-surface uppercase">Insured Shipping</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 text-center">
+<span class="material-symbols-outlined text-on-surface-variant mb-2" style="font-size: 24px;">verified_user</span>
+<div class="font-meta-table text-xs text-on-surface uppercase">Authenticity Guaranteed</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bottom-0 bg-surface-container-lowest border-t border-outline-variant mt-xl">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-lg px-xl py-xl max-w-container-max mx-auto">
+<div>
+<div class="font-display-lg text-display-lg text-primary mb-4">Golden Hammer</div>
+<p class="font-body-sm text-on-surface-variant">© 2024 Golden Hammer Auctions. All rights reserved.</p>
+</div>
+<div class="flex flex-col gap-2 font-body-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Legal</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+</div>
+<div class="flex flex-col gap-2 font-body-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Global Offices</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+</div>
+<div class="flex flex-col gap-2 font-body-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Investor Relations</a>
+</div>
+</div>
+</footer>
+</body></html>
