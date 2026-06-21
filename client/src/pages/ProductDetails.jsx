@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { io } from 'socket.io-client';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
 import { API_BASE } from '../config';
@@ -114,56 +115,48 @@ const ProductDetails = () => {
         watchMutation.mutate();
     };
 
-    // WebSocket real-time updates
+    // Socket.io real-time updates — matches the backend's room + event contract
     useEffect(() => {
-        const wsUrl = API_BASE.replace(/^http/, 'ws') + '/ws';
-        const socket = new WebSocket(wsUrl);
+        const socket = io(API_BASE, { transports: ['websocket', 'polling'] });
 
-        socket.onopen = () => {
-            socket.send(JSON.stringify({ action: 'join', auctionId: id }));
-        };
+        socket.on('connect', () => {
+            socket.emit('join:auction', id);
+        });
 
-        socket.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                const { event: eventName, data } = message;
+        socket.on('bid:new', (data) => {
+            queryClient.setQueryData(['auction', id], (oldProduct) => {
+                if (!oldProduct) return oldProduct;
+                const bidExists = oldProduct.bids?.some(
+                    b => b.id === data.id || (b.amount === data.amount && b.createdAt === data.createdAt)
+                );
+                const newBids = bidExists ? oldProduct.bids : [
+                    {
+                        id: data.id || Math.random().toString(),
+                        amount: data.amount,
+                        createdAt: data.createdAt,
+                        user: { name: data.bidder }
+                    },
+                    ...(oldProduct.bids || [])
+                ];
+                return {
+                    ...oldProduct,
+                    currentBid: data.currentBid,
+                    bidCount: data.bidCount,
+                    bids: newBids
+                };
+            });
+        });
 
-                if (eventName === 'bid:new') {
-                    queryClient.setQueryData(['auction', id], (oldProduct) => {
-                        if (!oldProduct) return oldProduct;
-                        const bidExists = oldProduct.bids?.some(b => b.id === data.id || (b.amount === data.amount && b.createdAt === data.createdAt));
-                        const newBids = bidExists ? oldProduct.bids : [
-                            {
-                                id: data.id || Math.random().toString(),
-                                amount: data.amount,
-                                createdAt: data.createdAt,
-                                user: { name: data.bidder }
-                            },
-                            ...(oldProduct.bids || [])
-                        ];
-                        return {
-                            ...oldProduct,
-                            currentBid: data.currentBid,
-                            bidCount: data.bidCount,
-                            bids: newBids
-                        };
-                    });
-                } else if (eventName === 'auction:closed') {
-                    queryClient.setQueryData(['auction', id], (oldProduct) => {
-                        if (!oldProduct) return oldProduct;
-                        return { ...oldProduct, status: 'CLOSED' };
-                    });
-                }
-            } catch (err) {
-                console.error("Error handling ws message", err);
-            }
-        };
+        socket.on('auction:closed', () => {
+            queryClient.setQueryData(['auction', id], (oldProduct) => {
+                if (!oldProduct) return oldProduct;
+                return { ...oldProduct, status: 'CLOSED' };
+            });
+        });
 
         return () => {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ action: 'leave', auctionId: id }));
-            }
-            socket.close();
+            socket.emit('leave:auction', id);
+            socket.disconnect();
         };
     }, [id, queryClient]);
 

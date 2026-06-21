@@ -49,7 +49,7 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
     const result = await prisma.$transaction(async (tx) => {
       // SELECT FOR UPDATE — row-level lock prevents concurrent bid collisions
       const rows = await tx.$queryRaw`
-        SELECT id, current_bid AS "currentBid", status, end_time AS "endTime"
+        SELECT id, "currentBid", status, "endTime"
         FROM "Auction"
         WHERE id = ${auctionId}
         FOR UPDATE
