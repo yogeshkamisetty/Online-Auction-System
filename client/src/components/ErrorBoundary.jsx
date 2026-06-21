@@ -20,8 +20,8 @@ export default class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div style={{ maxWidth: 560, margin: '4rem auto', textAlign: 'center', padding: '2rem' }}>
-          <h1 style={{ color: '#b91c1c' }}>Something went wrong</h1>
-          <p style={{ color: '#78716c' }}>
+          <h1 style={{ color: 'var(--error)' }}>Something went wrong</h1>
+          <p style={{ color: 'var(--on-surface-variant)' }}>
             An unexpected error occurred. Try reloading the page.
           </p>
           <button

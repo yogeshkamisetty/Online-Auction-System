@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import Spinner from '../components/Spinner';
+import Pagination from '../components/Pagination';
 
 const AdminDashboard = () => {
     const { user } = useContext(AuthContext);
     const queryClient = useQueryClient();
+    const toast = useToast();
 
     const [activeTab, setActiveTab] = useState('overview');
     
@@ -68,7 +71,7 @@ const AdminDashboard = () => {
             queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
         },
         onError: (err) => {
-            alert(err.message || 'Failed to update user status');
+            toast.error(err.message || 'Failed to update user status');
         }
     });
 
@@ -101,17 +104,17 @@ const AdminDashboard = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['adminAuctions'] });
             queryClient.invalidateQueries({ queryKey: ['adminStats'] });
-            alert('Listing removed successfully.');
+            toast.success('Listing removed successfully.');
         },
         onError: (err) => {
-            alert(err.message || 'Failed to delete auction');
+            toast.error(err.message || 'Failed to delete auction');
         }
     });
 
     // Handlers
     const handleSuspendToggle = (targetUser) => {
         if (targetUser.id === user?.id) {
-            alert('Security Safeguard: You cannot suspend your own admin account.');
+            toast.warning('Security safeguard: you cannot suspend your own admin account.');
             return;
         }
         const confirmMsg = `Are you sure you want to ${targetUser.suspended ? 'unsuspend' : 'suspend'} ${targetUser.name}?`;
@@ -276,7 +279,7 @@ const AdminDashboard = () => {
                                                         <td>{auc.category}</td>
                                                         <td className="font-mono">${Number(auc.startPrice).toLocaleString()}</td>
                                                         <td>
-                                                            <span className="status-badge outbid" style={{ background: '#fef3c7', color: '#78350f' }}>
+                                                            <span className="status-pill status-pill--warning">
                                                                 {auc.verificationStatus}
                                                             </span>
                                                         </td>
@@ -344,10 +347,7 @@ const AdminDashboard = () => {
                                                         <td style={{ fontWeight: 600 }}>{u.name}</td>
                                                         <td>{u.email}</td>
                                                         <td>
-                                                            <span className="status-badge" style={{
-                                                                backgroundColor: u.role === 'ADMIN' ? '#dbeafe' : '#f3f4f6',
-                                                                color: u.role === 'ADMIN' ? '#1e40af' : '#4b5563'
-                                                            }}>{u.role}</span>
+                                                            <span className={`status-pill ${u.role === 'ADMIN' ? 'status-pill--info' : 'status-pill--neutral'}`}>{u.role}</span>
                                                         </td>
                                                         <td className="font-mono">{u._count?.auctions} / {u._count?.bids}</td>
                                                         <td>
@@ -380,29 +380,12 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Pagination */}
-                            {usersData?.total > limit && (
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1.5rem' }}>
-                                    <button 
-                                        className="btn btn-ghost" 
-                                        disabled={userPage === 0}
-                                        onClick={() => setUserPage(prev => Math.max(0, prev - 1))}
-                                        style={{ padding: '6px 12px', fontSize: '12px' }}
-                                    >
-                                        &larr; Prev
-                                    </button>
-                                    <span style={{ alignSelf: 'center', fontSize: '13px', color: 'var(--outline)' }}>
-                                        Page {userPage + 1} of {Math.ceil(usersData.total / limit)}
-                                    </span>
-                                    <button 
-                                        className="btn btn-ghost" 
-                                        disabled={(userPage + 1) * limit >= usersData.total}
-                                        onClick={() => setUserPage(prev => prev + 1)}
-                                        style={{ padding: '6px 12px', fontSize: '12px' }}
-                                    >
-                                        Next &rarr;
-                                    </button>
-                                </div>
-                            )}
+                            <Pagination
+                                total={usersData?.total || 0}
+                                pageSize={limit}
+                                page={userPage}
+                                onPage={setUserPage}
+                            />
                         </div>
                     )}
 
@@ -473,10 +456,7 @@ const AdminDashboard = () => {
                                                             <span className={`status-badge ${auc.status.toLowerCase()}`}>{auc.status}</span>
                                                         </td>
                                                         <td>
-                                                            <span className="status-badge" style={{
-                                                                backgroundColor: auc.verificationStatus === 'VERIFIED' ? '#d1fae5' : auc.verificationStatus === 'PENDING' ? '#fef3c7' : '#f3f4f6',
-                                                                color: auc.verificationStatus === 'VERIFIED' ? '#065f46' : auc.verificationStatus === 'PENDING' ? '#78350f' : '#4b5563'
-                                                            }}>{auc.verificationStatus}</span>
+                                                            <span className={`status-pill ${auc.verificationStatus === 'VERIFIED' ? 'status-pill--success' : auc.verificationStatus === 'PENDING' ? 'status-pill--warning' : 'status-pill--neutral'}`}>{auc.verificationStatus}</span>
                                                         </td>
                                                         <td>
                                                             <div style={{ display: 'flex', gap: '6px' }}>
@@ -505,29 +485,12 @@ const AdminDashboard = () => {
                             </div>
 
                             {/* Pagination */}
-                            {auctionsData?.total > limit && (
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1.5rem' }}>
-                                    <button 
-                                        className="btn btn-ghost" 
-                                        disabled={auctionPage === 0}
-                                        onClick={() => setAuctionPage(prev => Math.max(0, prev - 1))}
-                                        style={{ padding: '6px 12px', fontSize: '12px' }}
-                                    >
-                                        &larr; Prev
-                                    </button>
-                                    <span style={{ alignSelf: 'center', fontSize: '13px', color: 'var(--outline)' }}>
-                                        Page {auctionPage + 1} of {Math.ceil(auctionsData.total / limit)}
-                                    </span>
-                                    <button 
-                                        className="btn btn-ghost" 
-                                        disabled={(auctionPage + 1) * limit >= auctionsData.total}
-                                        onClick={() => setAuctionPage(prev => prev + 1)}
-                                        style={{ padding: '6px 12px', fontSize: '12px' }}
-                                    >
-                                        Next &rarr;
-                                    </button>
-                                </div>
-                            )}
+                            <Pagination
+                                total={auctionsData?.total || 0}
+                                pageSize={limit}
+                                page={auctionPage}
+                                onPage={setAuctionPage}
+                            />
                         </div>
                     )}
                 </div>

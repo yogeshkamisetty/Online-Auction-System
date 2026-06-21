@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* Fonts are loaded via <link> in index.html (preconnect + non-blocking).
+   The previous render-blocking @import was removed for performance. */
 
 /* ==========================================================================
    TECHNICAL PRECISION 2.0 DESIGN SYSTEM VARIABLES & RESET
@@ -44,6 +45,14 @@
     
     --success: #10B981; /* Deep Emerald */
     --success-light: #e6f4ea;
+    --on-success: #065f46;
+
+    --warning: #d97706; /* Amber — fills the missing semantic warning color */
+    --warning-light: #fef3c7;
+    --on-warning: #78350f;
+
+    --info: #1e40af; /* Blue — used for role/info pills */
+    --info-light: #dbeafe;
     
     /* Spacing Scale (8px Grid) */
     --space-xs: 4px;
@@ -308,6 +317,54 @@ textarea:focus-visible {
 .btn-danger:hover {
     background-color: #9e1212;
 }
+
+/* Shared disabled + loading states (apply to every variant) */
+.btn:disabled,
+.btn[aria-disabled="true"],
+.btn.is-loading {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
+    box-shadow: none;
+    filter: grayscale(0.2);
+}
+
+.btn.is-loading {
+    position: relative;
+    color: transparent !important;
+}
+.btn.is-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    color: var(--on-surface);
+    animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin { to { transform: rotate(360deg); } }
+
+/* Status pills — tokenized, replace ad-hoc inline badge colors */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: var(--rounded-full);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.status-pill--success { background: var(--success-light); color: var(--on-success); }
+.status-pill--warning { background: var(--warning-light); color: var(--on-warning); }
+.status-pill--info    { background: var(--info-light);    color: var(--info); }
+.status-pill--neutral { background: var(--surface-container); color: var(--outline); }
 
 /* ==========================================================================
    NAVIGATION
@@ -1451,6 +1508,27 @@ textarea:focus-visible {
     box-shadow: 0 0 0 3px rgba(255, 212, 95, 0.4);
 }
 
+/* Error state — pair with a sibling .form-error message for AA redundancy */
+.form-input.is-error,
+.form-input[aria-invalid="true"] {
+    border-color: var(--error);
+    background-color: var(--error-container);
+}
+.form-input.is-error:focus,
+.form-input[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.25);
+}
+.form-error {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--error);
+}
+
 .form-input:disabled {
     background-color: var(--surface-container);
     cursor: not-allowed;
@@ -1679,3 +1757,108 @@ textarea:focus-visible {
     text-transform: none;
     letter-spacing: 0.02em;
 }
+
+/* ==========================================================================
+   PHASE 1 — MISSING COMPONENTS + LAYOUT UTILITIES
+   ========================================================================== */
+
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+.toast-stack {
+    position: fixed;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    z-index: 1000;
+    max-width: min(380px, calc(100vw - 2 * var(--space-lg)));
+}
+.toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--rounded-lg);
+    background: var(--inverse-surface);
+    color: var(--inverse-on-surface);
+    box-shadow: var(--shadow-combined);
+    border-left: 3px solid var(--outline);
+    animation: toastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast--success { border-left-color: var(--success); }
+.toast--error   { border-left-color: var(--error); }
+.toast--warning { border-left-color: var(--warning); }
+.toast--info    { border-left-color: var(--info); }
+.toast__icon { font-size: 20px; flex-shrink: 0; }
+.toast--success .toast__icon { color: var(--success); }
+.toast--error   .toast__icon { color: #ff8a80; }
+.toast--warning .toast__icon { color: var(--warning); }
+.toast--info    .toast__icon { color: var(--secondary-fixed-dim, #a8c9f3); }
+.toast__msg { flex: 1; font-family: var(--font-body); font-size: 14px; line-height: 1.4; }
+.toast__close {
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--inverse-on-surface); opacity: 0.6; flex-shrink: 0;
+}
+.toast__close:hover { opacity: 1; }
+.toast__close .material-symbols-outlined { font-size: 18px; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+/* ── Pagination ────────────────────────────────────────────────────────── */
+.pagination {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-md); margin-top: var(--space-md); flex-wrap: wrap;
+}
+.pagination__info { font-size: 12px; color: var(--on-surface-variant); }
+.pagination__controls { display: flex; align-items: center; gap: var(--space-xs); }
+.pagination__btn {
+    min-width: 36px; height: 36px; padding: 0 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--outline-variant); border-radius: var(--rounded-md);
+    background: var(--surface-container-lowest); color: var(--on-surface);
+    font-family: var(--font-mono); font-size: 13px; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.pagination__btn:hover:not(:disabled) { border-color: var(--primary); background: var(--surface-container-low); }
+.pagination__btn.is-active { background: var(--secondary); color: var(--on-secondary); border-color: var(--secondary); }
+.pagination__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination__btn .material-symbols-outlined { font-size: 18px; }
+.pagination__ellipsis { color: var(--outline); padding: 0 2px; }
+
+/* ── Tooltip ───────────────────────────────────────────────────────────── */
+.tooltip-wrap { position: relative; display: inline-flex; }
+.tooltip-trigger { display: inline-flex; cursor: help; }
+.tooltip {
+    position: absolute; z-index: 900;
+    padding: 6px 10px; border-radius: var(--rounded-md);
+    background: var(--inverse-surface); color: var(--inverse-on-surface);
+    font-family: var(--font-body); font-size: 12px; line-height: 1.3;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    box-shadow: var(--shadow-soft);
+}
+.tooltip--top    { bottom: calc(100% + 6px); left: 50%; transform: translate(-50%, 4px); }
+.tooltip--bottom { top: calc(100% + 6px);    left: 50%; transform: translate(-50%, -4px); }
+.tooltip--left   { right: calc(100% + 6px);  top: 50%;  transform: translate(4px, -50%); }
+.tooltip--right  { left: calc(100% + 6px);   top: 50%;  transform: translate(-4px, -50%); }
+.tooltip-wrap:hover .tooltip,
+.tooltip-trigger:focus + .tooltip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+.tooltip--left:where(.tooltip-wrap:hover *),
+.tooltip--right:where(.tooltip-wrap:hover *) { transform: translate(0, -50%); }
+
+/* ── Layout utilities (reduce inline style usage) ──────────────────────── */
+.stack   { display: flex; flex-direction: column; }
+.row     { display: flex; flex-direction: row; align-items: center; }
+.cluster { display: flex; flex-wrap: wrap; align-items: center; }
+.between { justify-content: space-between; }
+.gap-xs  { gap: var(--space-xs); }
+.gap-sm  { gap: var(--space-sm); }
+.gap-md  { gap: var(--space-md); }
+.gap-lg  { gap: var(--space-lg); }
+.text-muted   { color: var(--on-surface-variant); }
+.text-danger  { color: var(--error); }
+.text-success { color: var(--success); }
+.w-full  { width: 100%; }
