@@ -20,3 +20,9 @@ services:
         sync: false
       - key: CORS_ORIGIN
         sync: false
+      # Public URL of the Vercel frontend — used in transactional email links.
+      - key: CLIENT_URL
+        sync: false
+      # Resend API key — without it, emails are simulated to the server log.
+      - key: RESEND_API_KEY
+        sync: false
