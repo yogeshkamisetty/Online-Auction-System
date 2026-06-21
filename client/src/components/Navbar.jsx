@@ -22,12 +22,12 @@ const Navbar = () => {
             <div className="container navbar">
                 <div className="nav-left">
                     <Link to="/" className="logo" aria-label="Golden Hammer Luxury Auctions Homepage" onClick={() => setMenuOpen(false)}>
-                        <svg width="200" height="40" viewBox="0 0 200 40" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ height: '32px', width: 'auto' }}>
-                            <path d="M10 10L20 10V30H10V10Z" fill="#ffd45f"/>
-                            <path d="M25 10H35V15H25V10Z" fill="#ffd45f"/>
-                            <text x="45" y="28" fontFamily="Geist, sans-serif" fontWeight="700" fontSize="20" letterSpacing="-0.03em" fill="#ffffff">GOLDEN HAMMER</text>
-                            <rect x="0" y="38" width="200" height="2" fill="#ffd45f" opacity="0.3"/>
-                        </svg>
+                        <img 
+                            src="/images/logo2.png" 
+                            alt="Golden Hammer Logo" 
+                            style={{ height: '36px', width: '36px', borderRadius: '50%', objectFit: 'contain' }} 
+                        />
+                        <span>GOLDEN HAMMER</span>
                     </Link>
                     <nav className="nav-links" aria-label="Desktop primary navigation">
                         <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
