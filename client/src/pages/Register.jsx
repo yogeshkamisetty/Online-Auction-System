@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../lib/api';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
@@ -22,15 +22,15 @@ const Register = () => {
         if (password !== confirmPassword) return setMessage({ text: 'Passwords do not match.', type: 'error' });
         if (!terms) return setMessage({ text: 'Please agree to the Terms & Conditions.', type: 'error' });
 
-        setMessage({ text: 'Registering...', type: 'info' });
+        setMessage({ text: 'Registering new profile...', type: 'info' });
 
         try {
-            await axios.post('http://localhost:3001/api/auth/register', {
+            await api.post('/auth/register', {
                 name: fullName,
                 email,
                 password
             });
-            setMessage({ text: 'Registration successful! Redirecting to login...', type: 'success' });
+            setMessage({ text: 'Profile registered successfully! Redirecting to login...', type: 'success' });
             setTimeout(() => {
                 navigate('/login');
             }, 1500);
@@ -43,14 +43,21 @@ const Register = () => {
     };
 
     return (
-        <main className="auth-wrapper">
-            <div className="auth-card">
-                <h2 className="auth-title">Create an Account</h2>
-                <form onSubmit={handleRegister} className="auth-form">
+        <main className="container flex-center" style={{ minHeight: '85vh', padding: '40px 0' }}>
+            <div className="detail-card" style={{ width: '100%', maxWidth: '460px', padding: '32px', boxW: 'var(--shadow-combined)' }}>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                    <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: '4px' }}>
+                        Collector Registration
+                    </span>
+                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Register New Account</h2>
+                </div>
+
+                <form onSubmit={handleRegister} className="space-y-md">
                     <div className="form-group">
                         <label>Full Name</label>
                         <input 
                             type="text" 
+                            className="form-input"
                             placeholder="e.g. Jane Doe" 
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
@@ -60,6 +67,7 @@ const Register = () => {
                         <label>Email Address</label>
                         <input 
                             type="email" 
+                            className="form-input"
                             placeholder="name@example.com" 
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -69,7 +77,8 @@ const Register = () => {
                         <label>Password</label>
                         <input 
                             type="password" 
-                            placeholder="Create a strong password" 
+                            className="form-input"
+                            placeholder="Min 6 characters" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
@@ -78,39 +87,40 @@ const Register = () => {
                         <label>Confirm Password</label>
                         <input 
                             type="password" 
-                            placeholder="Type your password again" 
+                            className="form-input"
+                            placeholder="Re-type password" 
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0' }}>
                         <input 
                             type="checkbox" 
                             id="terms" 
-                            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                            style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: 'var(--primary)' }}
                             checked={terms}
                             onChange={(e) => setTerms(e.target.checked)}
                         />
-                        <label htmlFor="terms" style={{ fontSize: '0.85rem', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                            I agree to the <Link to="#" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '600' }}>Terms & Conditions</Link>
+                        <label htmlFor="terms" className="body-sm" style={{ cursor: 'pointer', color: 'var(--on-surface-variant)' }}>
+                            I agree to the <Link to="#" style={{ color: 'var(--primary)', fontWeight: 600 }}>Terms & Conditions</Link>
                         </label>
                     </div>
                     
-                    <p style={{ 
-                        fontSize: '0.85rem', 
-                        fontWeight: '600', 
-                        marginBottom: '15px', 
-                        textAlign: 'center', 
-                        minHeight: '20px',
-                        color: message.type === 'error' ? '#e11d48' : message.type === 'success' ? '#166534' : 'var(--primary)'
-                    }}>
-                        {message.text}
-                    </p>
+                    {message.text && (
+                        <div className={`alert ${message.type === 'error' ? 'alert-error' : message.type === 'success' ? 'alert-success' : 'alert-info'}`} style={{ fontSize: '13px', padding: '8px 12px' }}>
+                            {message.text}
+                        </div>
+                    )}
 
-                    <button type="submit" className="btn btn-primary auth-btn">Create Account</button>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px' }}>
+                        Create Registry Account
+                    </button>
                 </form>
-                <p className="auth-toggle">Already have an account? <Link to="/login">Log In here</Link></p>
+
+                <p className="body-sm text-center" style={{ marginTop: '20px', color: 'var(--on-surface-variant)' }}>
+                    Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Log In here</Link>
+                </p>
             </div>
         </main>
     );

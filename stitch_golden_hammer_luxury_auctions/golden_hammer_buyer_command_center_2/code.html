@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Buyer Dashboard - Golden Hammer Auctions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;700&amp;family=Inter:wght@400;500;700&amp;family=Jetbrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-background": "#191c1d",
+                "error": "#ba1a1a",
+                "outline-variant": "#d1c5b0",
+                "secondary-fixed-dim": "#a8c9f3",
+                "inverse-on-surface": "#f0f1f2",
+                "on-secondary-fixed-variant": "#27496c",
+                "on-secondary": "#ffffff",
+                "primary-container": "#ffd45f",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "background": "#f8f9fa",
+                "surface-dim": "#d9dadb",
+                "surface": "#f8f9fa",
+                "on-surface-variant": "#4d4636",
+                "on-surface": "#191c1d",
+                "error-container": "#ffdad6",
+                "surface-tint": "#755b00",
+                "on-secondary-container": "#3b5c80",
+                "on-tertiary-container": "#b22a21",
+                "tertiary-container": "#ffcdc6",
+                "on-tertiary-fixed-variant": "#900e0c",
+                "outline": "#7f7663",
+                "on-tertiary-fixed": "#410001",
+                "secondary": "#406185",
+                "primary-fixed-dim": "#ebc24f",
+                "on-primary-fixed": "#241a00",
+                "surface-container-high": "#e7e8e9",
+                "on-error": "#ffffff",
+                "surface-container-highest": "#e1e3e4",
+                "primary-fixed": "#ffdf91",
+                "surface-bright": "#f8f9fa",
+                "on-primary-fixed-variant": "#594400",
+                "primary": "#755b00",
+                "on-secondary-fixed": "#001d36",
+                "inverse-primary": "#ebc24f",
+                "on-tertiary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#ffdad5",
+                "surface-container-low": "#f3f4f5",
+                "surface-container": "#edeeef",
+                "tertiary-fixed-dim": "#ffb4aa",
+                "tertiary": "#b22a21",
+                "on-primary-container": "#755b00",
+                "secondary-container": "#b3d4ff",
+                "inverse-surface": "#2e3132",
+                "secondary-fixed": "#d1e4ff",
+                "surface-variant": "#e1e3e4"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "gutter": "24px",
+                "base": "8px",
+                "sm": "12px",
+                "container-max": "1440px",
+                "xl": "40px",
+                "xs": "4px",
+                "lg": "24px",
+                "md": "16px"
+        },
+        "fontFamily": {
+                "display-lg": [
+                        "Geist"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "meta-table": [
+                        "JetBrains Mono"
+                ],
+                "label-caps": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Geist"
+                ],
+                "headline-lg": [
+                        "Geist"
+                ],
+                "body-sm": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.04em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "letterSpacing": "0em",
+                                "fontWeight": "400"
+                        }
+                ],
+                "meta-table": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-caps": [
+                        "11px",
+                        {
+                                "lineHeight": "12px",
+                                "letterSpacing": "0.08em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0em",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .shimmer-bg {
+            background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface-dim font-body-md text-body-md w-full top-0 sticky border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none z-50">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-xl py-md">
+<div class="text-headline-lg font-headline-lg text-primary dark:text-primary-fixed tracking-tighter">
+                Golden Hammer
+            </div>
+<div class="hidden md:flex items-center gap-lg">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 ease-in-out" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 ease-in-out" href="#">Browse</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary pb-1 duration-300 ease-in-out" href="#">Auctions</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors duration-300 ease-in-out" href="#">Valuations</a>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<button class="hidden md:block px-md py-base border border-outline rounded text-primary hover:bg-surface-variant transition-colors text-body-sm font-body-sm">Sign In</button>
+<button class="hidden md:block px-md py-base bg-primary-container text-on-primary-container rounded hover:bg-primary-fixed transition-colors text-body-sm font-body-sm">Register</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow max-w-container-max mx-auto w-full px-lg md:px-xl py-lg md:py-xl">
+<!-- Header Section -->
+<header class="mb-xl">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-xs">Good Morning, John 👋</h1>
+<p class="text-on-surface-variant font-body-md text-body-md">Your portfolio is active. 3 assets require attention.</p>
+</header>
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md mb-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border-l-4 border-l-primary border-t border-r border-b border-outline-variant rounded-lg p-md shadow-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Active Bids</span>
+<span class="material-symbols-outlined text-primary text-xl">gavel</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-xs">12</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-[#10B981]">trending_up</span>
+<span class="font-meta-table text-meta-table text-[#10B981]">+3 this week</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border-l-4 border-l-[#10B981] border-t border-r border-b border-outline-variant rounded-lg p-md shadow-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-[#10B981]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Winning Now</span>
+<span class="material-symbols-outlined text-[#10B981] text-xl">emoji_events</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-xs">8</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-outline">horizontal_rule</span>
+<span class="font-meta-table text-meta-table text-on-surface-variant">Stable</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border-l-4 border-l-secondary border-t border-r border-b border-outline-variant rounded-lg p-md shadow-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Total Capital Settled</span>
+<span class="material-symbols-outlined text-secondary text-xl">account_balance</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-xs">$4.2M</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-[#10B981]">trending_up</span>
+<span class="font-meta-table text-meta-table text-[#10B981]">+$1.1M YTD</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border-l-4 border-l-primary-fixed border-t border-r border-b border-outline-variant rounded-lg p-md shadow-sm relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Success Rate</span>
+<span class="material-symbols-outlined text-primary-fixed text-xl">monitoring</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-xs">84%</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-[#10B981]">trending_up</span>
+<span class="font-meta-table text-meta-table text-[#10B981]">Top 5% Collector</span>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Main Column (Left 8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Active Bidding Workspace Table -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm">
+<div class="flex justify-between items-center p-md md:p-lg border-b border-outline-variant">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Active Bidding Workspace</h2>
+<button class="font-body-sm text-body-sm text-primary hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr class="border-b border-outline-variant text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-sm px-md font-semibold">Asset</th>
+<th class="py-sm px-md font-semibold">Current Bid</th>
+<th class="py-sm px-md font-semibold">Your Bid</th>
+<th class="py-sm px-md font-semibold">Status</th>
+<th class="py-sm px-md text-right font-semibold">Time Left</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm bg-surface-container-lowest divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A macro shot of a luxury Swiss mechanical watch dial, silver and blue details, studio lighting, minimal background, high contrast editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxxp3dCAEq5Gnbm8JSxGuIyZHxXTKWn5sSUMJciU0MziV6ldarIp2GNRpjIGmQUw6-GShLWeirNW63L-g46yNdMkZ1_lRwuJgRvMrRlhhBmTCQ-pBDZsTAubOLhX4-F32o6Qm4EuMNd6YL8kFOHBhl_68EXbFreTVTWPkh19AHe2zU26bBnFkVtMNByyuBYn7Y-2HWri-XaF51ByXddTkEgiP5-wcw2cxqZ2xpnEIjPPLOz8j8gXaJFnZNAii9duXsneIjVo64uNU"/>
+</div>
+<div class="font-meta-table text-meta-table text-on-surface font-medium">Patek Philippe 5711</div>
+</div>
+</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface">$145,000</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface">$145,000</td>
+<td class="py-md px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#10B981]/10 text-[#10B981] font-label-caps text-label-caps font-bold">WINNING</span>
+</td>
+<td class="py-md px-md text-right font-meta-table text-meta-table text-error font-medium">00:14:32</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A modern abstract painting, bold geometric shapes in navy and gold, hanging in a bright minimalist gallery, sharp lighting, editorial luxury art photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8gbsgVVbXaB5XZXAFuZzlei47-XSLokHx-830e5QibV_w_mYheRPy70nkPZqaZKSnl7ScWj071BTlybUiHJ7s_aERfinu-De9eWGmj9FiXBVdoqJEuG5J5z7fDumkpe3GGAB4sYV14kVDA2qojFYnr9vhmeUOcSJug8HN2zxn7SSifAMWLo-nH8f5A7gsRkRGKsu6Cyrx2PmkDrMAdJ-svU0abqG8gKrZIfRfZbBuFf2xp0tz5VV19PAg1jANb5pwxV9gCiRypyE"/>
+</div>
+<div class="font-meta-table text-meta-table text-on-surface font-medium">Rothko 'No. 14'</div>
+</div>
+</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface">$2,100,000</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface-variant line-through">$2,050,000</td>
+<td class="py-md px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold">OUTBID</span>
+</td>
+<td class="py-md px-md text-right font-meta-table text-meta-table text-on-surface-variant">02:45:00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-md">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-surface-variant overflow-hidden">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A pristine vintage Ferrari 250 GTO, classic red, parked in a sleek concrete warehouse, dramatic side lighting, high-end automotive editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp-FMzNEd1E6uR6Q9r1L7zzqgmtg_BgeFdTdCWA16em0OTj2_9jP0sUT1wt9DloIcj2QkaMowU_70yr2RrBh1GCoLvBHXBHj-6BFUU4Bg34D9eZCI8rPzyyZK22Zbc9PSuKUL0NV2MeU9gBW1rB-hXM7p8JU8Nu9jFUIN9vLYN_wekXikyh1ebB6XIM0VSVza6PDXcR1b7wx5TYwmhXCcq_i38FV7kckbyOgG5zGACi9lXJMBRfrNwOTfnc8qoFSrzXmT0d9kKn0k"/>
+</div>
+<div class="font-meta-table text-meta-table text-on-surface font-medium">1962 Ferrari 250 GTO</div>
+</div>
+</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface">$18,500,000</td>
+<td class="py-md px-md font-meta-table text-meta-table text-on-surface">$18,500,000</td>
+<td class="py-md px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-[#10B981]/10 text-[#10B981] font-label-caps text-label-caps font-bold">WINNING</span>
+</td>
+<td class="py-md px-md text-right font-meta-table text-meta-table text-on-surface-variant">14:00:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Analytics & Recent Split -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Portfolio Analytics -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm flex flex-col">
+<h3 class="font-body-md text-body-md font-bold text-on-surface mb-md">Portfolio Analytics</h3>
+<div class="flex-grow flex items-center justify-center bg-surface-container-low rounded border border-outline-variant border-dashed p-xl">
+<!-- Placeholder for chart -->
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-outline mb-sm">pie_chart</span>
+<p class="font-meta-table text-meta-table text-on-surface-variant">Category Distribution Chart Loading...</p>
+</div>
+</div>
+</section>
+<!-- Recent Acquisitions -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm">
+<h3 class="font-body-md text-body-md font-bold text-on-surface mb-md">Recent Acquisitions</h3>
+<div class="flex flex-col gap-sm">
+<div class="p-sm border border-outline-variant rounded flex items-center gap-md hover:border-primary transition-colors">
+<div class="w-12 h-12 bg-surface-variant rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A sleek modern minimalist villa in the Hollywood Hills, twilight lighting, glowing interiors, luxury real estate editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFyM_QNwfyjQuQi7Nf6wAE59yw-Mm2L2-iZLrHXxGfIbl8ae6BoHTon4fmID-VPUSZ4zHlt948xRlJbsQa7Gynnyo3M7DWcyNqPYJGZLEblCOaI3NNEczuI43kowkiPjEQ9JJqEeTaBA-_Da9sJzg3NSjUb4o85aUk1sYtciziBy0TV03CMLeMI90VBPLLTbNQE05XaVd0Eebnyvkr0S2eoVKjI6zRvqLd7FPdJmD_sP1l-x9SuIWrArBSolapgbalj-xxSa51qk4"/>
+</div>
+<div class="flex-grow">
+<div class="font-meta-table text-meta-table text-on-surface">Villa Firenze Estate</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Settled • Preparing for Transfer</div>
+</div>
+<span class="material-symbols-outlined text-primary text-sm">local_shipping</span>
+</div>
+<div class="p-sm border border-outline-variant rounded flex items-center gap-md hover:border-primary transition-colors">
+<div class="w-12 h-12 bg-surface-variant rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A rare Hermes Birkin bag in pristine condition, crocodile leather, studio lighting on a marble pedestal, luxury fashion editorial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI_cJTS5g3Tmg1oq2PH0sSb3J7_rMWJiaUo4s2AhX_os22hyAj7wve07YBEs2BMUgQQn8M5t56nv7mKJZ1jzStULiXVnP7q3PTT4l56vpt3_vKyL0XgKbRvSUW1GoBgIcYaVdJjmQ1gdMTqUxexTPzc90Rj3FxFxMjqVIueTiNNj34UDsve2VnwMkVmchlStrO3aG3DvSBNUxfuQgXfB5C6nv5redNHTnKUHz-4KpCwyRiZY1OU0-MZzwIn9mKrm8Pda9qGzsbmO8"/>
+</div>
+<div class="flex-grow">
+<div class="font-meta-table text-meta-table text-on-surface">Hermès Himalaya Birkin</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Delivered • Authenticated</div>
+</div>
+<span class="material-symbols-outlined text-[#10B981] text-sm">check_circle</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Sidebar Column (Right 4 Cols) -->
+<aside class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Live Intelligence Feed -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-body-md text-body-md font-bold text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm text-error">sensors</span>
+                            Live Intelligence
+                        </h3>
+</div>
+<div class="relative border-l border-outline-variant ml-sm space-y-md pb-xs">
+<div class="relative pl-md">
+<div class="absolute left-[-5px] top-1 w-2 h-2 rounded-full bg-error ring-4 ring-error-container"></div>
+<div class="font-meta-table text-meta-table text-error mb-xs">Just Now</div>
+<div class="font-body-sm text-body-sm text-on-surface">Outbid on Rothko 'No. 14' by Collector #8492.</div>
+<button class="mt-xs text-xs font-meta-table text-primary hover:underline">Bid Higher</button>
+</div>
+<div class="relative pl-md">
+<div class="absolute left-[-5px] top-1 w-2 h-2 rounded-full bg-[#10B981] ring-4 ring-[#10B981]/20"></div>
+<div class="font-meta-table text-meta-table text-on-surface-variant mb-xs">10 mins ago</div>
+<div class="font-body-sm text-body-sm text-on-surface">Auction ending soon: 1962 Ferrari 250 GTO. You are currently winning.</div>
+</div>
+<div class="relative pl-md">
+<div class="absolute left-[-5px] top-1 w-2 h-2 rounded-full bg-primary ring-4 ring-primary-container"></div>
+<div class="font-meta-table text-meta-table text-on-surface-variant mb-xs">1 hour ago</div>
+<div class="font-body-sm text-body-sm text-on-surface">New valuation report available for your Fine Art portfolio.</div>
+</div>
+</div>
+</section>
+<!-- Elite Recommendations -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm">
+<h3 class="font-body-md text-body-md font-bold text-on-surface mb-md">Elite Recommendations</h3>
+<div class="relative rounded-lg overflow-hidden h-48 group cursor-pointer mb-md">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A sophisticated mechanical tourbillon watch mechanism, extreme close up, dramatic moody lighting highlighting metallic gears, editorial technical style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkrUQtqaD_K4fBginZIGBsnQw5RvUdbHJhn7Hf76ZKcR48b4nmc4pvHNNM9Ai5V0ODIUpyWVVPCcM7fe7CHMsWIIeq0oDpX0x4akyrD2Yu_kCIVBa7SK4DRZV1Vk25OAkKSeFHmKoub3WhfPAcqYT4P2ommJzOhGe_wCY6WdJqcO7eBkIPFMOlKBjTNQcgtDxMVVhh-s8N6lLQGNHpdpYjewsLtxgGOSu9QlxueXLLxHheM7JQOksquBfeMVR0XJANmQL-0eHQ-As"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#012C4E]/90 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-md w-full">
+<div class="font-label-caps text-label-caps text-primary-container mb-xs">Based on Watch History</div>
+<div class="font-headline-lg-mobile text-headline-lg-mobile text-white leading-tight">Audemars Piguet Concept</div>
+</div>
+</div>
+</section>
+<!-- Achievements -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg shadow-sm flex flex-col items-center">
+<h3 class="font-body-md text-body-md font-bold text-on-surface w-full mb-md">Status</h3>
+<div class="flex gap-md w-full justify-center">
+<div class="flex flex-col items-center gap-xs group">
+<div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center border-2 border-primary group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl text-on-primary-container">verified</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant text-center">Verified<br/>Collector</span>
+</div>
+<div class="flex flex-col items-center gap-xs group">
+<div class="w-16 h-16 rounded-full bg-surface-variant flex items-center justify-center border-2 border-outline-variant group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-3xl text-on-surface-variant">diamond</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant text-center">Top<br/>Bidder</span>
+</div>
+</div>
+</section>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface font-body-sm text-body-sm w-full mt-auto border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-xl py-lg max-w-container-max mx-auto text-on-surface-variant dark:text-inverse-on-surface">
+<div class="font-headline-lg text-primary mb-md md:mb-0">Golden Hammer</div>
+<div class="flex flex-wrap gap-md justify-center">
+<a class="text-on-surface-variant hover:text-primary opacity-80 hover:opacity-100 transition-opacity" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary opacity-80 hover:opacity-100 transition-opacity" href="#">Auction Rules</a>
+<a class="text-on-surface-variant hover:text-primary opacity-80 hover:opacity-100 transition-opacity" href="#">Institutional Partners</a>
+</div>
+<div class="mt-md md:mt-0 opacity-80">© 2024 Golden Hammer Auctions. All rights reserved.</div>
+</div>
+</footer>
+</body></html>

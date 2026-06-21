@@ -10,6 +10,13 @@ import Browse from './pages/Browse';
 import ProductDetails from './pages/ProductDetails';
 import Dashboard from './pages/Dashboard';
 import Sell from './pages/Sell';
+import AdminDashboard from './pages/AdminDashboard';
+import Watchlist from './pages/Watchlist';
+import Checkout from './pages/Checkout';
+import NotFound from './pages/NotFound';
+
+// Route Guards
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   return (
@@ -23,6 +30,10 @@ function App() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sell" element={<Sell />} />
+        <Route path="/watchlist" element={<Watchlist />} />
+        <Route path="/checkout/:id" element={<Checkout />} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </>
