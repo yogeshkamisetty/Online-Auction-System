@@ -1,0 +1,186 @@
+/* ============================================================================
+   Golden Hammer — Motion & Visualization Layer
+   Scroll reveals, micro-interactions, infographics. Respects reduced-motion.
+   ========================================================================== */
+
+/* ── Scroll-triggered reveals ─────────────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Stagger children when the parent becomes visible */
+[data-reveal-stagger] > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal-stagger].is-visible > * { opacity: 1; transform: none; }
+[data-reveal-stagger].is-visible > *:nth-child(1) { transition-delay: 0.05s; }
+[data-reveal-stagger].is-visible > *:nth-child(2) { transition-delay: 0.12s; }
+[data-reveal-stagger].is-visible > *:nth-child(3) { transition-delay: 0.19s; }
+[data-reveal-stagger].is-visible > *:nth-child(4) { transition-delay: 0.26s; }
+[data-reveal-stagger].is-visible > *:nth-child(5) { transition-delay: 0.33s; }
+[data-reveal-stagger].is-visible > *:nth-child(6) { transition-delay: 0.40s; }
+
+/* ── Infographic: animated stats band ─────────────────────────────────────── */
+.stats-band {
+  background:
+    radial-gradient(1200px 400px at 80% -20%, rgba(255, 212, 95, 0.10), transparent 60%),
+    var(--secondary, #012c4e);
+  color: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.stats-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(600px 300px at 20% 0%, #000, transparent 75%);
+  pointer-events: none;
+}
+.stats-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.stat-cell { display: flex; flex-direction: column; gap: 6px; }
+.stat-value {
+  font-family: 'Geist', 'Inter', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--primary-container, #ffd45f);
+}
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+/* Mini bar-spark visualization */
+.sparkbars { display: flex; align-items: flex-end; gap: 3px; height: 28px; margin-top: 8px; }
+.sparkbars span {
+  flex: 1;
+  background: linear-gradient(180deg, var(--primary-container, #ffd45f), rgba(255, 212, 95, 0.3));
+  border-radius: 2px 2px 0 0;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: sparkGrow 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes sparkGrow { to { transform: scaleY(1); } }
+
+/* ── Card micro-interactions ──────────────────────────────────────────────── */
+.auction-card,
+.detail-card,
+.category-column {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease;
+}
+.auction-card:hover,
+.detail-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 0 rgba(1, 44, 78, 0.08),
+              0 18px 40px -12px rgba(1, 44, 78, 0.22);
+}
+.auction-card img { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.auction-card:hover img { transform: scale(1.05); }
+
+/* Buttons: tactile press + sheen */
+.btn { transition: transform 0.15s ease, box-shadow 0.25s ease, background 0.25s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.btn-primary:hover::after { left: 140%; }
+
+/* ── Live pulse indicator ─────────────────────────────────────────────────── */
+.pulse-indicator {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: livePulse 1.8s infinite;
+}
+@keyframes livePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70%  { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Price flash when a live bid arrives */
+@keyframes priceFlash {
+  0%   { color: var(--primary, #755b00); transform: scale(1); }
+  30%  { color: #10b981; transform: scale(1.08); }
+  100% { color: inherit; transform: scale(1); }
+}
+.price-flash { animation: priceFlash 0.9s ease; }
+
+/* ── Skeleton shimmer (brushed-metal) ─────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* ── Hero entrance ────────────────────────────────────────────────────────── */
+.hero-content > * { animation: heroRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero-content > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-content > *:nth-child(2) { animation-delay: 0.15s; }
+.hero-content > *:nth-child(3) { animation-delay: 0.25s; }
+.hero-content > *:nth-child(4) { animation-delay: 0.35s; }
+.hero-content > *:nth-child(5) { animation-delay: 0.45s; }
+@keyframes heroRise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+.hero-showcase img { transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.hero-showcase:hover img { transform: scale(1.04); }
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 20px; }
+  .stat-value { font-size: 32px; }
+  .stats-band { padding: 28px; }
+}
+
+/* ── Accessibility: honor reduced-motion ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  [data-reveal],
+  [data-reveal-stagger] > * {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
