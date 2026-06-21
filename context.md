@@ -97,6 +97,7 @@ d:/Yogesh/Coding/FSD - Auction System/
    - **Scroll-Triggered Reveals & Stagger Effects**: Developed custom `<Reveal>` wrapper triggering viewport scroll-animations.
    - **Micro-Interactions**: Wired card lifts, image hover zoom, button sheen sweeps, and brushed-metal skeleton shimmers.
    - **Demo & Products Refresh**: Redesigned `seed.js` to build 12 live active auctions with future closing times, authentic bid history arrays, and multi-user configurations.
+   - **Official Logo Integration**: Replaced placeholder vector outlines in `Navbar.jsx` with the official custom `logo2.png` graphics paired with polished, display-spaced typography.
 
 ## Issues Faced & Resolutions
 

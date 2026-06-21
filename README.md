@@ -103,6 +103,7 @@ Traditional auction houses limit participation through geography, rigid schedule
 - **Scroll-Triggered Reveals & Staggers**: Custom `IntersectionObserver`-based stagger effects (`Reveal.jsx`) for seamless, fluid scroll reveals.
 - **Advanced Micro-Interactions**: Real-time price flashes, card-lifting hover zooms, button sheen sweeps, and brushed-metal shimmer skeletons.
 - **Accessibility & Motion Compliance**: Fully supports and respects `prefers-reduced-motion` media queries.
+- **Official Brand Logo**: Replaced placeholder vector outlines in `Navbar.jsx` with the official custom `logo2.png` graphics paired with polished, display-spaced typography.
 
 ### Seeding & Demo Content
 - **12 Active Seeded Lots**: Diverse categories (Luxury Watches, Fine Art, Classic Vehicles, Rare Numismatics) with future closing times.
