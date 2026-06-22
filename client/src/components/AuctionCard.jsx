@@ -16,12 +16,12 @@ const AuctionCard = ({ product }) => {
                     loading="lazy"
                 />
                 {product.status === 'ACTIVE' && (
-                    <span className="card-live-pill meta-table" aria-label="Live auction">
+                    <span className="live-pill card-live-pill meta-table" aria-label="Live auction">
                         <span className="pulse-indicator" aria-hidden="true"></span> LIVE
                     </span>
                 )}
                 {product.verificationStatus === 'VERIFIED' && (
-                    <span className="card-verified-pill meta-table" aria-label="Expert verified">
+                    <span className="verified-pill card-verified-pill meta-table" aria-label="Expert verified">
                         <span className="material-symbols-outlined" aria-hidden="true">verified</span> VERIFIED
                     </span>
                 )}

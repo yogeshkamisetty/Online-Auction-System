@@ -244,6 +244,12 @@ const ProductDetails = () => {
                                 ) : (
                                     <span className="badge-ended">ENDED</span>
                                 )}
+
+                                {product.verificationStatus === 'VERIFIED' && (
+                                    <span className="verified-pill meta-table" aria-label="Expert verified provenance">
+                                        <span className="material-symbols-outlined" aria-hidden="true">verified</span> VERIFIED
+                                    </span>
+                                )}
                                 
                                 {token && (
                                     <button 

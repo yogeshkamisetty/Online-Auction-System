@@ -229,19 +229,19 @@ const Dashboard = () => {
                                                                 <td>
                                                                     {bid.auction.status === 'ACTIVE' ? (
                                                                         bid.isWinning ? (
-                                                                            <span className="status-badge winning">🏆 Winning</span>
+                                                                            <span className="status-badge winning">Winning</span>
                                                                         ) : (
-                                                                            <span className="status-badge outbid">⚠ Outbid</span>
+                                                                            <span className="status-badge outbid">Outbid</span>
                                                                         )
                                                                     ) : bid.auction.status === 'CLOSED' ? (
                                                                         bid.isWinning ? (
-                                                                            <span className="status-badge active" style={{ backgroundColor: 'var(--primary-container)', color: 'var(--on-primary-container)' }}>🏆 Won - Awaiting Settle</span>
+                                                                            <span className="status-badge active" style={{ backgroundColor: 'var(--primary-container)', color: 'var(--on-primary-container)' }}>Won — awaiting settlement</span>
                                                                         ) : (
                                                                             <span className="status-badge closed">Ended</span>
                                                                         )
                                                                     ) : bid.auction.status === 'SETTLED' ? (
                                                                         bid.isWinning ? (
-                                                                            <span className="status-badge winning">✓ Purchased</span>
+                                                                            <span className="status-badge winning">Purchased</span>
                                                                         ) : (
                                                                             <span className="status-badge closed">Ended</span>
                                                                         )
