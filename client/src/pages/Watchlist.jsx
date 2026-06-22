@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import AuctionCard from '../components/AuctionCard';
-import Spinner from '../components/Spinner';
+import SkeletonCard from '../components/SkeletonCard';
 
 const Watchlist = () => {
     const { user, token } = useAuth();
@@ -29,13 +29,7 @@ const Watchlist = () => {
         enabled: !!token
     });
 
-    if (isLoading) {
-        return (
-            <div className="flex-center" style={{ minHeight: '60vh' }}>
-                <Spinner />
-            </div>
-        );
-    }
+
 
     if (isError) {
         return (
@@ -80,21 +74,33 @@ const Watchlist = () => {
             <div className="metrics-grid" style={{ marginTop: 'var(--space-md)' }}>
                 <div className="metric-card">
                     <p className="metric-title">Watching Assets</p>
-                    <p className="metric-value">{watchingCount}</p>
+                    {isLoading ? (
+                        <div className="skeleton" style={{ width: '40px', height: '34px', margin: '3px 0' }}></div>
+                    ) : (
+                        <p className="metric-value">{watchingCount}</p>
+                    )}
                     <p className="meta-table" style={{ color: 'var(--primary)', marginTop: 'var(--space-xs)' }}>
                         ★ Monitored in real-time
                     </p>
                 </div>
                 <div className="metric-card" style={{ borderColor: 'var(--error)' }}>
                     <p className="metric-title">Ending Within 24h</p>
-                    <p className="metric-value" style={{ color: 'var(--error)' }}>{endingToday}</p>
+                    {isLoading ? (
+                        <div className="skeleton" style={{ width: '40px', height: '34px', margin: '3px 0' }}></div>
+                    ) : (
+                        <p className="metric-value" style={{ color: 'var(--error)' }}>{endingToday}</p>
+                    )}
                     <p className="meta-table" style={{ color: 'var(--error)', marginTop: 'var(--space-xs)' }}>
                         ⌛ High-priority action
                     </p>
                 </div>
                 <div className="metric-card">
                     <p className="metric-title">Aggregate Value (Est)</p>
-                    <p className="metric-value">${estimatedValue.toLocaleString('en-US')}</p>
+                    {isLoading ? (
+                        <div className="skeleton" style={{ width: '120px', height: '34px', margin: '3px 0' }}></div>
+                    ) : (
+                        <p className="metric-value">${estimatedValue.toLocaleString('en-US')}</p>
+                    )}
                     <p className="meta-table" style={{ color: 'var(--success)', marginTop: 'var(--space-xs)' }}>
                         ▲ Portfolio asset sum
                     </p>
@@ -134,7 +140,13 @@ const Watchlist = () => {
                         </div>
                     </div>
 
-                    {filteredWatchlist.length === 0 ? (
+                    {isLoading ? (
+                        <div className="auction-grid">
+                            {[...Array(3)].map((_, i) => (
+                                <SkeletonCard key={i} />
+                            ))}
+                        </div>
+                    ) : filteredWatchlist.length === 0 ? (
                         <div className="detail-card text-center" style={{ padding: 'var(--space-xl)' }}>
                             <span className="material-symbols-outlined" style={{ fontSize: '48px', color: 'var(--outline)' }} aria-hidden="true">
                                 visibility_off
@@ -162,23 +174,31 @@ const Watchlist = () => {
                             <span>Live Market Feed</span>
                             <span className="badge-live" style={{ fontSize: '9px', padding: '2px 6px' }}>Live</span>
                         </h3>
-                        <div className="timeline-list" style={{ marginTop: 'var(--space-md)' }} aria-label="Real-time auction activity timeline">
-                            <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
-                                <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--primary)' }}>Just Now</p>
-                                <p className="body-sm" style={{ fontWeight: 600 }}>New Bid Placed</p>
-                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 402 is currently at $1,250,000</p>
+                        {isLoading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', marginTop: 'var(--space-md)' }}>
+                                <div className="skeleton" style={{ width: '100%', height: '50px' }}></div>
+                                <div className="skeleton" style={{ width: '100%', height: '50px' }}></div>
+                                <div className="skeleton" style={{ width: '100%', height: '50px' }}></div>
                             </div>
-                            <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
-                                <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>12m ago</p>
-                                <p className="body-sm" style={{ fontWeight: 600 }}>Auction Closed</p>
-                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 380 closed at $48,400</p>
+                        ) : (
+                            <div className="timeline-list" style={{ marginTop: 'var(--space-md)' }} aria-label="Real-time auction activity timeline">
+                                <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
+                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--primary)' }}>Just Now</p>
+                                    <p className="body-sm" style={{ fontWeight: 600 }}>New Bid Placed</p>
+                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 402 is currently at $1,250,000</p>
+                                </div>
+                                <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
+                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>12m ago</p>
+                                    <p className="body-sm" style={{ fontWeight: 600 }}>Auction Closed</p>
+                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 380 closed at $48,400</p>
+                                </div>
+                                <div className="timeline-step" style={{ paddingBottom: '0' }}>
+                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>1h ago</p>
+                                    <p className="body-sm" style={{ fontWeight: 600 }}>Asset Uploaded</p>
+                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Verified report added for Rothko Painting</p>
+                                </div>
                             </div>
-                            <div className="timeline-step" style={{ paddingBottom: '0' }}>
-                                <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>1h ago</p>
-                                <p className="body-sm" style={{ fontWeight: 600 }}>Asset Uploaded</p>
-                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Verified report added for Rothko Painting</p>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>

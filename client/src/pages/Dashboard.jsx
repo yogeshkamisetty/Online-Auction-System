@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
-import Spinner from '../components/Spinner';
+
 
 const Dashboard = () => {
     const { user, token, login } = useContext(AuthContext);
@@ -198,9 +198,7 @@ const Dashboard = () => {
 
                                     <h3 className="panel-heading">My Bidding Ledger</h3>
                                     <div className="table-container table-scroll-container">
-                                        {isBuyerLoading ? (
-                                            <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
-                                        ) : isBuyerError ? (
+                                        {isBuyerError ? (
                                             <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve bids.</div>
                                         ) : (
                                             <table className="dashboard-table" aria-label="Bidding activities and invoice tracking">
@@ -214,7 +212,17 @@ const Dashboard = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {uniqueBids.length === 0 ? (
+                                                    {isBuyerLoading ? (
+                                                        [...Array(3)].map((_, i) => (
+                                                            <tr key={i}>
+                                                                <td><div className="skeleton" style={{ width: '120px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '80px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '80px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '60px', height: '14px', borderRadius: 'var(--rounded-full)' }}></div></td>
+                                                                <td><div className="skeleton skeleton-btn" style={{ width: '70px', height: '24px' }}></div></td>
+                                                            </tr>
+                                                        ))
+                                                    ) : uniqueBids.length === 0 ? (
                                                         <tr>
                                                             <td colSpan="5" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: 'var(--space-lg)' }}>
                                                                 No bids recorded. <Link to="/browse" style={{ color: 'var(--primary)', fontWeight: 'bold' }} aria-label="Browse catalog of live auctions">Browse live auctions</Link>
@@ -298,9 +306,7 @@ const Dashboard = () => {
                                     </div>
 
                                     <div className="table-container table-scroll-container">
-                                        {isSellerLoading ? (
-                                            <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
-                                        ) : isSellerError ? (
+                                        {isSellerError ? (
                                             <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve listings.</div>
                                         ) : (
                                             <table className="dashboard-table" aria-label="Consigned luxury inventory ledger">
@@ -314,7 +320,17 @@ const Dashboard = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {allListings.length === 0 ? (
+                                                    {isSellerLoading ? (
+                                                        [...Array(3)].map((_, i) => (
+                                                            <tr key={i}>
+                                                                <td><div className="skeleton" style={{ width: '120px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '80px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '80px', height: '14px' }}></div></td>
+                                                                <td><div className="skeleton" style={{ width: '60px', height: '14px', borderRadius: 'var(--rounded-full)' }}></div></td>
+                                                                <td><div className="skeleton skeleton-btn" style={{ width: '70px', height: '24px' }}></div></td>
+                                                            </tr>
+                                                        ))
+                                                    ) : allListings.length === 0 ? (
                                                         <tr>
                                                             <td colSpan="5" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: 'var(--space-lg)' }}>
                                                                 No consignments found. <Link to="/sell" style={{ color: 'var(--primary)', fontWeight: 'bold' }} aria-label="Consign and list a new asset">List one now</Link>

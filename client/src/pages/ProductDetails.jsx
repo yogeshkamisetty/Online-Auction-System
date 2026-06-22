@@ -6,7 +6,7 @@ import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { API_BASE } from '../config';
-import Spinner from '../components/Spinner';
+import SkeletonDetails from '../components/SkeletonDetails';
 
 const DetailedCountdown = ({ endTime }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -182,11 +182,7 @@ const ProductDetails = () => {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex-center" style={{ minHeight: '60vh' }}>
-                <Spinner />
-            </div>
-        );
+        return <SkeletonDetails />;
     }
 
     if (isError || !product) {

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
 import AuctionCard from '../components/AuctionCard';
-import Spinner from '../components/Spinner';
+import SkeletonCard from '../components/SkeletonCard';
 
 const Browse = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -161,8 +161,10 @@ const Browse = () => {
                 {/* Main Content Grid */}
                 <div>
                     {isLoading ? (
-                        <div className="flex-center" style={{ minHeight: '40vh' }}>
-                            <Spinner />
+                        <div className="auction-grid">
+                            {[...Array(6)].map((_, i) => (
+                                <SkeletonCard key={i} />
+                            ))}
                         </div>
                     ) : isError ? (
                         <div className="alert alert-error text-center">

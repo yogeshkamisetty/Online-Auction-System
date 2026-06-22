@@ -94,58 +94,53 @@ const Checkout = () => {
                 &larr; Back to Dashboard
             </Link>
 
-            <div className="item-details-layout" style={{ marginTop: 'var(--space-lg)' }}>
+            <div className="item-details-layout checkout-details-layout">
                 {/* Left Column: Congratulations & Details */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+                <div className="checkout-column">
                     {/* Celebration Header */}
-                    <section className="detail-card" style={{ 
-                        textAlign: 'center', 
-                        position: 'relative', 
-                        overflow: 'hidden', 
-                        background: 'linear-gradient(135deg, rgba(255,212,95,0.08) 0%, rgba(255,255,255,0) 100%)'
-                    }}>
-                        <div style={{ position: 'relative', zIndex: 10 }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '48px', color: 'var(--primary)', fontVariationSettings: "'FILL' 1" }}>
+                    <section className="detail-card checkout-celebration">
+                        <div>
+                            <span className="material-symbols-outlined checkout-celebration-icon">
                                 emoji_events
                             </span>
-                            <h1 className="display-lg" style={{ fontSize: '32px', color: 'var(--secondary)', marginTop: 'var(--space-base)' }}>
+                            <h1 className="display-lg checkout-celebration-title">
                                 {settledSuccess || isAlreadySettled ? 'Acquisition Commenced!' : 'Congratulations!'}
                             </h1>
-                            <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
+                            <p className="body-md checkout-celebration-text">
                                 {settledSuccess || isAlreadySettled ? 'Your transaction is successfully secured.' : 'You Won This Luxury Asset Auction'}
                             </p>
                         </div>
                     </section>
 
                     {/* Product Summary */}
-                    <section className="detail-card" style={{ display: 'flex', gap: 'var(--space-lg)', flexWrap: 'wrap', padding: 'var(--space-lg)' }}>
-                        <div style={{ flex: '1 1 200px', height: '160px', borderRadius: 'var(--rounded-lg)', overflow: 'hidden', border: '1px solid var(--outline-variant)' }}>
+                    <section className="detail-card checkout-summary-card">
+                        <div className="checkout-summary-img-container">
                             <img 
                                 src={auction.imageUrl || '/images/camera-1.avif'} 
                                 alt={auction.title} 
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                className="checkout-summary-img" 
                             />
                         </div>
-                        <div style={{ flex: '2 1 300px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-base)', marginBottom: 'var(--space-base)' }}>
-                                <span className="badge-live" style={{ background: 'var(--primary-container)', color: 'var(--on-surface)', fontWeight: 700 }}>
+                        <div className="checkout-summary-info">
+                            <div className="checkout-summary-badge-row">
+                                <span className="badge-live checkout-lot-badge">
                                     LOT-{String(auction.id).padStart(3, '0')}
                                 </span>
                                 <span className="badge-live">
                                     ✓ Authenticated
                                 </span>
                             </div>
-                            <h2 className="headline-lg" style={{ fontSize: '22px', color: 'var(--secondary)' }}>{auction.title}</h2>
-                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>{auction.description}</p>
+                            <h2 className="headline-lg checkout-summary-title">{auction.title}</h2>
+                            <p className="body-sm checkout-summary-desc">{auction.description}</p>
                         </div>
                     </section>
 
                     {/* Timeline Journey */}
                     <section className="detail-card">
-                        <h3 className="panel-heading" style={{ borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-base)' }}>
+                        <h3 className="panel-heading checkout-panel-heading">
                             Acquisition Journey
                         </h3>
-                        <div className="timeline-list" style={{ marginTop: 'var(--space-lg)' }}>
+                        <div className="timeline-list checkout-timeline-container">
                             <div className="timeline-step completed">
                                 <h4 className="timeline-title">Auction Closed & Won</h4>
                                 <p className="timeline-desc">You are the highest bidder at closing time.</p>
@@ -169,40 +164,40 @@ const Checkout = () => {
                 </div>
 
                 {/* Right Column: Checkout Breakdown Sidebar */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
-                    <div className="detail-card glass-panel" style={{ padding: 'var(--space-lg)' }}>
-                        <h3 className="panel-heading" style={{ borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-base)', fontSize: '18px' }}>
+                <div className="checkout-column">
+                    <div className="detail-card glass-panel checkout-invoice-card">
+                        <h3 className="panel-heading checkout-invoice-title">
                             Financial Invoice
                         </h3>
 
-                        <div className="space-y-sm" style={{ marginTop: 'var(--space-md)', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-md)' }}>
+                        <div className="space-y-sm checkout-invoice-items">
                             <div className="flex-between body-md">
-                                <span style={{ color: 'var(--on-surface-variant)' }}>Hammer Bid Price</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${bidAmount.toLocaleString('en-US')}</span>
+                                <span className="text-muted">Hammer Bid Price</span>
+                                <span className="font-mono checkout-invoice-price">${bidAmount.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
-                                <span style={{ color: 'var(--on-surface-variant)' }}>Buyer's Premium (15%)</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${buyersPremium.toLocaleString('en-US')}</span>
+                                <span className="text-muted">Buyer's Premium (15%)</span>
+                                <span className="font-mono checkout-invoice-price">${buyersPremium.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
-                                <span style={{ color: 'var(--on-surface-variant)' }}>Taxes & Duties (Est.)</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${taxes.toLocaleString('en-US')}</span>
+                                <span className="text-muted">Taxes & Duties (Est.)</span>
+                                <span className="font-mono checkout-invoice-price">${taxes.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
-                                <span style={{ color: 'var(--on-surface-variant)' }}>White Glove Courier Shipping</span>
-                                <span className="font-mono" style={{ fontWeight: 600 }}>${shipping.toLocaleString('en-US')}</span>
+                                <span className="text-muted">White Glove Courier Shipping</span>
+                                <span className="font-mono checkout-invoice-price">${shipping.toLocaleString('en-US')}</span>
                             </div>
                         </div>
 
-                        <div className="flex-between" style={{ marginTop: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
-                            <span className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Total Due</span>
-                            <span className="display-lg" style={{ fontSize: '24px', color: 'var(--primary)' }}>
+                        <div className="flex-between checkout-total-row">
+                            <span className="headline-lg checkout-total-label">Total Due</span>
+                            <span className="display-lg checkout-total-val">
                                 ${totalDue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </span>
                         </div>
 
                         {errorMessage && (
-                            <div className="alert alert-error" style={{ marginBottom: 'var(--space-md)' }}>
+                            <div className="alert alert-error checkout-alert-margin">
                                 {errorMessage}
                             </div>
                         )}
@@ -210,21 +205,20 @@ const Checkout = () => {
                         {settledSuccess || isAlreadySettled ? (
                             <div className="alert alert-success text-center">
                                 <p style={{ fontWeight: 'bold' }}>Payment Complete</p>
-                                <p className="body-sm" style={{ marginTop: 'var(--space-xs)' }}>Funds are held in secure escrow. You will be updated when authentication is completed.</p>
-                                <Link to="/dashboard" className="btn btn-ghost" style={{ width: '100%', marginTop: 'var(--space-sm)' }}>Go to Dashboard</Link>
+                                <p className="body-sm checkout-success-note">Funds are held in secure escrow. You will be updated when authentication is completed.</p>
+                                <Link to="/dashboard" className="btn btn-ghost w-full checkout-success-btn">Go to Dashboard</Link>
                             </div>
                         ) : (
                             <div>
                                 <button 
-                                    className="btn btn-primary" 
+                                    className="btn btn-primary checkout-pay-btn" 
                                     onClick={handleConfirmPayment}
                                     disabled={settleMutation.isPending}
-                                    style={{ width: '100%', padding: '12px', fontSize: '14px', letterSpacing: '0.05em' }}
                                     aria-label="Authorize secure escrow settlement payment"
                                 >
                                     {settleMutation.isPending ? 'Processing Escrow...' : 'Secure Settlement Checkout'}
                                 </button>
-                                <p className="body-sm text-center" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-base)', fontSize: '12px' }}>
+                                <p className="body-sm text-center checkout-pay-note">
                                     Wire transfer is preferred for settlements exceeding $100,000. Under bank grade escrow security.
                                 </p>
                             </div>
@@ -232,19 +226,19 @@ const Checkout = () => {
                     </div>
 
                     {/* Trust and Security Section */}
-                    <div className="detail-card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)', padding: 'var(--space-md)' }}>
-                        <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start' }}>
-                            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '24px' }}>shield</span>
+                    <div className="detail-card checkout-trust-card">
+                        <div className="checkout-trust-item">
+                            <span className="material-symbols-outlined checkout-trust-icon">shield</span>
                             <div>
-                                <h4 className="body-md" style={{ fontWeight: 600, color: 'var(--secondary)' }}>Escrow Custody Protection</h4>
-                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: '2px' }}>Funds are locked in credit-backed bank accounts until physical transfer validation.</p>
+                                <h4 className="body-md checkout-trust-title">Escrow Custody Protection</h4>
+                                <p className="body-sm checkout-trust-desc">Funds are locked in credit-backed bank accounts until physical transfer validation.</p>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 'var(--space-sm)', alignItems: 'flex-start' }}>
-                            <span className="material-symbols-outlined" style={{ color: 'var(--primary)', fontSize: '24px' }}>local_shipping</span>
+                        <div className="checkout-trust-item">
+                            <span className="material-symbols-outlined checkout-trust-icon">local_shipping</span>
                             <div>
-                                <h4 className="body-md" style={{ fontWeight: 600, color: 'var(--secondary)' }}>Fully Insured Climate Shipping</h4>
-                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: '2px' }}>Assets are placed in climate-sealed casings and escorted by armed security staff.</p>
+                                <h4 className="body-md checkout-trust-title">Fully Insured Climate Shipping</h4>
+                                <p className="body-sm checkout-trust-desc">Assets are placed in climate-sealed casings and escorted by armed security staff.</p>
                             </div>
                         </div>
                     </div>
