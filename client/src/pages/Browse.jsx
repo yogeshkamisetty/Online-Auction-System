@@ -31,15 +31,32 @@ const Browse = () => {
         }
         const params = new URLSearchParams(location.search);
         const categoryParam = params.get('category');
+        const searchParam = params.get('search');
+        
+        let result = products;
         
         if (categoryParam) {
             const cat = categoryParam.toLowerCase();
-            const filtered = products.filter(p => p.category.toLowerCase() === cat);
+            result = result.filter(p => p.category.toLowerCase() === cat);
             setSelectedCategories([cat]);
-            setFilteredProducts(filtered);
         } else {
-            setFilteredProducts(products);
+            setSelectedCategories([]);
         }
+
+        if (searchParam) {
+            setSearchQuery(searchParam);
+            const queryTokens = searchParam.toLowerCase().trim().split(/\s+/).filter(t => t);
+            if (queryTokens.length > 0) {
+                result = result.filter(p => {
+                    const text = `${p.title} ${p.description} ${p.category}`.toLowerCase();
+                    return queryTokens.every(token => text.includes(token));
+                });
+            }
+        } else {
+            setSearchQuery('');
+        }
+        
+        setFilteredProducts(result);
     }, [products, location.search]);
 
     const handleCategoryChange = (e) => {
