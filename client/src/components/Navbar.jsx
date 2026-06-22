@@ -30,22 +30,20 @@ const Navbar = () => {
         <header className="site-header" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
             <div className="container navbar">
                 <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                    <Link to="/" className="logo" aria-label="Golden Hammer Luxury Auctions Homepage" onClick={() => setMenuOpen(false)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0', textDecoration: 'none' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-primary, #d4af37)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-45deg)' }}>
-                                <path d="m14 14-3.5 3.5a2.5 2.5 0 1 1-3.5-3.5L10.5 10" />
-                                <path d="m15 5 4 4" />
-                                <path d="m5 15-3 3" />
-                                <path d="M15 9 9 15" />
-                                <path d="M13 3h7v7h-7z" fill="var(--gold-primary, #d4af37)" />
-                            </svg>
-                            <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.05em', color: '#ffffff', lineHeight: '1' }}>
+                    <Link to="/" className="logo" aria-label="Golden Hammer Auctions Homepage" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                        <img 
+                            src="/images/logo-premium.png" 
+                            alt="Golden Hammer Auctions Logo" 
+                            style={{ height: '38px', width: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--gold-primary, #d4af37)', boxShadow: '0 0 10px rgba(212, 175, 55, 0.25)' }} 
+                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
+                            <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.03em', color: '#ffffff', lineHeight: '1' }}>
                                 GOLDEN HAMMER
                             </span>
+                            <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.28em', color: 'var(--gold-primary, #d4af37)', lineHeight: '1' }}>
+                                AUCTIONS
+                            </span>
                         </div>
-                        <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.32em', color: 'var(--gold-primary, #d4af37)', marginTop: '2px', paddingLeft: '32px', lineHeight: '1' }}>
-                            AUCTIONS
-                        </span>
                     </Link>
                     
                     <nav className="nav-links" aria-label="Desktop primary navigation" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
