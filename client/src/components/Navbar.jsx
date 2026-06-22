@@ -27,29 +27,25 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <header className="site-header" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+        <header className="site-header">
             <div className="container navbar">
-                <div className="nav-left" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                    <Link to="/" className="logo" aria-label="Golden Hammer Auctions Homepage" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+                <div className="nav-left">
+                    <Link to="/" className="logo" aria-label="Golden Hammer Auctions Homepage" onClick={() => setMenuOpen(false)}>
                         <img 
                             src="/images/logo-premium.png" 
                             alt="Golden Hammer Auctions Logo" 
-                            style={{ height: '38px', width: '38px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--gold-primary, #d4af37)', boxShadow: '0 0 10px rgba(212, 175, 55, 0.25)' }} 
+                            className="logo-premium-img"
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px' }}>
-                            <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '0.03em', color: '#ffffff', lineHeight: '1' }}>
-                                GOLDEN HAMMER
-                            </span>
-                            <span style={{ fontSize: '9px', fontWeight: '700', letterSpacing: '0.28em', color: 'var(--gold-primary, #d4af37)', lineHeight: '1' }}>
-                                AUCTIONS
-                            </span>
+                        <div className="logo-text-col">
+                            <span className="logo-title">GOLDEN HAMMER</span>
+                            <span className="logo-subtitle">AUCTIONS</span>
                         </div>
                     </Link>
                     
-                    <nav className="nav-links" aria-label="Desktop primary navigation" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <nav className="nav-links" aria-label="Desktop primary navigation">
                         <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
-                        <div className="nav-dropdown-trigger" style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: 'rgba(255, 255, 255, 0.7)', fontSize: '14px', fontWeight: '500', padding: '4px 12px' }}>
-                            <Link to="/browse" style={{ padding: 0, background: 'none', border: 'none', color: 'inherit' }}>Auctions</Link>
+                        <div className="nav-dropdown-trigger">
+                            <Link to="/browse">Auctions</Link>
                             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>keyboard_arrow_down</span>
                         </div>
                         <Link to="/browse" className={isActive('/browse') && !location.search ? 'active' : ''}>Categories</Link>
@@ -65,63 +61,37 @@ const Navbar = () => {
                     </nav>
                 </div>
                 
-                <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                <div className="nav-right">
                     {/* Mockup Search Bar */}
-                    <div className="desktop-search" style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '220px' }}>
+                    <div className="nav-search-bar">
                         <input 
                             type="text" 
                             placeholder="Search auctions, items, sellers..." 
                             value={navSearch}
                             onChange={(e) => setNavSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            style={{
-                                width: '100%',
-                                background: '#0f1115',
-                                border: '1px solid rgba(212, 175, 55, 0.25)',
-                                borderRadius: '100px',
-                                padding: '8px 36px 8px 14px',
-                                fontSize: '12px',
-                                color: '#ffffff',
-                                outline: 'none',
-                                transition: 'all 0.3s ease'
-                            }}
                         />
                         <span 
-                            className="material-symbols-outlined" 
+                            className="material-symbols-outlined nav-search-bar-icon" 
                             onClick={handleSearch}
-                            style={{ position: 'absolute', right: '12px', color: 'var(--gold-primary, #d4af37)', fontSize: '16px', cursor: 'pointer' }}
                         >
                             search
                         </span>
                     </div>
 
                     {/* Icons bar */}
-                    <div className="nav-icons-bar" style={{ display: 'flex', alignItems: 'center', gap: '16px', color: 'rgba(255, 255, 255, 0.8)' }}>
-                        <Link to="/watchlist" aria-label="View Watchlist" style={{ display: 'flex', alignItems: 'center' }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color = 'var(--gold-primary)'} onMouseLeave={(e) => e.target.style.color = 'inherit'}>
+                    <div className="nav-action-icons">
+                        <Link to="/watchlist" className="nav-icon-button" aria-label="View Watchlist">
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                                 favorite
                             </span>
                         </Link>
                         
-                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <div className="nav-notification-container" aria-label="Notifications">
                             <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
                                 notifications
                             </span>
-                            <span style={{
-                                position: 'absolute',
-                                top: '-6px',
-                                right: '-6px',
-                                background: '#ef4444',
-                                color: '#ffffff',
-                                fontSize: '8px',
-                                fontWeight: '700',
-                                width: '13px',
-                                height: '13px',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}>
+                            <span className="nav-notification-badge">
                                 3
                             </span>
                         </div>

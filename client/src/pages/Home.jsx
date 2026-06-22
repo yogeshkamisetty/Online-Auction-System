@@ -1,8 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import api from '../lib/api';
 import { useToast } from '../context/ToastContext';
 import Reveal from '../components/Reveal';
 import '../assets/css/homepage-dark.css';
+
+const MOCK_AUCTIONS = [
+    {
+        id: 'rolex',
+        title: 'Rolex Daytona Diamond',
+        currentBid: 124500,
+        bids: 42,
+        timeLeft: 1 * 3600 + 23 * 60 + 45, // 01:23:45
+        image: '/images/rolex_daytona_diamond.png',
+        flash: false
+    },
+    {
+        id: 'porsche',
+        title: 'Porsche 911 Turbo S',
+        currentBid: 185000,
+        bids: 38,
+        timeLeft: 2 * 3600 + 10 * 60 + 22, // 02:10:22
+        image: '/images/porsche_911_turbo_s.png',
+        flash: false
+    },
+    {
+        id: 'basquiat',
+        title: 'Basquiat - Untitled 1982',
+        currentBid: 950000,
+        bids: 28,
+        timeLeft: 45 * 60 + 31, // 00:45:31
+        image: '/images/basquiat_untitled_1982.png',
+        flash: false
+    },
+    {
+        id: 'hermes',
+        title: 'Hermès Birkin 30 Gold',
+        currentBid: 68000,
+        bids: 19,
+        timeLeft: 3 * 3600 + 15 * 60 + 10, // 03:15:10
+        image: '/images/hermes_birkin_gold.png',
+        flash: false
+    }
+];
 
 const Home = () => {
     const toast = useToast();
@@ -15,45 +56,45 @@ const Home = () => {
         seconds: '18'
     });
 
-    // Simulated luxury auctions state (incorporating mockup details)
-    const [auctions, setAuctions] = useState([
-        {
-            id: 'rolex',
-            title: 'Rolex Daytona Diamond',
-            currentBid: 124500,
-            bids: 42,
-            timeLeft: 1 * 3600 + 23 * 60 + 45, // 01:23:45
-            image: '/images/rolex_daytona_diamond.png',
-            flash: false
-        },
-        {
-            id: 'porsche',
-            title: 'Porsche 911 Turbo S',
-            currentBid: 185000,
-            bids: 38,
-            timeLeft: 2 * 3600 + 10 * 60 + 22, // 02:10:22
-            image: '/images/porsche_911_turbo_s.png',
-            flash: false
-        },
-        {
-            id: 'basquiat',
-            title: 'Basquiat - Untitled 1982',
-            currentBid: 950000,
-            bids: 28,
-            timeLeft: 45 * 60 + 31, // 00:45:31
-            image: '/images/basquiat_untitled_1982.png',
-            flash: false
-        },
-        {
-            id: 'hermes',
-            title: 'Hermès Birkin 30 Gold',
-            currentBid: 68000,
-            bids: 19,
-            timeLeft: 3 * 3600 + 15 * 60 + 10, // 03:15:10
-            image: '/images/hermes_birkin_gold.png',
-            flash: false
+    const [auctions, setAuctions] = useState([]);
+
+    // Fetch actual products from database
+    const { data: dbProducts = [] } = useQuery({
+        queryKey: ['auctions'],
+        queryFn: async () => {
+            const res = await api.get('/auctions');
+            return res.data;
         }
-    ]);
+    });
+
+    // Merge database active auctions with mock fallback items
+    useEffect(() => {
+        const activeDbAuctions = dbProducts
+            .filter(p => p.status === 'ACTIVE')
+            .map(p => ({
+                id: p.id,
+                title: p.title,
+                currentBid: parseFloat(p.currentBid) || 0,
+                bids: p.bidCount || 0,
+                timeLeft: p.endTime ? Math.max(0, Math.floor((new Date(p.endTime) - new Date()) / 1000)) : 3600,
+                image: p.imageUrl || '/images/logo-premium.png',
+                flash: false,
+                isDb: true
+            }));
+
+        const displayAuctions = [...activeDbAuctions].slice(0, 4);
+
+        if (displayAuctions.length < 4) {
+            const needed = 4 - displayAuctions.length;
+            const fillItems = MOCK_AUCTIONS.slice(0, needed).map(item => ({
+                ...item,
+                isDb: false
+            }));
+            setAuctions([...displayAuctions, ...fillItems]);
+        } else {
+            setAuctions(displayAuctions);
+        }
+    }, [dbProducts]);
 
     // Isolated dark theme setup for the homepage
     useEffect(() => {
@@ -382,7 +423,9 @@ const Home = () => {
                         {auctions.map((auc) => (
                             <div key={auc.id} className="lux-card">
                                 <div className="lux-img-wrapper">
-                                    <img src={auc.image} alt={auc.title} />
+                                    <Link to={auc.isDb ? `/product/${auc.id}` : "/browse"} style={{ display: 'block', height: '100%' }}>
+                                        <img src={auc.image} alt={auc.title} />
+                                    </Link>
                                     <span className="lux-card-badge-live">Live</span>
                                     <button className="lux-card-favorite-btn" aria-label="Add to watchlist">
                                         <span className="material-symbols-outlined">favorite</span>
@@ -392,7 +435,11 @@ const Home = () => {
                                     </span>
                                 </div>
                                 <div className="lux-card-content">
-                                    <h3 className="lux-card-title">{auc.title}</h3>
+                                    <h3 className="lux-card-title">
+                                        <Link to={auc.isDb ? `/product/${auc.id}` : "/browse"} style={{ color: 'inherit', textDecoration: 'none' }}>
+                                            {auc.title}
+                                        </Link>
+                                    </h3>
                                     <div className="lux-card-footer">
                                         <div className="lux-bid-col">
                                             <span className="lux-bid-lbl">Current Bid</span>
@@ -404,7 +451,7 @@ const Home = () => {
                                                 {auc.bids} Bids
                                             </span>
                                         </div>
-                                        <Link to="/browse" className="btn-card-action" aria-label={`Bid on ${auc.title}`}>
+                                        <Link to={auc.isDb ? `/product/${auc.id}` : "/browse"} className="btn-card-action" aria-label={`Bid on ${auc.title}`}>
                                             <span className="material-symbols-outlined">arrow_forward</span>
                                         </Link>
                                     </div>
