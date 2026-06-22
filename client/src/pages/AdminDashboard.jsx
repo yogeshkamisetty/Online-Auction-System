@@ -61,6 +61,15 @@ const AdminDashboard = () => {
         enabled: activeTab === 'auctions' || activeTab === 'verification'
     });
 
+    const { data: deletedAuctions, isLoading: deletedLoading, isError: deletedError } = useQuery({
+        queryKey: ['adminDeletedAuctions'],
+        queryFn: async () => {
+            const res = await api.get('/admin/auctions/deleted');
+            return res.data;
+        },
+        enabled: activeTab === 'deleted'
+    });
+
     // Mutations
     const suspendMutation = useMutation({
         mutationFn: async ({ userId, suspended }) => {
@@ -104,7 +113,8 @@ const AdminDashboard = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['adminAuctions'] });
             queryClient.invalidateQueries({ queryKey: ['adminStats'] });
-            toast.success('Listing removed successfully.');
+            queryClient.invalidateQueries({ queryKey: ['adminDeletedAuctions'] });
+            toast.success('Listing placed in retention (will be purged in 7 days).');
         },
         onError: (err) => {
             toast.error(err.message || 'Failed to delete auction');
@@ -124,8 +134,30 @@ const AdminDashboard = () => {
     };
 
     const handleDeleteAuction = (auctionId, title) => {
-        if (window.confirm(`CRITICAL COMPLIANCE ACTION: Are you sure you want to permanently delete "${title}"? This will also purge all bids attached to it.`)) {
+        if (window.confirm(`Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`)) {
             deleteMutation.mutate(auctionId);
+        }
+    };
+
+    const restoreMutation = useMutation({
+        mutationFn: async (auctionId) => {
+            const res = await api.post(`/admin/auctions/${auctionId}/restore`);
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminAuctions'] });
+            queryClient.invalidateQueries({ queryKey: ['adminStats'] });
+            queryClient.invalidateQueries({ queryKey: ['adminDeletedAuctions'] });
+            toast.success('Listing restored successfully.');
+        },
+        onError: (err) => {
+            toast.error(err.message || 'Failed to restore auction');
+        }
+    });
+
+    const handleRestoreAuction = (auctionId, title) => {
+        if (window.confirm(`Are you sure you want to restore "${title}" to the active catalog?`)) {
+            restoreMutation.mutate(auctionId);
         }
     };
 
@@ -185,6 +217,12 @@ const AdminDashboard = () => {
                             <a href="#" className={activeTab === 'auctions' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('auctions'); setVerificationFilter(''); setStatusFilter(''); }}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>gavel</span>
                                 Auction Audit Log
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" className={activeTab === 'deleted' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('deleted'); }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                                Deleted Lots
                             </a>
                         </li>
                     </ul>
@@ -491,6 +529,74 @@ const AdminDashboard = () => {
                                 page={auctionPage}
                                 onPage={setAuctionPage}
                             />
+                        </div>
+                    )}
+
+                    {/* Tab 5: Deleted Lots */}
+                    {activeTab === 'deleted' && (
+                        <div className="space-y-lg">
+                            <div className="panel-header-flex">
+                                <h2 className="panel-heading" style={{ margin: 0 }}>Deleted Lots Retention (7 Days)</h2>
+                            </div>
+                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: '-8px' }}>
+                                Lots here are soft-deleted. After 7 days, they are permanently purged from the database and Cloudinary.
+                            </p>
+
+                            <div className="table-container table-scroll-container">
+                                {deletedLoading ? (
+                                    <div className="flex-center" style={{ padding: 'var(--space-xl)' }}><Spinner /></div>
+                                ) : deletedError ? (
+                                    <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve deleted listings.</div>
+                                ) : (
+                                    <table className="dashboard-table" aria-label="Deleted lots catalog">
+                                        <thead>
+                                            <tr>
+                                                <th>Asset Lot</th>
+                                                <th>Seller Name</th>
+                                                <th>Deleted At</th>
+                                                <th>Purge Schedule (Est)</th>
+                                                <th>State At Deletion</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {!deletedAuctions || deletedAuctions.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="6" style={{ textAlign: 'center', color: 'var(--on-surface-variant)', padding: '24px' }}>
+                                                        No deleted auctions currently in retention.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                deletedAuctions.map(auc => {
+                                                    const deletedDate = new Date(auc.deletedAt);
+                                                    const purgeDate = new Date(deletedDate);
+                                                    purgeDate.setDate(purgeDate.getDate() + 7);
+                                                    return (
+                                                        <tr key={auc.id}>
+                                                            <td style={{ fontWeight: 600, color: 'var(--secondary)' }}>{auc.title}</td>
+                                                            <td>{auc.seller?.name || 'Unknown'}</td>
+                                                            <td className="font-mono">{deletedDate.toLocaleDateString()}</td>
+                                                            <td className="font-mono" style={{ color: 'var(--primary)' }}>{purgeDate.toLocaleDateString()}</td>
+                                                            <td>
+                                                                <span className={`status-badge ${auc.status.toLowerCase()}`}>{auc.status}</span>
+                                                            </td>
+                                                            <td>
+                                                                <button 
+                                                                    onClick={() => handleRestoreAuction(auc.id, auc.title)}
+                                                                    className="btn btn-primary"
+                                                                    style={{ padding: '4px 8px', fontSize: '10px' }}
+                                                                >
+                                                                    Restore
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            )}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

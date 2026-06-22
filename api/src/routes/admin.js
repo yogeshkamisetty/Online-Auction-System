@@ -21,15 +21,15 @@ router.get('/stats', async (req, res) => {
       totalBids,
     ] = await Promise.all([
       prisma.user.count(),
-      prisma.auction.count(),
-      prisma.auction.count({ where: { status: 'ACTIVE' } }),
-      prisma.auction.count({ where: { status: 'CLOSED' } }),
+      prisma.auction.count({ where: { deletedAt: null } }),
+      prisma.auction.count({ where: { status: 'ACTIVE', deletedAt: null } }),
+      prisma.auction.count({ where: { status: 'CLOSED', deletedAt: null } }),
       prisma.auction.aggregate({
-        where: { status: 'SETTLED' },
+        where: { status: 'SETTLED', deletedAt: null },
         _sum: { currentBid: true, platformFee: true, buyerPremium: true },
         _count: true,
       }),
-      prisma.auction.count({ where: { verificationStatus: 'PENDING' } }),
+      prisma.auction.count({ where: { verificationStatus: 'PENDING', deletedAt: null } }),
       prisma.bid.count(),
     ]);
 
@@ -61,7 +61,7 @@ router.get('/stats', async (req, res) => {
 router.get('/auctions', async (req, res) => {
   try {
     const { status, verificationStatus, search, take = '50', skip = '0' } = req.query;
-    const where = {};
+    const where = { deletedAt: null };
     if (status && VALID_STATUSES.includes(status)) where.status = status;
     if (verificationStatus && VALID_VERIFICATION.includes(verificationStatus)) {
       where.verificationStatus = verificationStatus;
@@ -119,16 +119,48 @@ router.patch('/auctions/:id', async (req, res) => {
 // ── DELETE /api/admin/auctions/:id — takedown (e.g. compliance) ──────────────
 router.delete('/auctions/:id', async (req, res) => {
   try {
-    // Remove dependent bids first to satisfy FK constraints
-    await prisma.$transaction([
-      prisma.bid.deleteMany({ where: { auctionId: req.params.id } }),
-      prisma.auction.delete({ where: { id: req.params.id } }),
-    ]);
-    res.json({ message: 'Auction removed' });
+    const auction = await prisma.auction.update({
+      where: { id: req.params.id },
+      data: { deletedAt: new Date() },
+    });
+    res.json({ message: 'Auction soft-deleted', auction });
   } catch (err) {
     if (err.code === 'P2025') return res.status(404).json({ error: 'Auction not found' });
     console.error(err);
     res.status(500).json({ error: 'Failed to delete auction' });
+  }
+});
+
+// ── GET /api/admin/auctions/deleted — all soft-deleted auctions ──────────────
+router.get('/auctions/deleted', async (req, res) => {
+  try {
+    const items = await prisma.auction.findMany({
+      where: { deletedAt: { not: null } },
+      orderBy: { deletedAt: 'desc' },
+      include: {
+        seller: { select: { id: true, name: true, email: true } },
+        _count: { select: { bids: true } },
+      },
+    });
+    res.json(items);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load deleted auctions' });
+  }
+});
+
+// ── POST /api/admin/auctions/:id/restore — restore soft-deleted auction ──────
+router.post('/auctions/:id/restore', async (req, res) => {
+  try {
+    const auction = await prisma.auction.update({
+      where: { id: req.params.id },
+      data: { deletedAt: null },
+    });
+    res.json({ message: 'Auction restored successfully', auction });
+  } catch (err) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Auction not found' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to restore auction' });
   }
 });
 

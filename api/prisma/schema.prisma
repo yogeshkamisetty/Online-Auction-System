@@ -42,10 +42,12 @@ model Auction {
   bids               Bid[]
   watchlist          Watchlist[]
   createdAt          DateTime           @default(now())
+  deletedAt          DateTime?
 
   @@index([status, featured])
   @@index([sellerId])
   @@index([verificationStatus])
+  @@index([deletedAt])
 }
 
 model Bid {

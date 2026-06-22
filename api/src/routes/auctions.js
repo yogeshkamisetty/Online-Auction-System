@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid status filter' });
     }
 
-    const where = { status: requestedStatus };
+    const where = { status: requestedStatus, deletedAt: null };
     if (featured === 'true') where.featured = true;
     if (sellerId) where.sellerId = sellerId;
     if (category) where.category = { equals: category, mode: 'insensitive' };
@@ -54,7 +54,7 @@ router.get('/:id', async (req, res) => {
         },
       },
     });
-    if (!auction) return res.status(404).json({ error: 'Auction not found' });
+    if (!auction || auction.deletedAt) return res.status(404).json({ error: 'Auction not found' });
     res.json(auction);
   } catch (err) {
     console.error(err);
@@ -138,6 +138,31 @@ router.patch('/:id/settle', requireAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to settle auction' });
+  }
+});
+
+// DELETE /api/auctions/:id — seller or admin deletes a listing
+router.delete('/:id', requireAuth, async (req, res) => {
+  try {
+    const auction = await prisma.auction.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!auction) return res.status(404).json({ error: 'Auction not found' });
+    
+    // Check ownership or admin status
+    if (auction.sellerId !== req.user.userId && req.user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'You are not authorized to delete this listing' });
+    }
+    
+    await prisma.auction.update({
+      where: { id: req.params.id },
+      data: { deletedAt: new Date() }
+    });
+    
+    res.json({ message: 'Listing successfully placed in retention.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete listing' });
   }
 });
 

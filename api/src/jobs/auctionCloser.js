@@ -7,7 +7,7 @@ function startAuctionCloser(io) {
   cron.schedule('* * * * *', async () => {
     try {
       const expired = await prisma.auction.findMany({
-        where: { status: 'ACTIVE', endTime: { lt: new Date() } },
+        where: { status: 'ACTIVE', endTime: { lt: new Date() }, deletedAt: null },
         include: {
           seller: { select: { id: true, name: true, email: true } },
           bids: {

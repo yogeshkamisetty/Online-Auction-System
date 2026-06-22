@@ -51,7 +51,7 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
       const rows = await tx.$queryRaw`
         SELECT id, "currentBid", status, "endTime"
         FROM "Auction"
-        WHERE id = ${auctionId}
+        WHERE id = ${auctionId} AND "deletedAt" IS NULL
         FOR UPDATE
       `;
 

@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 
 const Dashboard = () => {
     const { user, token, login } = useContext(AuthContext);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const toast = useToast();
 
     const [activePanel, setActivePanel] = useState('dashboardHome');
     const [dashboardTab, setDashboardTab] = useState('buyer');
@@ -51,6 +54,26 @@ const Dashboard = () => {
         },
         enabled: !!user && !!token
     });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (auctionId) => {
+            const res = await api.delete(`/auctions/${auctionId}`);
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['myListings'] });
+            toast.success('Listing placed in retention (will be purged in 7 days).');
+        },
+        onError: (err) => {
+            toast.error(err.message || 'Failed to delete listing');
+        }
+    });
+
+    const handleDeleteListing = (auctionId, title) => {
+        if (window.confirm(`Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`)) {
+            deleteMutation.mutate(auctionId);
+        }
+    };
 
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
@@ -348,9 +371,20 @@ const Dashboard = () => {
                                                                     <span className={`status-badge ${a.status.toLowerCase()}`}>{a.status}</span>
                                                                 </td>
                                                                 <td>
-                                                                    <Link to={`/product/${a.id}`} className="btn btn-ghost btn-sm" aria-label={`View lot details for consignment ${a.title}`}>
-                                                                        Details
-                                                                    </Link>
+                                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                                        <Link to={`/product/${a.id}`} className="btn btn-ghost btn-sm" aria-label={`View lot details for consignment ${a.title}`}>
+                                                                            Details
+                                                                        </Link>
+                                                                        {(a.status === 'ACTIVE' || a.status === 'PENDING') && (
+                                                                            <button 
+                                                                                onClick={() => handleDeleteListing(a.id, a.title)}
+                                                                                className="btn btn-danger btn-sm"
+                                                                                style={{ padding: '4px 8px', fontSize: '10px' }}
+                                                                            >
+                                                                                Delete
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         ))

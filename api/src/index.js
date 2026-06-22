@@ -11,6 +11,7 @@ const bidRoutes     = require('./routes/bids');
 const adminRoutes   = require('./routes/admin');
 const watchlistRoutes = require('./routes/watchlist');
 const { startAuctionCloser } = require('./jobs/auctionCloser');
+const { startPurgeJob } = require('./jobs/purgeDeletedAuctions');
 
 const corsOrigin = process.env.CORS_ORIGIN || '*';
 
@@ -61,6 +62,7 @@ io.on('connection', (socket) => {
 
 // ── Cron jobs ────────────────────────────────────────────────────────────────
 startAuctionCloser(io);
+startPurgeJob();
 
 // ── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
