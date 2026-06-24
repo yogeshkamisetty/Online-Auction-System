@@ -35,6 +35,16 @@ const Navbar = () => {
         return pathname === path;
     };
 
+    const isAdminTabActive = (tabName) => {
+        const pathname = location.pathname;
+        if (!pathname.startsWith('/admin')) return false;
+        const searchParams = new URLSearchParams(location.search);
+        const currentTab = searchParams.get('tab') || 'overview';
+        return currentTab === tabName;
+    };
+
+    const showAdminNav = user && user.role === 'ADMIN' && location.pathname.startsWith('/admin');
+
     return (
         <header className="site-header">
             <div className="container navbar">
@@ -52,30 +62,46 @@ const Navbar = () => {
                     </Link>
                     
                     <nav className="nav-links" aria-label="Desktop primary navigation">
-                        <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
-                        <Link to="/browse" className={isActive('/browse') ? 'active' : ''}>Auctions</Link>
-                        
-                        {user && user.role === 'ADMIN' && (
-                            <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`}>Admin Console</Link>
-                        )}
-                        
-                        {user && (
+                        {showAdminNav ? (
                             <>
-                                <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''}>Watchlist</Link>
-                                <Link to="/sell" className={isActive('/sell') ? 'active' : ''}>Consign Asset</Link>
-                                <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
+                                <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''}>KPIs</Link>
+                                <Link to="/admin?tab=verification" className={isAdminTabActive('verification') ? 'active' : ''}>Verifications</Link>
+                                <Link to="/admin?tab=users" className={isAdminTabActive('users') ? 'active' : ''}>Users</Link>
+                                <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''}>Auctions Log</Link>
+                                <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''}>Deleted Lots</Link>
+                                <Link to="/" className="exit-admin-link">
+                                    <span className="material-symbols-outlined" style={{ fontSize: '16px', marginRight: '4px', verticalAlign: 'middle' }}>logout</span>
+                                    Exit Console
+                                </Link>
                             </>
-                        )}
-                        
-                        {!user && (
+                        ) : (
                             <>
-                                <a href="#how-it-works" onClick={(e) => {
-                                    if (location.pathname !== '/') {
-                                        e.preventDefault();
-                                        navigate('/#how-it-works');
-                                    }
-                                }}>How It Works</a>
-                                <a href="#about-us">About Us</a>
+                                <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
+                                <Link to="/browse" className={isActive('/browse') ? 'active' : ''}>Auctions</Link>
+                                
+                                {user && user.role === 'ADMIN' && (
+                                    <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`}>Admin Console</Link>
+                                )}
+                                
+                                {user && (
+                                    <>
+                                        <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''}>Watchlist</Link>
+                                        <Link to="/sell" className={isActive('/sell') ? 'active' : ''}>Consign Asset</Link>
+                                        <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
+                                    </>
+                                )}
+                                
+                                {!user && (
+                                    <>
+                                        <a href="#how-it-works" onClick={(e) => {
+                                            if (location.pathname !== '/') {
+                                                e.preventDefault();
+                                                navigate('/#how-it-works');
+                                            }
+                                        }}>How It Works</a>
+                                        <a href="#about-us">About Us</a>
+                                    </>
+                                )}
                             </>
                         )}
                     </nav>
@@ -156,33 +182,53 @@ const Navbar = () => {
             {/* Mobile Navigation Panel */}
             <div className={`mobile-nav-panel ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
                 <nav className="mobile-nav-links" aria-label="Mobile primary navigation">
-                    <Link to="/" className={isActive('/') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Home</Link>
-                    <Link to="/browse" className={isActive('/browse') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Browse Catalog</Link>
-                    
-                    {user && (
+                    {showAdminNav ? (
                         <>
-                            <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>My Watchlist</Link>
-                            <Link to="/sell" className={isActive('/sell') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Consign Asset</Link>
-                            <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard Workspace</Link>
+                            <div className="mobile-admin-header font-bold text-center py-xs mb-sm" style={{ color: 'var(--primary-container)', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)', letterSpacing: '0.05em' }}>
+                                ADMIN COMMAND CONSOLE
+                            </div>
+                            <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''} onClick={() => setMenuOpen(false)}>System KPIs</Link>
+                            <Link to="/admin?tab=verification" className={isAdminTabActive('verification') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Verification Queue</Link>
+                            <Link to="/admin?tab=users" className={isAdminTabActive('users') ? 'active' : ''} onClick={() => setMenuOpen(false)}>User Directory</Link>
+                            <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Auction Audit Log</Link>
+                            <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Deleted Lots</Link>
+                            <hr className="mobile-divider" />
+                            <Link to="/" className="exit-admin-link justify-center w-full" onClick={() => setMenuOpen(false)}>
+                                <span className="material-symbols-outlined" style={{ fontSize: '18px', marginRight: '6px' }}>logout</span>
+                                Exit Console
+                            </Link>
                         </>
-                    )}
-                    
-                    {user && user.role === 'ADMIN' && (
-                        <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Admin Panel</Link>
-                    )}
-                    
-                    {!user && (
+                    ) : (
                         <>
-                            <a href="#how-it-works" onClick={(e) => {
-                                setMenuOpen(false);
-                                if (location.pathname !== '/') {
-                                    e.preventDefault();
-                                    navigate('/#how-it-works');
-                                }
-                            }}>How It Works</a>
-                            <a href="#about-us" onClick={() => {
-                                setMenuOpen(false);
-                            }}>About Us</a>
+                            <Link to="/" className={isActive('/') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Home</Link>
+                            <Link to="/browse" className={isActive('/browse') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Browse Catalog</Link>
+                            
+                            {user && (
+                                <>
+                                    <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>My Watchlist</Link>
+                                    <Link to="/sell" className={isActive('/sell') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Consign Asset</Link>
+                                    <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard Workspace</Link>
+                                </>
+                            )}
+                            
+                            {user && user.role === 'ADMIN' && (
+                                <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Admin Panel</Link>
+                            )}
+                            
+                            {!user && (
+                                <>
+                                    <a href="#how-it-works" onClick={(e) => {
+                                        setMenuOpen(false);
+                                        if (location.pathname !== '/') {
+                                            e.preventDefault();
+                                            navigate('/#how-it-works');
+                                        }
+                                    }}>How It Works</a>
+                                    <a href="#about-us" onClick={() => {
+                                        setMenuOpen(false);
+                                    }}>About Us</a>
+                                </>
+                            )}
                         </>
                     )}
                     

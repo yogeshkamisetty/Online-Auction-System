@@ -348,6 +348,12 @@ d:/Yogesh/Coding/FSD - Auction System/
 3. **Golden Shimmer Button**: Built an animated, premium gold publish button.
 4. **CSS Upgrades**: Added ~745 lines of CSS to `styles.css` matching the dark luxury homepage aesthetic without introducing new color tokens.
 
+### Phase 6 — Navigation & Admin Workspace Upgrades (24 June 2026)
+1. **Dynamic Workspace Navbar**: Desktop and mobile menus dynamically update to display admin sub-navigation tabs (KPIs, Verifications, Users, Auctions, Deleted Lots) + Exit Console when browsing the Admin Console, matching the admin's use case.
+2. **URL-Driven Tabs**: Synced Admin Dashboard tabs to URL search query parameters (`?tab=...`), making the active panel persistent on reload/bookmark and enabling deep linking.
+3. **Luxury Branding Shimmer**: Styled the `GOLDEN HAMMER` header logo brand text with a 3D gold gradient to match the modernist royal gold aesthetic.
+4. **Global Button Styling Fix**: Extracted gold gradient and outline buttons to global `styles.css`, preventing unstyled auth buttons when users navigate away from the homepage.
+
 ---
 
 ## 9. Production-Readiness Audit

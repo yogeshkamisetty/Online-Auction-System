@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { AuthContext } from '../context/AuthContext';
@@ -13,7 +13,8 @@ const AdminDashboard = () => {
     const toast = useToast();
     const verificationDialogRef = useRef(null);
 
-    const [activeTab, setActiveTab] = useState('overview');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'overview';
     
     // Pagination & Search States
     const [userSearch, setUserSearch] = useState('');
@@ -253,6 +254,20 @@ const AdminDashboard = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [confirmation]);
 
+    useEffect(() => {
+        if (activeTab === 'verification') {
+            setVerificationFilter('PENDING');
+            setStatusFilter('');
+        } else {
+            setVerificationFilter('');
+            setStatusFilter('');
+        }
+        setUserSearch('');
+        setUserPage(0);
+        setAuctionSearch('');
+        setAuctionPage(0);
+    }, [activeTab]);
+
     return (
         <main className="container py-xl">
             {/* Header Title */}
@@ -277,34 +292,34 @@ const AdminDashboard = () => {
                     <h3 className="sidebar-title">Admin Console</h3>
                     <ul className="dashboard-menu">
                         <li>
-                            <a href="#" className={activeTab === 'overview' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('overview'); }}>
+                            <Link to="/admin?tab=overview" className={activeTab === 'overview' ? 'active' : ''}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>monitoring</span>
                                 System KPIs
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="#" className={activeTab === 'verification' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('verification'); setVerificationFilter('PENDING'); setStatusFilter(''); }}>
+                            <Link to="/admin?tab=verification" className={activeTab === 'verification' ? 'active' : ''}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>verified_user</span>
                                 Verification Queue
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="#" className={activeTab === 'users' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('users'); }}>
+                            <Link to="/admin?tab=users" className={activeTab === 'users' ? 'active' : ''}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>group</span>
                                 User Directory
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="#" className={activeTab === 'auctions' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('auctions'); setVerificationFilter(''); setStatusFilter(''); }}>
+                            <Link to="/admin?tab=auctions" className={activeTab === 'auctions' ? 'active' : ''}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>gavel</span>
                                 Auction Audit Log
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="#" className={activeTab === 'deleted' ? 'active' : ''} onClick={(e) => { e.preventDefault(); setActiveTab('deleted'); }}>
+                            <Link to="/admin?tab=deleted" className={activeTab === 'deleted' ? 'active' : ''}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
                                 Deleted Lots
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </aside>

@@ -425,8 +425,11 @@ textarea:focus-visible {
     font-size: 18px;
     font-weight: 800;
     letter-spacing: 0.03em;
-    color: #ffffff;
+    background: linear-gradient(135deg, #ffeaa7 0%, #d4af37 50%, #aa7c11 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     line-height: 1;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
 }
 
 .logo-subtitle {
@@ -586,6 +589,67 @@ textarea:focus-visible {
 .admin-nav-link {
   color: var(--primary-container) !important;
   font-weight: 700 !important;
+}
+
+/* Global Luxury Gold Theme Buttons */
+.btn-gold-gradient {
+    background: linear-gradient(135deg, #ffeaa7 0%, #d4af37 50%, #b8962e 100%);
+    color: #060709 !important;
+    font-weight: 700 !important;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+}
+
+.btn-gold-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 26px rgba(212, 175, 55, 0.45);
+}
+
+.btn-gold-outline {
+    background: transparent;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-gold-outline:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    background: rgba(212, 175, 55, 0.05) !important;
+    transform: translateY(-2px);
+}
+
+/* Exit Admin Link */
+.exit-admin-link {
+    color: var(--primary) !important;
+    font-weight: 600 !important;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(255, 212, 95, 0.3) !important;
+    border-radius: var(--rounded-md);
+    padding: var(--space-xs) var(--space-sm);
+    transition: all 0.2s;
+    background: transparent;
+    text-decoration: none;
+}
+
+.exit-admin-link:hover {
+    background-color: rgba(255, 212, 95, 0.1) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transform: translateY(-1px);
 }
 
 
