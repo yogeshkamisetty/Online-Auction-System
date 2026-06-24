@@ -61,7 +61,8 @@ The platform handles the **hard problems of real auctions**: concurrent bids tha
 - Secure checkout & settlement on won lots (buyer's premium, escrow-style flow)
 
 ### 🏷️ For Sellers
-- Create consignment listings with image upload
+- **Premium Consignment Registry** — multi-step wizard with live auction preview card
+- Create consignment listings with image upload (Cloudinary)
 - Seller dashboard: active listings, items sold, gross merchandise value (GMV)
 
 ### 🛡️ For Administrators *(dedicated console)*
