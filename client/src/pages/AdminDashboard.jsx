@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
@@ -11,6 +11,7 @@ const AdminDashboard = () => {
     const { user } = useContext(AuthContext);
     const queryClient = useQueryClient();
     const toast = useToast();
+    const verificationDialogRef = useRef(null);
 
     const [activeTab, setActiveTab] = useState('overview');
     
@@ -27,6 +28,10 @@ const AdminDashboard = () => {
     const [verificationNotes, setVerificationNotes] = useState('');
     const [verificationStatus, setVerificationStatus] = useState('VERIFIED');
     const [verifyingError, setVerifyingError] = useState('');
+
+    // Custom Confirmation Modal States
+    const [confirmation, setConfirmation] = useState(null);
+    const confirmationDialogRef = useRef(null);
 
     const limit = 20;
 
@@ -127,16 +132,28 @@ const AdminDashboard = () => {
             toast.warning('Security safeguard: you cannot suspend your own admin account.');
             return;
         }
-        const confirmMsg = `Are you sure you want to ${targetUser.suspended ? 'unsuspend' : 'suspend'} ${targetUser.name}?`;
-        if (window.confirm(confirmMsg)) {
-            suspendMutation.mutate({ userId: targetUser.id, suspended: !targetUser.suspended });
-        }
+        const isSuspending = !targetUser.suspended;
+        setConfirmation({
+            title: `${isSuspending ? 'Suspend' : 'Unsuspend'} Account`,
+            message: `Are you sure you want to ${isSuspending ? 'suspend' : 'unsuspend'} ${targetUser.name}?`,
+            actionText: isSuspending ? 'Suspend User' : 'Unsuspend User',
+            isDestructive: isSuspending,
+            onConfirm: () => {
+                suspendMutation.mutate({ userId: targetUser.id, suspended: isSuspending });
+            }
+        });
     };
 
     const handleDeleteAuction = (auctionId, title) => {
-        if (window.confirm(`Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`)) {
-            deleteMutation.mutate(auctionId);
-        }
+        setConfirmation({
+            title: 'Delete Listing',
+            message: `Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`,
+            actionText: 'Delete Listing',
+            isDestructive: true,
+            onConfirm: () => {
+                deleteMutation.mutate(auctionId);
+            }
+        });
     };
 
     const restoreMutation = useMutation({
@@ -156,9 +173,15 @@ const AdminDashboard = () => {
     });
 
     const handleRestoreAuction = (auctionId, title) => {
-        if (window.confirm(`Are you sure you want to restore "${title}" to the active catalog?`)) {
-            restoreMutation.mutate(auctionId);
-        }
+        setConfirmation({
+            title: 'Restore Listing',
+            message: `Are you sure you want to restore "${title}" to the active catalog?`,
+            actionText: 'Restore Listing',
+            isDestructive: false,
+            onConfirm: () => {
+                restoreMutation.mutate(auctionId);
+            }
+        });
     };
 
     const submitVerification = (e) => {
@@ -171,6 +194,64 @@ const AdminDashboard = () => {
             verificationNotes
         });
     };
+
+    useEffect(() => {
+        if (!verifyingAuction || !verificationDialogRef.current) return;
+
+        const dialog = verificationDialogRef.current;
+        const focusable = Array.from(dialog.querySelectorAll('button, select, textarea, input, [href], [tabindex]:not([tabindex="-1"])'));
+        focusable[0]?.focus();
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setVerifyingAuction(null);
+                return;
+            }
+            if (event.key !== 'Tab' || focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [verifyingAuction]);
+
+    useEffect(() => {
+        if (!confirmation || !confirmationDialogRef.current) return;
+
+        const dialog = confirmationDialogRef.current;
+        const focusable = Array.from(dialog.querySelectorAll('button, select, textarea, input, [href], [tabindex]:not([tabindex="-1"])'));
+        focusable[0]?.focus();
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setConfirmation(null);
+                return;
+            }
+            if (event.key !== 'Tab' || focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [confirmation]);
 
     return (
         <main className="container py-xl">
@@ -239,7 +320,7 @@ const AdminDashboard = () => {
                             ) : statsError || !stats ? (
                                 <div className="alert alert-error text-center">Failed to retrieve administration metrics.</div>
                             ) : (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div className="stack gap-lg">
                                     <div className="metrics-grid">
                                         <div className="metric-card">
                                             <p className="metric-title">Gross Volume (GMV)</p>
@@ -432,7 +513,7 @@ const AdminDashboard = () => {
                         <div className="space-y-lg">
                             <div className="panel-header-flex">
                                 <h2 className="panel-heading" style={{ margin: 0 }}>Auction Audit Log</h2>
-                                <div style={{ display: 'flex', gap: '8px' }}>
+                                <div className="row gap-xs">
                                     <select 
                                         className="form-input"
                                         value={statusFilter} 
@@ -497,7 +578,7 @@ const AdminDashboard = () => {
                                                             <span className={`status-pill ${auc.verificationStatus === 'VERIFIED' ? 'status-pill--success' : auc.verificationStatus === 'PENDING' ? 'status-pill--warning' : 'status-pill--neutral'}`}>{auc.verificationStatus}</span>
                                                         </td>
                                                         <td>
-                                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                                            <div className="row gap-xs">
                                                                 <button 
                                                                     onClick={() => { setVerifyingAuction(auc); setVerificationStatus(auc.verificationStatus); setVerificationNotes(auc.verificationNotes || ''); }}
                                                                     className="btn btn-ghost"
@@ -605,13 +686,13 @@ const AdminDashboard = () => {
             {/* Verification Stamp Modal Overlay */}
             <div className={`modal-overlay ${verifyingAuction ? 'active' : ''}`} aria-hidden={!verifyingAuction}>
                 {verifyingAuction && (
-                    <div className="detail-card glass-panel modal-content-container" style={{
+                    <div ref={verificationDialogRef} className="detail-card glass-panel modal-content-container" role="dialog" aria-modal="true" aria-labelledby="verification-dialog-title" style={{
                         width: '100%',
                         maxWidth: '500px',
                         padding: 'var(--space-lg)',
                         backgroundColor: '#ffffff'
                     }}>
-                        <h3 className="panel-heading" style={{ fontSize: '18px', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-xs)' }}>
+                        <h3 id="verification-dialog-title" className="panel-heading" style={{ fontSize: '18px', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-xs)' }}>
                             Verify: {verifyingAuction.title}
                         </h3>
                         <form onSubmit={submitVerification} className="space-y-md" style={{ marginTop: 'var(--space-md)' }}>
@@ -648,7 +729,7 @@ const AdminDashboard = () => {
                                 </div>
                             )}
 
-                            <div style={{ display: 'flex', gap: 'var(--space-base)', justifyContent: 'flex-end', paddingTop: 'var(--space-base)' }}>
+                            <div className="row gap-sm" style={{ justifyContent: 'flex-end', paddingTop: 'var(--space-base)' }}>
                                 <button 
                                     type="button" 
                                     className="btn btn-ghost" 
@@ -667,6 +748,48 @@ const AdminDashboard = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                )}
+            </div>
+
+            {/* Custom Confirmation Modal Overlay */}
+            <div className={`modal-overlay ${confirmation ? 'active' : ''}`} aria-hidden={!confirmation}>
+                {confirmation && (
+                    <div ref={confirmationDialogRef} className="detail-card glass-panel modal-content-container" role="dialog" aria-modal="true" aria-labelledby="confirmation-dialog-title" style={{
+                        width: '100%',
+                        maxWidth: '450px',
+                        padding: 'var(--space-lg)',
+                        backgroundColor: '#ffffff'
+                    }}>
+                        <h3 id="confirmation-dialog-title" className="panel-heading" style={{ fontSize: '18px', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-xs)', color: 'var(--secondary)' }}>
+                            {confirmation.title}
+                        </h3>
+                        <div style={{ marginTop: 'var(--space-md)' }}>
+                            <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginBottom: 'var(--space-lg)' }}>
+                                {confirmation.message}
+                            </p>
+                            <div style={{ display: 'flex', gap: 'var(--space-base)', justifyContent: 'flex-end' }}>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-ghost" 
+                                    onClick={() => setConfirmation(null)}
+                                    aria-label="Cancel action"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className={`btn ${confirmation.isDestructive ? 'btn-danger' : 'btn-primary'}`}
+                                    onClick={() => {
+                                        confirmation.onConfirm();
+                                        setConfirmation(null);
+                                    }}
+                                    aria-label={confirmation.actionText}
+                                >
+                                    {confirmation.actionText}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

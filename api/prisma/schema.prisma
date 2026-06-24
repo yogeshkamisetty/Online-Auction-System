@@ -58,6 +58,9 @@ model Bid {
   auctionId String
   user      User     @relation(fields: [userId], references: [id])
   auction   Auction  @relation(fields: [auctionId], references: [id])
+
+  @@index([auctionId, amount(desc)])
+  @@index([userId])
 }
 
 model Watchlist {

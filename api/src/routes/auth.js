@@ -60,6 +60,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// GET /api/auth/me — validate the current session and return fresh user data
+router.get('/me', requireAuth, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user || user.suspended) {
+      return res.status(401).json({ error: 'Session is no longer valid' });
+    }
+    res.json({ user: publicUser(user) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load current session' });
+  }
+});
+
 // PUT /api/auth/me — update own profile
 router.put('/me', requireAuth, async (req, res) => {
   try {

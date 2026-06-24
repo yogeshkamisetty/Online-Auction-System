@@ -90,7 +90,7 @@ const ProductDetails = () => {
         enabled: !!token
     });
 
-    const isWatched = watchlist.some(item => item.id === id);
+    const isWatched = watchlist.some(item => String(item.id) === String(id));
 
     const watchMutation = useMutation({
         mutationFn: async () => {
@@ -132,7 +132,7 @@ const ProductDetails = () => {
                 );
                 const newBids = bidExists ? oldProduct.bids : [
                     {
-                        id: data.id || Math.random().toString(),
+                        id: data.id || `${data.amount}-${data.createdAt}`,
                         amount: data.amount,
                         createdAt: data.createdAt,
                         user: { name: data.bidder }
@@ -307,7 +307,7 @@ const ProductDetails = () => {
                                 <>
                                     <div className="bid-labels">
                                         <label htmlFor="bid-amount-input" className="label-caps" style={{ color: 'var(--secondary)' }}>Place Ascending Bid</label>
-                                        <span className="min-increment font-mono">Min Increment: +$10</span>
+                                        <span className="min-increment font-mono">Next bid must exceed current high bid</span>
                                     </div>
 
                                     <form className="bid-form" onSubmit={handleBid} aria-label="Bid placement form">
@@ -376,7 +376,7 @@ const ProductDetails = () => {
                                         <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
                                             Winner has completed settlement. Platform commission deducted. Net earnings released: 
                                             <strong className="font-mono" style={{ color: 'var(--success)', display: 'block', fontSize: '18px', marginTop: 'var(--space-xs)' }}>
-                                                ${(Number(product.currentBid) - Number(product.platformFee)).toLocaleString('en-US')}
+                                                ${(Number(product.currentBid) - Number(product.platformFee || 0)).toLocaleString('en-US')}
                                             </strong>
                                         </p>
                                     </div>

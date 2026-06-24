@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
@@ -14,7 +14,8 @@ const MOCK_AUCTIONS = [
         bids: 42,
         timeLeft: 1 * 3600 + 23 * 60 + 45, // 01:23:45
         image: '/images/rolex_daytona_diamond.png',
-        flash: false
+        flash: false,
+        isMock: true
     },
     {
         id: 'porsche',
@@ -23,7 +24,8 @@ const MOCK_AUCTIONS = [
         bids: 38,
         timeLeft: 2 * 3600 + 10 * 60 + 22, // 02:10:22
         image: '/images/porsche_911_turbo_s.png',
-        flash: false
+        flash: false,
+        isMock: true
     },
     {
         id: 'basquiat',
@@ -32,7 +34,8 @@ const MOCK_AUCTIONS = [
         bids: 28,
         timeLeft: 45 * 60 + 31, // 00:45:31
         image: '/images/basquiat_untitled_1982.png',
-        flash: false
+        flash: false,
+        isMock: true
     },
     {
         id: 'hermes',
@@ -41,7 +44,8 @@ const MOCK_AUCTIONS = [
         bids: 19,
         timeLeft: 3 * 3600 + 15 * 60 + 10, // 03:15:10
         image: '/images/hermes_birkin_gold.png',
-        flash: false
+        flash: false,
+        isMock: true
     }
 ];
 
@@ -55,8 +59,7 @@ const Home = () => {
         minutes: '34',
         seconds: '18'
     });
-
-    const [auctions, setAuctions] = useState([]);
+    const [nowMs, setNowMs] = useState(() => Date.now());
 
     // Fetch actual products from database
     const { data: dbProducts = [] } = useQuery({
@@ -68,7 +71,7 @@ const Home = () => {
     });
 
     // Merge database active auctions with mock fallback items
-    useEffect(() => {
+    const auctions = useMemo(() => {
         const activeDbAuctions = dbProducts
             .filter(p => p.status === 'ACTIVE')
             .map(p => ({
@@ -77,6 +80,7 @@ const Home = () => {
                 currentBid: parseFloat(p.currentBid) || 0,
                 bids: p.bidCount || 0,
                 timeLeft: p.endTime ? Math.max(0, Math.floor((new Date(p.endTime) - new Date()) / 1000)) : 3600,
+                endTime: p.endTime,
                 image: p.imageUrl || '/images/logo-premium.png',
                 flash: false,
                 isDb: true
@@ -90,10 +94,9 @@ const Home = () => {
                 ...item,
                 isDb: false
             }));
-            setAuctions([...displayAuctions, ...fillItems]);
-        } else {
-            setAuctions(displayAuctions);
+            return [...displayAuctions, ...fillItems];
         }
+        return displayAuctions;
     }, [dbProducts]);
 
     // Isolated dark theme setup for the homepage
@@ -130,50 +133,12 @@ const Home = () => {
                 minutes: String(cm).padStart(2, '0'),
                 seconds: String(cs).padStart(2, '0')
             });
-
-            // Update card countdown timers
-            setAuctions(prev => prev.map(auc => ({
-                ...auc,
-                timeLeft: auc.timeLeft > 0 ? auc.timeLeft - 1 : 24 * 3600
-            })));
+            setNowMs(Date.now());
 
         }, 1000);
 
         return () => clearInterval(interval);
     }, []);
-
-    // Real-time bid simulator (every 7 seconds, a random card updates)
-    useEffect(() => {
-        const simulator = setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * auctions.length);
-            
-            setAuctions(prev => prev.map((auc, idx) => {
-                if (idx === randomIndex) {
-                    const increment = auc.currentBid > 500000 ? 10000 : 2500;
-                    return {
-                        ...auc,
-                        currentBid: auc.currentBid + increment,
-                        bids: auc.bids + 1,
-                        flash: true
-                    };
-                }
-                return auc;
-            }));
-
-            // Clear flashing state
-            setTimeout(() => {
-                setAuctions(prev => prev.map((auc, idx) => {
-                    if (idx === randomIndex) {
-                        return { ...auc, flash: false };
-                    }
-                    return auc;
-                }));
-            }, 900);
-
-        }, 7000);
-
-        return () => clearInterval(simulator);
-    }, [auctions.length]);
 
     // Format seconds into digital layout (hh:mm:ss)
     const formatTime = (totalSec) => {
@@ -427,11 +392,19 @@ const Home = () => {
                                         <img src={auc.image} alt={auc.title} />
                                     </Link>
                                     <span className="lux-card-badge-live">Live</span>
-                                    <button className="lux-card-favorite-btn" aria-label="Add to watchlist">
+                                    <Link
+                                        to={auc.isDb ? `/product/${auc.id}` : "/browse"}
+                                        className="lux-card-favorite-btn"
+                                        aria-label={auc.isDb ? `View ${auc.title} to add it to your watchlist` : 'Browse live auctions to add items to your watchlist'}
+                                    >
                                         <span className="material-symbols-outlined">favorite</span>
-                                    </button>
+                                    </Link>
                                     <span className="lux-card-timer">
-                                        {formatTime(auc.timeLeft)}
+                                        {formatTime(
+                                            auc.endTime
+                                                ? Math.max(0, Math.floor((new Date(auc.endTime).getTime() - nowMs) / 1000))
+                                                : auc.timeLeft
+                                        )}
                                     </span>
                                 </div>
                                 <div className="lux-card-content">

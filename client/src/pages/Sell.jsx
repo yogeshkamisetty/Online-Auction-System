@@ -34,38 +34,34 @@ const Sell = () => {
         const endTime = new Date();
         endTime.setDate(endTime.getDate() + parseInt(duration));
         
-        let imageUrl = '';
-        if (imageFile) {
-            const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-            const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'golden_hammer_preset';
-            
-            if (cloudName) {
-                try {
-                    const formData = new FormData();
-                    formData.append('file', imageFile);
-                    formData.append('upload_preset', uploadPreset);
-                    
-                    const uploadRes = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
-                    imageUrl = uploadRes.data.secure_url;
-                } catch (uploadErr) {
-                    console.error('[cloudinary-upload-error] falling back to mock image:', uploadErr.message);
-                }
-            }
-            
-            if (!imageUrl) {
-                const catLower = category.toLowerCase();
-                if (catLower.includes('ancient')) {
-                    imageUrl = 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?auto=format&fit=crop&w=800&q=80';
-                } else if (catLower.includes('modern')) {
-                    imageUrl = 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=800&q=80';
-                } else if (catLower.includes('luxury') || catLower.includes('accessories')) {
-                    imageUrl = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80';
-                } else if (catLower.includes('furniture')) {
-                    imageUrl = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80';
-                } else {
-                    imageUrl = 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=800&q=80';
-                }
-            }
+        if (!imageFile) {
+            setErrorMessage('Please upload an asset image before publishing.');
+            setUploading(false);
+            return;
+        }
+
+        const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+        const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'golden_hammer_preset';
+
+        if (!cloudName) {
+            setErrorMessage('Image upload is not configured. Set VITE_CLOUDINARY_CLOUD_NAME before publishing listings.');
+            setUploading(false);
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('file', imageFile);
+            formData.append('upload_preset', uploadPreset);
+
+            const uploadRes = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
+            var imageUrl = uploadRes.data.secure_url;
+        } catch (uploadErr) {
+            const text = uploadErr.response?.data?.error?.message || uploadErr.message || 'Image upload failed';
+            setErrorMessage(text);
+            toast.error(text);
+            setUploading(false);
+            return;
         }
         
         try {

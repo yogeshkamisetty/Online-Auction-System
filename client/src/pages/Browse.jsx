@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../lib/api';
 import AuctionCard from '../components/AuctionCard';
@@ -7,12 +7,14 @@ import SkeletonCard from '../components/SkeletonCard';
 
 const Browse = () => {
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchInput, setSearchInput] = useState('');
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
+    const [filterError, setFilterError] = useState('');
 
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Fetch products
     const { data: products = [], isLoading, isError } = useQuery({
@@ -32,19 +34,21 @@ const Browse = () => {
         const params = new URLSearchParams(location.search);
         const categoryParam = params.get('category');
         const searchParam = params.get('search');
+        const minParam = params.get('min');
+        const maxParam = params.get('max');
         
         let result = products;
         
         if (categoryParam) {
-            const cat = categoryParam.toLowerCase();
-            result = result.filter(p => p.category.toLowerCase() === cat);
-            setSelectedCategories([cat]);
+            const categories = categoryParam.split(',').map(value => value.toLowerCase()).filter(Boolean);
+            result = result.filter(p => categories.includes(p.category.toLowerCase()));
+            setSelectedCategories(categories);
         } else {
             setSelectedCategories([]);
         }
 
         if (searchParam) {
-            setSearchQuery(searchParam);
+            setSearchInput(searchParam);
             const queryTokens = searchParam.toLowerCase().trim().split(/\s+/).filter(t => t);
             if (queryTokens.length > 0) {
                 result = result.filter(p => {
@@ -53,46 +57,86 @@ const Browse = () => {
                 });
             }
         } else {
-            setSearchQuery('');
+            setSearchInput('');
+        }
+
+        setMinPrice(minParam || '');
+        setMaxPrice(maxParam || '');
+        const min = minParam === null ? null : Number(minParam);
+        const max = maxParam === null ? null : Number(maxParam);
+        if (min !== null && Number.isFinite(min) && min >= 0) {
+            result = result.filter(p => Number(p.currentBid) >= min);
+        }
+        if (max !== null && Number.isFinite(max) && max >= 0) {
+            result = result.filter(p => Number(p.currentBid) <= max);
         }
         
         setFilteredProducts(result);
     }, [products, location.search]);
 
+    // Debounced URL updates for search input
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            const params = new URLSearchParams(location.search);
+            const currentSearch = params.get('search') || '';
+            const targetSearch = searchInput.trim();
+            
+            if (targetSearch !== currentSearch) {
+                if (targetSearch) {
+                    params.set('search', targetSearch);
+                } else {
+                    params.delete('search');
+                }
+                navigate({ pathname: '/browse', search: params.toString() ? `?${params}` : '' }, { replace: true });
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchInput, location.search, navigate]);
+
     const handleCategoryChange = (e) => {
         const value = e.target.value.toLowerCase();
-        if (e.target.checked) {
-            setSelectedCategories([...selectedCategories, value]);
+        const nextCategories = e.target.checked
+            ? [...selectedCategories, value]
+            : selectedCategories.filter(c => c !== value);
+        setSelectedCategories(nextCategories);
+
+        // Instantly sync category change to URL
+        const params = new URLSearchParams(location.search);
+        if (nextCategories.length > 0) {
+            params.set('category', nextCategories.join(','));
         } else {
-            setSelectedCategories(selectedCategories.filter(c => c !== value));
+            params.delete('category');
         }
+        navigate({ pathname: '/browse', search: params.toString() ? `?${params}` : '' });
     };
 
     const applyFilters = () => {
-        let result = products;
+        setFilterError('');
+        const min = minPrice === '' ? null : Number(minPrice);
+        const max = maxPrice === '' ? null : Number(maxPrice);
 
-        if (searchQuery.trim()) {
-            const queryTokens = searchQuery.toLowerCase().trim().split(/\s+/).filter(t => t);
-            if (queryTokens.length > 0) {
-                result = result.filter(p => {
-                    const text = `${p.title} ${p.description} ${p.category}`.toLowerCase();
-                    return queryTokens.every(token => text.includes(token));
-                });
-            }
+        if ((min !== null && !Number.isFinite(min)) || (max !== null && !Number.isFinite(max))) {
+            setFilterError('Enter valid numeric price values.');
+            return;
+        }
+        if ((min !== null && min < 0) || (max !== null && max < 0)) {
+            setFilterError('Price filters cannot be negative.');
+            return;
+        }
+        if (min !== null && max !== null && min > max) {
+            setFilterError('Minimum price cannot be greater than maximum price.');
+            return;
         }
 
-        if (selectedCategories.length > 0) {
-            result = result.filter(p => selectedCategories.includes(p.category.toLowerCase()));
-        }
+        const params = new URLSearchParams(location.search);
+        if (min !== null) params.set('min', String(min));
+        else params.delete('min');
+        
+        if (max !== null) params.set('max', String(max));
+        else params.delete('max');
 
-        if (minPrice !== '') {
-            result = result.filter(p => parseFloat(p.currentBid) >= parseFloat(minPrice));
-        }
-        if (maxPrice !== '') {
-            result = result.filter(p => parseFloat(p.currentBid) <= parseFloat(maxPrice));
-        }
-
-        setFilteredProducts(result);
+        navigate({ pathname: '/browse', search: params.toString() ? `?${params}` : '' });
     };
 
     const categoriesList = ['Collections', 'Electronics', 'Furniture', 'Accessories', 'Vehicles', 'Ancient', 'Modern', 'Luxury'];
@@ -112,8 +156,8 @@ const Browse = () => {
                         type="text" 
                         placeholder="Search items or categories..." 
                         className="form-input"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
                         style={{ backgroundColor: 'var(--surface-container-lowest)' }}
                     />
@@ -171,8 +215,13 @@ const Browse = () => {
                     </div>
                     
                     <button className="btn btn-secondary" onClick={applyFilters} style={{ width: '100%' }}>
-                        Apply Filters
+                        Apply Price Range
                     </button>
+                    {filterError && (
+                        <div className="alert alert-error" style={{ marginTop: 'var(--space-base)' }}>
+                            {filterError}
+                        </div>
+                    )}
                 </aside>
 
                 {/* Main Content Grid */}

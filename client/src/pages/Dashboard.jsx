@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
@@ -17,6 +17,10 @@ const Dashboard = () => {
 
     const [profileForm, setProfileForm] = useState({ name: '', email: '', password: '' });
     const [profileMessage, setProfileMessage] = useState({ text: '', type: '' });
+
+    // Custom Confirmation Modal States
+    const [confirmation, setConfirmation] = useState(null);
+    const confirmationDialogRef = useRef(null);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -70,10 +74,47 @@ const Dashboard = () => {
     });
 
     const handleDeleteListing = (auctionId, title) => {
-        if (window.confirm(`Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`)) {
-            deleteMutation.mutate(auctionId);
-        }
+        setConfirmation({
+            title: 'Delete Listing',
+            message: `Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`,
+            actionText: 'Delete Listing',
+            isDestructive: true,
+            onConfirm: () => {
+                deleteMutation.mutate(auctionId);
+            }
+        });
     };
+
+    useEffect(() => {
+        if (!confirmation || !confirmationDialogRef.current) return;
+
+        const dialog = confirmationDialogRef.current;
+        const focusable = Array.from(dialog.querySelectorAll('button, select, textarea, input, [href], [tabindex]:not([tabindex="-1"])'));
+        if (focusable.length > 0) {
+            focusable[0].focus();
+        }
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setConfirmation(null);
+                return;
+            }
+            if (event.key !== 'Tab' || focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [confirmation]);
 
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
@@ -371,7 +412,7 @@ const Dashboard = () => {
                                                                     <span className={`status-badge ${a.status.toLowerCase()}`}>{a.status}</span>
                                                                 </td>
                                                                 <td>
-                                                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                                                    <div className="row gap-xs">
                                                                         <Link to={`/product/${a.id}`} className="btn btn-ghost btn-sm" aria-label={`View lot details for consignment ${a.title}`}>
                                                                             Details
                                                                         </Link>
@@ -445,6 +486,48 @@ const Dashboard = () => {
                         </div>
                     )}
                 </div>
+            </div>
+
+            {/* Custom Confirmation Modal Overlay */}
+            <div className={`modal-overlay ${confirmation ? 'active' : ''}`} aria-hidden={!confirmation}>
+                {confirmation && (
+                    <div ref={confirmationDialogRef} className="detail-card glass-panel modal-content-container" role="dialog" aria-modal="true" aria-labelledby="confirmation-dialog-title" style={{
+                        width: '100%',
+                        maxWidth: '450px',
+                        padding: 'var(--space-lg)',
+                        backgroundColor: '#ffffff'
+                    }}>
+                        <h3 id="confirmation-dialog-title" className="panel-heading" style={{ fontSize: '18px', borderBottom: '1px solid var(--outline-variant)', paddingBottom: 'var(--space-xs)', color: 'var(--secondary)' }}>
+                            {confirmation.title}
+                        </h3>
+                        <div style={{ marginTop: 'var(--space-md)' }}>
+                            <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginBottom: 'var(--space-lg)' }}>
+                                {confirmation.message}
+                            </p>
+                            <div className="row gap-sm" style={{ justifyContent: 'flex-end' }}>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-ghost" 
+                                    onClick={() => setConfirmation(null)}
+                                    aria-label="Cancel action"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="button" 
+                                    className={`btn ${confirmation.isDestructive ? 'btn-danger' : 'btn-primary'}`}
+                                    onClick={() => {
+                                        confirmation.onConfirm();
+                                        setConfirmation(null);
+                                    }}
+                                    aria-label={confirmation.actionText}
+                                >
+                                    {confirmation.actionText}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </main>
     );

@@ -7,10 +7,16 @@ import AuctionCard from '../components/AuctionCard';
 import SkeletonCard from '../components/SkeletonCard';
 
 const Watchlist = () => {
-    const { user, token } = useAuth();
+    const { token } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('title'); // title, bidAsc, bidDesc
+    const [nowMs, setNowMs] = useState(() => Date.now());
+
+    React.useEffect(() => {
+        const interval = setInterval(() => setNowMs(Date.now()), 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Redirect if not logged in
     React.useEffect(() => {
@@ -43,7 +49,7 @@ const Watchlist = () => {
     // Process statistics
     const watchingCount = watchlist.length;
     const endingToday = watchlist.filter(item => {
-        const remaining = new Date(item.endTime).getTime() - Date.now();
+        const remaining = new Date(item.endTime).getTime() - nowMs;
         return remaining > 0 && remaining < 24 * 60 * 60 * 1000;
     }).length;
     const estimatedValue = watchlist.reduce((sum, item) => sum + Number(item.currentBid || item.startPrice), 0);
@@ -171,7 +177,7 @@ const Watchlist = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
                     <div className="detail-card">
                         <h3 className="ledger-title" style={{ fontSize: '16px' }}>
-                            <span>Live Market Feed</span>
+                            <span>Watched Lots Activity</span>
                             <span className="badge-live" style={{ fontSize: '9px', padding: '2px 6px' }}>Live</span>
                         </h3>
                         {isLoading ? (
@@ -181,22 +187,45 @@ const Watchlist = () => {
                                 <div className="skeleton" style={{ width: '100%', height: '50px' }}></div>
                             </div>
                         ) : (
-                            <div className="timeline-list" style={{ marginTop: 'var(--space-md)' }} aria-label="Real-time auction activity timeline">
-                                <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
-                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--primary)' }}>Just Now</p>
-                                    <p className="body-sm" style={{ fontWeight: 600 }}>New Bid Placed</p>
-                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 402 is currently at $1,250,000</p>
-                                </div>
-                                <div className="timeline-step" style={{ paddingBottom: 'var(--space-md)' }}>
-                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>12m ago</p>
-                                    <p className="body-sm" style={{ fontWeight: 600 }}>Auction Closed</p>
-                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Lot 380 closed at $48,400</p>
-                                </div>
-                                <div className="timeline-step" style={{ paddingBottom: '0' }}>
-                                    <p className="label-caps font-mono" style={{ fontSize: '10px', color: 'var(--outline)' }}>1h ago</p>
-                                    <p className="body-sm" style={{ fontWeight: 600 }}>Asset Uploaded</p>
-                                    <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>Verified report added for Rothko Painting</p>
-                                </div>
+                            <div className="timeline-list" style={{ marginTop: 'var(--space-md)' }} aria-label="Real-time watched asset activity timeline">
+                                {watchlist.length === 0 ? (
+                                    <p className="body-sm text-muted" style={{ fontStyle: 'italic', margin: 0, padding: 'var(--space-sm) 0' }}>
+                                        No watched assets to display activity for. Add items to your watchlist to track live status updates.
+                                    </p>
+                                ) : (
+                                    watchlist.slice(0, 5).map((item, idx) => {
+                                        const isClosed = item.status === 'CLOSED' || item.status === 'SETTLED';
+                                        const isPending = item.status === 'PENDING';
+                                        const statusText = isClosed
+                                            ? `Closed at $${Number(item.currentBid || item.startPrice).toLocaleString('en-US')}`
+                                            : isPending
+                                                ? `Pending review and registry approval`
+                                                : `Currently at $${Number(item.currentBid || item.startPrice).toLocaleString('en-US')} (${item.bidCount} bid${item.bidCount === 1 ? '' : 's'})`;
+                                        const valColor = (!isClosed && !isPending) ? 'var(--primary)' : 'var(--on-surface-variant)';
+                                        
+                                        // Format time left/ended
+                                        const remaining = new Date(item.endTime).getTime() - nowMs;
+                                        const timeLabel = remaining <= 0 
+                                            ? 'Ended' 
+                                            : (() => {
+                                                const mins = Math.floor(remaining / 60000);
+                                                const hours = Math.floor(mins / 60);
+                                                const days = Math.floor(hours / 24);
+                                                if (days > 0) return `${days}d left`;
+                                                if (hours > 0) return `${hours}h left`;
+                                                if (mins > 0) return `${mins}m left`;
+                                                return '< 1m left';
+                                            })();
+
+                                        return (
+                                            <div key={item.id || idx} className="timeline-step" style={{ paddingBottom: idx === Math.min(watchlist.length, 5) - 1 ? '0' : 'var(--space-md)' }}>
+                                                <p className="label-caps font-mono" style={{ fontSize: '10px', color: valColor }}>{timeLabel}</p>
+                                                <p className="body-sm" style={{ fontWeight: 600 }}>{item.title}</p>
+                                                <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>{statusText}</p>
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
                         )}
                     </div>

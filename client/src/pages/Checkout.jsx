@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -9,11 +9,11 @@ import Spinner from '../components/Spinner';
 const Checkout = () => {
     const { id } = useParams();
     const { user, token } = useAuth();
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const toast = useToast();
     const [settledSuccess, setSettledSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [settlementSummary, setSettlementSummary] = useState(null);
 
     // Fetch auction details
     const { data: auction, isLoading, isError } = useQuery({
@@ -31,7 +31,8 @@ const Checkout = () => {
             const res = await api.patch(`/auctions/${id}/settle`);
             return res.data;
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            setSettlementSummary(data.summary || null);
             setSettledSuccess(true);
             queryClient.invalidateQueries(['auctionCheckout', id]);
             queryClient.invalidateQueries(['myBids']);
@@ -62,7 +63,11 @@ const Checkout = () => {
         );
     }
 
-    const isWinner = auction.currentBidderId === user?.id;
+    const winningBid = auction.bids?.length
+        ? [...auction.bids].sort((a, b) => Number(b.amount) - Number(a.amount))[0]
+        : null;
+    const winnerId = winningBid?.userId ?? winningBid?.user?.id;
+    const isWinner = winnerId != null && user?.id != null && String(winnerId) === String(user.id);
     const isClosed = auction.status === 'CLOSED';
     const isAlreadySettled = auction.status === 'SETTLED';
 
@@ -76,13 +81,20 @@ const Checkout = () => {
         );
     }
 
-    // Financial calculations
-    const bidAmount = Number(auction.currentBid);
-    const buyersPremium = bidAmount * 0.15;
-    const taxes = bidAmount * 0.092;
-    const shipping = 5000;
-    const totalDue = bidAmount + buyersPremium + taxes + shipping;
+    if (!isClosed && !isAlreadySettled) {
+        return (
+            <div className="container py-xl text-center">
+                <h2 className="headline-lg">Settlement Not Available</h2>
+                <p className="body-md">This auction must close before the winning bidder can settle the purchase.</p>
+                <Link to={'/product/' + id} className="btn btn-primary" style={{ marginTop: 'var(--space-md)' }}>Back to Auction</Link>
+            </div>
+        );
+    }
 
+    const invoice = settlementSummary ?? auction.settlementSummary;
+    const bidAmount = Number(invoice?.hammerPrice ?? winningBid?.amount ?? auction.currentBid ?? 0);
+    const buyersPremium = Number(invoice?.buyerPremium ?? auction.buyerPremium ?? 0);
+    const totalDue = Number(invoice?.totalPaid ?? bidAmount + buyersPremium);
     const handleConfirmPayment = () => {
         setErrorMessage('');
         settleMutation.mutate();
@@ -176,16 +188,8 @@ const Checkout = () => {
                                 <span className="font-mono checkout-invoice-price">${bidAmount.toLocaleString('en-US')}</span>
                             </div>
                             <div className="flex-between body-md">
-                                <span className="text-muted">Buyer's Premium (15%)</span>
+                                <span className="text-muted">Buyer's Premium</span>
                                 <span className="font-mono checkout-invoice-price">${buyersPremium.toLocaleString('en-US')}</span>
-                            </div>
-                            <div className="flex-between body-md">
-                                <span className="text-muted">Taxes & Duties (Est.)</span>
-                                <span className="font-mono checkout-invoice-price">${taxes.toLocaleString('en-US')}</span>
-                            </div>
-                            <div className="flex-between body-md">
-                                <span className="text-muted">White Glove Courier Shipping</span>
-                                <span className="font-mono checkout-invoice-price">${shipping.toLocaleString('en-US')}</span>
                             </div>
                         </div>
 

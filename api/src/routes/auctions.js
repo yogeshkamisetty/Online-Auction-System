@@ -4,6 +4,8 @@ const { requireAuth } = require('../middleware/auth');
 
 // Statuses visible to any public request
 const PUBLIC_STATUSES = ['ACTIVE', 'CLOSING', 'CLOSED', 'SETTLED'];
+const SELLER_COMMISSION_RATE = 0.10;
+const BUYER_PREMIUM_RATE = 0.05;
 
 // GET /api/auctions — list with optional filters
 router.get('/', async (req, res) => {
@@ -55,7 +57,13 @@ router.get('/:id', async (req, res) => {
       },
     });
     if (!auction || auction.deletedAt) return res.status(404).json({ error: 'Auction not found' });
-    res.json(auction);
+    const hammerPrice = Number(auction.currentBid || 0);
+    const buyerPremium = Number(auction.buyerPremium ?? hammerPrice * BUYER_PREMIUM_RATE);
+    const settlementSummary = ['CLOSED', 'SETTLED'].includes(auction.status)
+      ? { hammerPrice, buyerPremium, totalPaid: hammerPrice + buyerPremium }
+      : null;
+
+    res.json({ ...auction, settlementSummary });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch auction' });
@@ -112,8 +120,6 @@ router.patch('/:id/settle', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Only the winning bidder can settle this auction' });
     }
 
-    const SELLER_COMMISSION_RATE = 0.10;
-    const BUYER_PREMIUM_RATE    = 0.05;
     const hammer = parseFloat(winningBid.amount);
 
     const settled = await prisma.auction.update({

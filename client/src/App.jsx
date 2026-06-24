@@ -6,6 +6,7 @@ import Spinner from './components/Spinner';
 
 // Route Guards
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Eager — needed for first paint
 import Home from './pages/Home';
@@ -33,10 +34,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/sell" element={<Sell />} />
-          <Route path="/watchlist" element={<Watchlist />} />
-          <Route path="/checkout/:id" element={<Checkout />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/sell" element={<ProtectedRoute><Sell /></ProtectedRoute>} />
+          <Route path="/watchlist" element={<ProtectedRoute><Watchlist /></ProtectedRoute>} />
+          <Route path="/checkout/:id" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

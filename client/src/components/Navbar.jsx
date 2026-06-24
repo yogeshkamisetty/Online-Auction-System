@@ -62,7 +62,6 @@ const Navbar = () => {
                 </div>
                 
                 <div className="nav-right">
-                    {/* Mockup Search Bar */}
                     <div className="nav-search-bar">
                         <input 
                             type="text" 
@@ -71,12 +70,14 @@ const Navbar = () => {
                             onChange={(e) => setNavSearch(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <span 
+                        <button
+                            type="button"
                             className="material-symbols-outlined nav-search-bar-icon" 
                             onClick={handleSearch}
+                            aria-label="Search auctions"
                         >
                             search
-                        </span>
+                        </button>
                     </div>
 
                     {/* Icons bar */}
@@ -86,19 +87,6 @@ const Navbar = () => {
                                 favorite
                             </span>
                         </Link>
-                        
-                        <div className="nav-notification-container" aria-label="Notifications">
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                                notifications
-                            </span>
-                            <span className="nav-notification-badge">
-                                3
-                            </span>
-                        </div>
-
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px', cursor: 'pointer' }} aria-label="Toggle dark mode">
-                            dark_mode
-                        </span>
                     </div>
 
                     <div className="desktop-auth">
