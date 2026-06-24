@@ -24,7 +24,16 @@ const Navbar = () => {
         }
     };
 
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path) => {
+        const pathname = location.pathname;
+        if (path === '/') return pathname === '/';
+        if (path === '/browse') return pathname === '/browse' || pathname.startsWith('/product/');
+        if (path === '/watchlist') return pathname === '/watchlist';
+        if (path === '/sell') return pathname === '/sell';
+        if (path === '/dashboard') return pathname === '/dashboard' || pathname.startsWith('/checkout/');
+        if (path === '/admin') return pathname.startsWith('/admin');
+        return pathname === path;
+    };
 
     return (
         <header className="site-header">
@@ -44,20 +53,31 @@ const Navbar = () => {
                     
                     <nav className="nav-links" aria-label="Desktop primary navigation">
                         <Link to="/" className={isActive('/') ? 'active' : ''}>Home</Link>
-                        <div className="nav-dropdown-trigger">
-                            <Link to="/browse">Auctions</Link>
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>keyboard_arrow_down</span>
-                        </div>
-                        <Link to="/browse" className={isActive('/browse') && !location.search ? 'active' : ''}>Categories</Link>
-                        <a href="#how-it-works" onClick={(e) => {
-                            if (location.pathname !== '/') {
-                                e.preventDefault();
-                                navigate('/#how-it-works');
-                            }
-                        }}>How It Works</a>
-                        <a href="#about-us">About Us</a>
-                        <a href="#services">Services</a>
-                        <a href="#blog">Blog</a>
+                        <Link to="/browse" className={isActive('/browse') ? 'active' : ''}>Auctions</Link>
+                        
+                        {user && user.role === 'ADMIN' && (
+                            <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`}>Admin Console</Link>
+                        )}
+                        
+                        {user && (
+                            <>
+                                <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''}>Watchlist</Link>
+                                <Link to="/sell" className={isActive('/sell') ? 'active' : ''}>Consign Asset</Link>
+                                <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
+                            </>
+                        )}
+                        
+                        {!user && (
+                            <>
+                                <a href="#how-it-works" onClick={(e) => {
+                                    if (location.pathname !== '/') {
+                                        e.preventDefault();
+                                        navigate('/#how-it-works');
+                                    }
+                                }}>How It Works</a>
+                                <a href="#about-us">About Us</a>
+                            </>
+                        )}
                     </nav>
                 </div>
                 
@@ -81,25 +101,26 @@ const Navbar = () => {
                     </div>
 
                     {/* Icons bar */}
-                    <div className="nav-action-icons">
-                        <Link to="/watchlist" className="nav-icon-button" aria-label="View Watchlist">
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                                favorite
-                            </span>
-                        </Link>
-                    </div>
+                    {user && (
+                        <div className="nav-action-icons">
+                            <Link to="/watchlist" className="nav-icon-button" aria-label="View Watchlist">
+                                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                                    favorite
+                                </span>
+                            </Link>
+                        </div>
+                    )}
 
                     <div className="desktop-auth">
                         {user ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <span className="user-greeting" style={{ fontSize: '13px', fontWeight: '600', color: '#ffffff' }}>
+                            <div className="row gap-md">
+                                <span className="user-greeting font-semibold">
                                     Hi, {user.name ? user.name.split(' ')[0] : 'User'}
                                 </span>
                                 <a 
                                     href="#" 
-                                    className="btn btn-gold-outline" 
+                                    className="btn btn-gold-outline btn-nav-action" 
                                     onClick={handleLogout} 
-                                    style={{ padding: '8px 18px', fontSize: '12px', minHeight: '34px' }}
                                     aria-label="Log out of session"
                                 >
                                     Log Out
@@ -108,8 +129,7 @@ const Navbar = () => {
                         ) : (
                             <Link 
                                 to="/login" 
-                                className="btn btn-gold-gradient" 
-                                style={{ padding: '8px 20px', fontSize: '12px', minHeight: '34px', boxShadow: 'none' }}
+                                className="btn btn-gold-gradient btn-nav-action" 
                                 aria-label="Sign in to your account"
                             >
                                 Sign In
@@ -122,7 +142,6 @@ const Navbar = () => {
                         onClick={() => setMenuOpen(!menuOpen)}
                         aria-expanded={menuOpen}
                         aria-label="Toggle navigation menu"
-                        style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
                     >
                         <svg className="menu-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             {menuOpen ? (
@@ -139,23 +158,46 @@ const Navbar = () => {
                 <nav className="mobile-nav-links" aria-label="Mobile primary navigation">
                     <Link to="/" className={isActive('/') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Home</Link>
                     <Link to="/browse" className={isActive('/browse') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Browse Catalog</Link>
-                    <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>My Watchlist</Link>
-                    <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard Workspace</Link>
-                    {user && user.role === 'ADMIN' && (
-                        <Link to="/admin" className={isActive('/admin') ? 'active' : ''} onClick={() => setMenuOpen(false)} style={{ color: 'var(--primary-container)', fontWeight: '700' }}>Admin Panel</Link>
+                    
+                    {user && (
+                        <>
+                            <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>My Watchlist</Link>
+                            <Link to="/sell" className={isActive('/sell') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Consign Asset</Link>
+                            <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard Workspace</Link>
+                        </>
                     )}
+                    
+                    {user && user.role === 'ADMIN' && (
+                        <Link to="/admin" className={`admin-nav-link ${isActive('/admin') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>Admin Panel</Link>
+                    )}
+                    
+                    {!user && (
+                        <>
+                            <a href="#how-it-works" onClick={(e) => {
+                                setMenuOpen(false);
+                                if (location.pathname !== '/') {
+                                    e.preventDefault();
+                                    navigate('/#how-it-works');
+                                }
+                            }}>How It Works</a>
+                            <a href="#about-us" onClick={() => {
+                                setMenuOpen(false);
+                            }}>About Us</a>
+                        </>
+                    )}
+                    
                     <hr className="mobile-divider" />
                     {user ? (
                         <div className="mobile-auth-wrapper">
-                            <span className="user-greeting" style={{ display: 'block', marginBottom: '12px', textAlign: 'center' }}>
+                            <span className="user-greeting d-block mb-sm text-center">
                                 Logged in as: {user.name}
                             </span>
-                            <button className="btn btn-gold-outline" onClick={handleLogout} style={{ width: '100%', color: '#ffffff' }} aria-label="Log out of session">Log Out</button>
+                            <button className="btn btn-gold-outline w-full" onClick={handleLogout} aria-label="Log out of session">Log Out</button>
                         </div>
                     ) : (
-                        <div className="mobile-auth-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            <Link to="/login" className="btn btn-gold-outline" onClick={() => setMenuOpen(false)} style={{ width: '100%', color: '#ffffff' }} aria-label="Log in to your account">Log In</Link>
-                            <Link to="/register" className="btn btn-gold-gradient" onClick={() => setMenuOpen(false)} style={{ width: '100%' }} aria-label="Create a new collector account">Get Started</Link>
+                        <div className="mobile-auth-wrapper stack gap-sm">
+                            <Link to="/login" className="btn btn-gold-outline w-full" onClick={() => setMenuOpen(false)} aria-label="Log in to your account">Log In</Link>
+                            <Link to="/register" className="btn btn-gold-gradient w-full" onClick={() => setMenuOpen(false)} aria-label="Create a new collector account">Get Started</Link>
                         </div>
                     )}
                 </nav>

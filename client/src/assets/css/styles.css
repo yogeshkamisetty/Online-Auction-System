@@ -573,6 +573,22 @@ textarea:focus-visible {
     font-weight: 500;
 }
 
+.btn-nav-action {
+  padding: 8px 18px;
+  font-size: 12px;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none !important;
+}
+
+.admin-nav-link {
+  color: var(--primary-container) !important;
+  font-weight: 700 !important;
+}
+
+
 /* ==========================================================================
    FOOTER
    ========================================================================== */
