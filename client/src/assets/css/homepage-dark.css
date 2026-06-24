@@ -4,7 +4,7 @@
 
 .home-dark-theme {
     /* Theme Tokens */
-    --home-bg: #060709;
+    --home-bg: #012C4E;
     --home-card-bg: rgba(15, 17, 20, 0.7);
     --home-card-bg-hover: rgba(22, 25, 30, 0.85);
     --gold-primary: #e6c35c;
@@ -1075,14 +1075,14 @@
 /* Make navbar background blend on Homepage */
 .home-dark-theme ~ .site-header,
 body:has(.home-dark-theme) .site-header {
-    background-color: #060709 !important;
+    background-color: #012C4E !important;
     border-bottom: 1px solid rgba(212, 175, 55, 0.08) !important;
 }
 
 /* Ensure global footer is styled correctly in dark mode */
 .home-dark-theme ~ .site-footer,
 body:has(.home-dark-theme) .site-footer {
-    background-color: #060709 !important;
+    background-color: #012C4E !important;
     border-top: 1px solid rgba(212, 175, 55, 0.08) !important;
     color: var(--home-text-muted) !important;
 }
