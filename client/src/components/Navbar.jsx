@@ -182,6 +182,26 @@ const Navbar = () => {
             {/* Mobile Navigation Panel */}
             <div className={`mobile-nav-panel ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
                 <nav className="mobile-nav-links" aria-label="Mobile primary navigation">
+                    <div className="mobile-search-wrapper">
+                        <div className="nav-search-bar">
+                            <input 
+                                type="text" 
+                                placeholder="Search auctions, items, sellers..." 
+                                value={navSearch}
+                                onChange={(e) => setNavSearch(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <button
+                                type="button"
+                                className="material-symbols-outlined nav-search-bar-icon" 
+                                onClick={handleSearch}
+                                aria-label="Search auctions"
+                            >
+                                search
+                            </button>
+                        </div>
+                    </div>
+                    
                     {showAdminNav ? (
                         <>
                             <div className="mobile-admin-header font-bold text-center py-xs mb-sm" style={{ color: 'var(--primary-container)', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)', letterSpacing: '0.05em' }}>

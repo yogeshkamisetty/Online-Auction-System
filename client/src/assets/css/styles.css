@@ -1893,9 +1893,6 @@ textarea:focus-visible {
 }
 
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
     .metrics-grid {
         grid-template-columns: 1fr;
     }
@@ -2008,7 +2005,14 @@ textarea:focus-visible {
     margin: var(--space-xs) 0;
 }
 
-@media (max-width: 768px) {
+.mobile-search-wrapper {
+    display: none;
+}
+
+@media (max-width: 1080px) {
+    .nav-links {
+        display: none;
+    }
     .desktop-auth {
         display: none;
     }
@@ -2017,6 +2021,22 @@ textarea:focus-visible {
     }
     .mobile-nav-panel {
         display: block;
+    }
+}
+
+@media (max-width: 640px) {
+    .site-header .nav-search-bar,
+    .site-header .nav-action-icons {
+        display: none !important;
+    }
+    
+    .mobile-search-wrapper {
+        display: block !important;
+    }
+    
+    .mobile-search-wrapper .nav-search-bar {
+        width: 100% !important;
+        margin-bottom: var(--space-sm);
     }
 }
 
