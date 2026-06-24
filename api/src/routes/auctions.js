@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const prisma = require('../lib/prisma');
 const { requireAuth } = require('../middleware/auth');
+const { listingRateLimiter } = require('../middleware/rateLimit');
 
 // Statuses visible to any public request
 const PUBLIC_STATUSES = ['ACTIVE', 'CLOSING', 'CLOSED', 'SETTLED'];
@@ -71,11 +72,41 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/auctions — create listing (auth required)
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, listingRateLimiter, async (req, res) => {
   try {
     const { title, description, category, condition, imageUrl, startPrice, endTime } = req.body;
     if (!title || !description || !category || !startPrice || !endTime) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Starting price validation
+    const parsedPrice = parseFloat(startPrice);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return res.status(400).json({ error: 'Starting price must be a positive number' });
+    }
+
+    // End time validation
+    const parsedEndTime = new Date(endTime);
+    if (isNaN(parsedEndTime.getTime()) || parsedEndTime <= new Date(Date.now() + 5 * 60 * 1000)) {
+      return res.status(400).json({ error: 'Bidding end time must be at least 5 minutes in the future' });
+    }
+
+    // Image URL safety validation
+    if (imageUrl) {
+      try {
+        const parsedUrl = new URL(imageUrl);
+        if (parsedUrl.hostname !== 'res.cloudinary.com') {
+          return res.status(400).json({ error: 'Image must be uploaded to the trusted platform storage (Cloudinary)' });
+        }
+        const secureExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
+        const pathname = parsedUrl.pathname.toLowerCase();
+        const hasSecureExtension = secureExtensions.some(ext => pathname.endsWith(ext));
+        if (!hasSecureExtension) {
+          return res.status(400).json({ error: 'Image file type is not supported. Use JPG, JPEG, PNG, WEBP, or AVIF' });
+        }
+      } catch (urlErr) {
+        return res.status(400).json({ error: 'Provided image URL is invalid' });
+      }
     }
 
     const auction = await prisma.auction.create({
@@ -85,9 +116,9 @@ router.post('/', requireAuth, async (req, res) => {
         category,
         condition: condition || null,
         imageUrl: imageUrl || '',
-        startPrice: parseFloat(startPrice),
-        currentBid: parseFloat(startPrice),
-        endTime: new Date(endTime),
+        startPrice: parsedPrice,
+        currentBid: parsedPrice,
+        endTime: parsedEndTime,
         status: 'ACTIVE',
         sellerId: req.user.userId,
       },
