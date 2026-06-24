@@ -353,6 +353,7 @@ d:/Yogesh/Coding/FSD - Auction System/
 2. **URL-Driven Tabs**: Synced Admin Dashboard tabs to URL search query parameters (`?tab=...`), making the active panel persistent on reload/bookmark and enabling deep linking.
 3. **Luxury Branding Shimmer**: Styled the `GOLDEN HAMMER` header logo brand text with a 3D gold gradient to match the modernist royal gold aesthetic.
 4. **Global Button Styling Fix**: Extracted gold gradient and outline buttons to global `styles.css`, preventing unstyled auth buttons when users navigate away from the homepage.
+5. **Harmonious Theme Backgrounds**: Transitioned the custom dark backgrounds on the Homepage and Sell page from pitch-black (`#060709`) to deep midnight blue (`#012C4E`), establishing consistent branding across all platform pages.
 
 ---
 
