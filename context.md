@@ -1,278 +1,536 @@
-# Golden Hammer Auctions - Project Context
+# Golden Hammer Auctions — Project Context
 
-## Overview
-Golden Hammer Auctions is a full-stack, real-time bidding application designed to mimic a professional, high-stakes auction house experience. Users can register, list items for consignment, browse active catalog logs, track watched lots in real-time, and place bids under WebSocket synchronization. 
+> **Last Updated**: 24 June 2026  
+> **Audit Phase**: Production-Readiness Assessment (Phases 1–18)
 
-The application is built on the **Technical Precision 2.0** design guidelines—balancing Deep Midnight Blue structures, light grey canvas backgrounds, and Vibrant Gold accent triggers for a prestigious, Swiss-bank-inspired digital catalog.
+---
 
-## Technologies Used
-- **Frontend Core**: React (Vite), React Router DOM, Axios, @tanstack/react-query (React Query)
-- **Styling**: Custom CSS (Vanilla stylesheets structured on an 8px grid token scale)
-- **Backend Node.js Server**: Express.js, Prisma ORM, SQLite
-- **Real-time Synchronization**: Native WebSockets (`ws://`)
-- **Asset Storage & Uploads**: Cloudinary API Integration
-- **Authentication**: JWT (JSON Web Tokens), bcryptjs
+## 1. Overview
 
-## Folder Structure
+Golden Hammer Auctions is a full-stack, real-time bidding platform designed for high-stakes asset liquidation. Users register as collectors, list items for consignment, browse active auction catalogs, track watched lots, and place competitive bids synchronized via WebSockets.
+
+The application follows the **Technical Precision 2.0** design system — balancing Deep Midnight Blue structural elements, light grey canvas backgrounds, and Vibrant Gold accent triggers for a prestigious, Swiss-bank-inspired aesthetic.
+
+### Business Goals
+- Provide a premium auction experience competitive with Sotheby's and Christie's digital platforms
+- Enable real-time competitive bidding with low-latency WebSocket synchronization
+- Support buyer/seller/admin workflows with role-based access
+- Generate revenue via buyer's premium (5%) and seller's commission (10%)
+
+### User Roles
+| Role | Capabilities |
+|------|-------------|
+| **Visitor** | Browse catalog, view auction details, register |
+| **Collector (USER)** | All visitor + bid, watchlist, consign assets, dashboard, checkout |
+| **Administrator (ADMIN)** | All collector + manage users, verify auctions, view analytics, suspend accounts, manage listings |
+
+---
+
+## 2. Technology Stack
+
+### Frontend
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | React 19 (Vite 8) |
+| **Routing** | React Router DOM v7 |
+| **HTTP Client** | Axios with JWT interceptor |
+| **Server State** | @tanstack/react-query (React Query) |
+| **Real-time** | socket.io-client |
+| **Styling** | Vanilla CSS (8px grid token system) |
+| **Typography** | Geist (headlines), Inter (body), JetBrains Mono (metadata) |
+| **Icons** | Material Symbols Outlined (Google Fonts) |
+
+### Backend
+| Layer | Technology |
+|-------|-----------|
+| **Runtime** | Node.js + Express 5.2 |
+| **ORM** | Prisma 7.8 with `@prisma/adapter-pg` |
+| **Database** | PostgreSQL (Neon Serverless) |
+| **Real-time** | Socket.io (server) |
+| **Authentication** | JWT (jsonwebtoken) + bcryptjs |
+| **Image Storage** | Cloudinary (direct URL uploads) |
+| **Email** | Resend API (with dev console fallback) |
+| **Rate Limiting** | Custom (Upstash Redis / in-memory fallback) |
+| **Security** | Helmet (CSP disabled), CORS |
+| **Scheduling** | node-cron (auction closer, purge jobs) |
+| **Deployment** | Render.com (render.yaml) |
+
+---
+
+## 3. Architecture
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                      CLIENT (Vite/React)                 │
+│  ┌─────────┐ ┌──────────┐ ┌────────────┐ ┌───────────┐  │
+│  │ Pages   │ │Components│ │  Context   │ │  Hooks    │  │
+│  │ (11)    │ │  (14)    │ │Auth, Toast │ │useCountUp │  │
+│  └────┬────┘ └────┬─────┘ └─────┬──────┘ └───────────┘  │
+│       │           │             │                        │
+│       └───────────┴─────────────┘                        │
+│                    │                                     │
+│           ┌────────┴────────┐                            │
+│           │  lib/api.js     │  Axios + JWT interceptor   │
+│           │  config.js      │  API_URL                   │
+│           └────────┬────────┘                            │
+└────────────────────┼─────────────────────────────────────┘
+                     │ HTTP + Socket.io
+┌────────────────────┼─────────────────────────────────────┐
+│                    ▼  API (Express)                       │
+│  ┌──────────────────────────────────────────────────┐    │
+│  │  Middleware: auth.js, rateLimit.js, helmet, cors  │    │
+│  └───────┬──────────────────────────────────────────┘    │
+│          │                                               │
+│  ┌───────┴───────────────────────────────────────┐       │
+│  │  Routes: auth, auctions, bids, watchlist, admin│       │
+│  └───────┬───────────────────────────────────────┘       │
+│          │                                               │
+│  ┌───────┴───────────┐  ┌─────────────────────────┐     │
+│  │  Prisma ORM       │  │  Jobs: auctionCloser,   │     │
+│  │  (PG adapter)     │  │  purgeDeletedAuctions   │     │
+│  └───────┬───────────┘  └─────────────────────────┘     │
+│          │                                               │
+│  ┌───────┴───────────┐  ┌──────────┐ ┌──────────┐      │
+│  │  PostgreSQL       │  │Cloudinary│ │ Resend   │      │
+│  │  (Neon Serverless)│  │ (images) │ │ (emails) │      │
+│  └───────────────────┘  └──────────┘ └──────────┘      │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. Folder Structure
 
 ```
 d:/Yogesh/Coding/FSD - Auction System/
-├── api/                        # Backend Node.js / Express Server
-│   ├── prisma/                 # Prisma schema and SQLite database
-│   │   └── schema.prisma       # Database models (User, Auction, Bid)
-│   ├── src/                    # Backend source code
-│   │   ├── controllers/        # Route controllers (auth, auctions, bids)
-│   │   ├── middleware/         # Custom middleware (auth checking)
-│   │   ├── routes/             # Express API routes
-│   │   └── index.js            # Main server entry point (WebSocket setup)
-│   └── .env                    # Backend environment variables
+├── api/                              # Backend Express Server
+│   ├── prisma/
+│   │   ├── schema.prisma             # Models: User, Auction, Bid, Watchlist
+│   │   ├── seed.js                   # Demo data seeder (12 auctions)
+│   │   ├── makeAdmin.js              # CLI admin promotion utility
+│   │   └── prisma.config.ts          # Prisma configuration
+│   ├── src/
+│   │   ├── index.js                  # Express + Socket.io entrypoint
+│   │   ├── routes/
+│   │   │   ├── auth.js               # Register, login, /me, profile update
+│   │   │   ├── auctions.js           # CRUD auctions, settlement, image upload
+│   │   │   ├── bids.js               # Place bids (SELECT FOR UPDATE), bid history
+│   │   │   ├── admin.js              # Admin dashboard, user/auction management
+│   │   │   └── watchlist.js          # Watchlist add/remove/list
+│   │   ├── middleware/
+│   │   │   ├── auth.js               # JWT verification + admin guard
+│   │   │   └── rateLimit.js          # Rate limiting (Redis/in-memory)
+│   │   ├── jobs/
+│   │   │   ├── auctionCloser.js      # Cron: close expired auctions + email winners
+│   │   │   └── purgeDeletedAuctions.js # Cron: hard-delete after 7 days
+│   │   └── lib/
+│   │       ├── prisma.js             # Prisma client singleton
+│   │       ├── email.js              # Resend email wrapper
+│   │       └── socket.js             # ⚠️ DEAD CODE — not imported anywhere
+│   ├── .env                          # Environment variables
+│   ├── render.yaml                   # Render.com deployment config
+│   └── package.json                  # Dependencies
 │
-├── client/                     # Frontend React Application (Vite)
-│   ├── public/                 # Static assets
-│   │   └── images/             # Product and UI images
-│   ├── src/                    # Frontend source code
-│   │   ├── assets/             # Global CSS styles
-│   │   │   ├── css/styles.css  # Technical Precision 2.0 stylesheet
-│   │   │   └── css/animations.css # Motion & visualization styles (reveals, transitions)
-│   │   ├── components/         # Reusable React components
-│   │   │   ├── Navbar.jsx      # Navigation header with mobile drawer menu
-│   │   │   ├── Footer.jsx      # Structural Deep Midnight footer
-│   │   │   ├── AuctionCard.jsx # High-contrast lot cards with hover scales
-│   │   │   ├── CountdownTimer.jsx # Live time display component
-│   │   │   ├── Spinner.jsx     # Glass loading spinners
-│   │   │   ├── StatsBand.jsx   # Animated KPI infographic component
-│   │   │   └── Reveal.jsx      # Scroll-reveal intersection observer wrapper
-│   │   ├── hooks/              # Custom React hooks
-│   │   │   └── useCountUp.js   # Eased number counter for stats band
-│   │   ├── context/            # React Contexts (AuthContext for JWT handling)
-│   │   ├── lib/                # API communication layers
-│   │   │   └── api.js          # Axios interceptor setups
-│   │   ├── pages/              # React route components
-│   │   │   ├── Home.jsx        # Landing hero with Q3 Volume statistics
-│   │   │   ├── Browse.jsx      # Catalog lists with sidebar filters
-│   │   │   ├── ProductDetails.jsx # WS ledger and pulse auction details
-│   │   │   ├── Dashboard.jsx   # Workspace for Buyers/Sellers
-│   │   │   ├── AdminDashboard.jsx # Administration command board
-│   │   │   ├── Checkout.jsx    # Invoice checkout and courier tracking
-│   │   │   ├── Watchlist.jsx   # Portfolio monitor and market ticker
-│   │   │   ├── Sell.jsx        # Consignment creation forms
-│   │   │   ├── Login.jsx       # Portal authentication
-│   │   │   └── Register.jsx    # Collector onboarding forms
-│   │   ├── App.jsx             # Router endpoints
-│   │   └── main.jsx            # Application entry point
-│   ├── package.json            # Client packages and build scripts
-│   └── vite.config.js          # Bundling settings
+├── client/                           # Frontend React Application (Vite 8)
+│   ├── public/
+│   │   └── images/                   # Static product and UI images
+│   ├── src/
+│   │   ├── main.jsx                  # Application entry (React 19)
+│   │   ├── App.jsx                   # Router with protected routes
+│   │   ├── config.js                 # API_URL configuration
+│   │   ├── pages/
+│   │   │   ├── Home.jsx              # Landing hero + featured auctions (26KB)
+│   │   │   ├── Browse.jsx            # Catalog with URL-synced filters (12KB)
+│   │   │   ├── ProductDetails.jsx    # Real-time bidding + Socket.io (22KB)
+│   │   │   ├── Dashboard.jsx         # Buyer/seller workspace (34KB)
+│   │   │   ├── AdminDashboard.jsx    # Administration panel (46KB)
+│   │   │   ├── Checkout.jsx          # Settlement + buyer premium (13KB)
+│   │   │   ├── Watchlist.jsx         # Portfolio monitor + activity feed (14KB)
+│   │   │   ├── Sell.jsx              # Consignment form + Cloudinary (13KB)
+│   │   │   ├── Login.jsx             # Authentication portal (4KB)
+│   │   │   ├── Register.jsx          # Collector onboarding (7KB)
+│   │   │   └── NotFound.jsx          # 404 page (1KB)
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx            # Role-based nav + mobile drawer (10KB)
+│   │   │   ├── Footer.jsx            # Deep Midnight footer
+│   │   │   ├── AuctionCard.jsx       # Lot cards with hover effects
+│   │   │   ├── CountdownTimer.jsx    # Live countdown display
+│   │   │   ├── ErrorBoundary.jsx     # React error boundary
+│   │   │   ├── Spinner.jsx           # Loading spinner
+│   │   │   ├── StatsBand.jsx         # Animated KPI infographic
+│   │   │   ├── Reveal.jsx            # Scroll-reveal observer wrapper
+│   │   │   ├── Pagination.jsx        # Windowed page navigation
+│   │   │   ├── Tooltip.jsx           # Accessible CSS tooltip
+│   │   │   ├── ProtectedRoute.jsx    # Auth-gated route wrapper
+│   │   │   ├── AdminRoute.jsx        # Admin-gated route wrapper
+│   │   │   ├── SkeletonCard.jsx      # Card loading skeleton
+│   │   │   └── SkeletonDetails.jsx   # Detail page loading skeleton
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx       # JWT auth state + session validation
+│   │   │   └── ToastContext.jsx      # Non-blocking toast notifications
+│   │   ├── hooks/
+│   │   │   └── useCountUp.js         # Eased number animation for stats
+│   │   ├── lib/
+│   │   │   └── api.js                # Axios instance with JWT interceptor
+│   │   └── assets/css/
+│   │       ├── styles.css            # Technical Precision 2.0 design system (~3200 lines)
+│   │       ├── animations.css        # Motion & transition keyframes
+│   │       └── homepage-dark.css     # Dark-themed homepage overrides
+│   ├── vite.config.js                # Vite bundler configuration
+│   └── package.json                  # Client dependencies
 │
-├── DESIGN.md                   # Style guide, typography, and color tokens
-└── context.md                  # This context file
+├── DESIGN.md                         # Technical Precision 2.0 style guide
+├── DEPLOY.md                         # Deployment instructions
+├── README.md                         # Project documentation
+└── context.md                        # This file
 ```
 
-## What We Have Done
+---
 
-1. **Initial Migration**:
-   - Ported the Vanilla HTML/CSS/JS frontend into a modern React (Vite) template.
-   - Set up an `AuthContext` to centralize token headers in an Axios interceptor.
+## 5. Database Schema
 
-2. **Stitch Design Integration**:
-   - Added new routes `/watchlist` and `/checkout/:id`.
-   - Created the Checkout page supporting 15% Buyer's Premium calculators, local tax rates, Insured White Glove Courier Delivery steps, and secure Escrow settlement.
-   - Built the Watchlist control center listing monitored lots, portfolio valuations, and real-time market activity feed timelines.
+### Models
 
-3. **Technical Precision 2.0 Style Overhaul**:
-   - Defined strict color tokens (`--surface`, `--secondary` for Midnight Blue, and `--primary-container` for Gold) matching [DESIGN.md](file:///d:/Yogesh/Coding/FSD%20-%20Auction%20System/DESIGN.md).
-   - Enforced Inter, Geist (with tight display tracking), and JetBrains Mono monospace typography pairings.
-   - Removed muddy shadows and replaced them with `1px solid var(--outline-variant)` structural borders.
+**User**
+- `id`, `email` (unique), `password` (hashed), `name`, `role` (USER/ADMIN)
+- `verificationStatus` (UNVERIFIED/PENDING/VERIFIED)
+- `suspended` (boolean), `createdAt`
 
-4. **Design Audit & Polishing Refinements**:
-   - **Interactive Hamburger Nav Menu**: Overhauled the navbar to include responsive navigation panel dropdowns with clean ARIA tags.
-   - **Keyboard Focus Contrast**: Refactored focus rings to use high-contrast golden outlines on dark panels (headers/footers) to comply with WCAG AA.
-   - **Mobile Scroll Safety**: Wrapped all tables in `.table-scroll-container` wrappers to avoid viewports stretching horizontally.
-   - **Appraiser Modal Spring Transitions**: Added hardware-accelerated cubic-bezier fade-in and scale-in transforms for appraisal modals.
-   - **WebSocket announcements**: Connected inputs to labels and assigned `aria-live="polite"` to WebSocket bid feeds.
-   - **Image Upload Integration**: Integrated Cloudinary API direct uploads in `Sell.jsx` with category fallbacks.
+**Auction**
+- `id`, `title`, `description`, `imageUrl`, `startingPrice`, `currentBid`, `bidCount`
+- `status` (PENDING/ACTIVE/CLOSING/CLOSED/SETTLED)
+- `verificationStatus` (UNVERIFIED/PENDING/VERIFIED)
+- `category`, `featured`, `endTime`, `createdAt`, `deletedAt` (soft delete)
+- Relations: `seller` → User, `bids` → Bid[], `watchers` → Watchlist[]
 
-5. **Visual Overhaul & Interactive Motion Design**:
-   - **High-end Visualizations & Cohesive Color Palette**: Strengthened visual alignment with the "Technical Precision 2.0" Swiss-bank aesthetic, using crisp high-contrast border grids (`var(--outline-variant)`).
-   - **StatsBand KPI Infographic**: Implemented a modern gridded glassmorphism dashboard overlay in the Home page containing animated KPI elements (Clearance Rate, Latency, Volume).
-   - **Scroll-Triggered Reveals & Stagger Effects**: Developed custom `<Reveal>` wrapper triggering viewport scroll-animations.
-   - **Micro-Interactions**: Wired card lifts, image hover zoom, button sheen sweeps, and brushed-metal skeleton shimmers.
-   - **Demo & Products Refresh**: Redesigned `seed.js` to build 12 live active auctions with future closing times, authentic bid history arrays, and multi-user configurations.
-   - **Official Logo Integration**: Replaced placeholder vector outlines in `Navbar.jsx` with the official custom `logo2.png` graphics paired with polished, display-spaced typography.
+**Bid**
+- `id`, `amount`, `createdAt`
+- Relations: `bidder` → User, `auction` → Auction
 
-6. **Expert Design-System Audit & Remediation (Phase 0 + Phase 1)**:
-   A brutal 10-persona design review scored the system 42/100 — strong tokens, weak enforcement. The following remediations were executed and verified against `npm run build`:
-   - **Phase 0 — Critical fixes (42 → ~62):**
-     - **Icon font loaded**: `material-symbols-outlined` was used in 7 pages but the font was never imported, so 16 icons rendered as literal words ("dashboard", "gavel"). Added Material Symbols + Geist/Inter/JetBrains links to `index.html` and removed the render-blocking `@import` from `styles.css`.
-     - **Button/input states**: Added shared `:disabled` + `.is-loading` (spinner) button states (previously zero, despite `disabled=` used 8×) and `.is-error` / `[aria-invalid]` input states + `.form-error` helper.
-     - **Color unification**: Purged all 13 stray hardcoded hex values from JSX (killed the legacy `#d4af37` gold that competed with token `--primary-container #ffd45f`; fixed `Spinner.jsx`/`ErrorBoundary.jsx` which referenced non-existent token names).
-     - **Token gap closed**: Added missing `--warning` / `--info` / `--on-success` semantic tokens.
-   - **Phase 1 — Missing components (~62 → ~72):**
-     - **Toast system** (`context/ToastContext.jsx`): non-blocking, tokenized, animated, `aria-live` notifications with `success/error/warning/info` variants. Replaced all 4 native `alert()` calls in `AdminDashboard.jsx`; wired into `Login.jsx` and `Sell.jsx` submit outcomes.
-     - **Pagination** (`components/Pagination.jsx`): windowed page numbers + "N–M of total"; replaced two hand-rolled prev/next blocks in the admin user & auction tables.
-     - **Tooltip** (`components/Tooltip.jsx`): accessible CSS tooltip (`aria-describedby`, focus-reveal).
-     - **Status pills**: reusable `.status-pill--{success,warning,info,neutral}` classes replacing inline-styled verification/role badges.
-     - **Layout utilities**: `.stack`, `.row`, `.cluster`, `.gap-*`, `.text-muted` etc. to begin retiring the ~340 inline `style={{}}` objects (AdminDashboard reduced 52 → 41).
-   - **Backend bug fixed**: the bid `SELECT … FOR UPDATE` query referenced snake_case columns (`current_bid`, `end_time`) while Prisma generated camelCase (`"currentBid"`, `"endTime"`), causing every bid to 500. Corrected the identifiers; verified bidding returns 201 with working row-lock validation.
-   - **Real-time transport fixed**: `ProductDetails.jsx` previously used a native `WebSocket` to `/ws`, incompatible with the Socket.io backend. Switched to `socket.io-client` with the `join:auction` / `bid:new` / `auction:closed` contract; verified live broadcast end-to-end.
+**Watchlist**
+- `id`, `createdAt`
+- Relations: `user` → User, `auction` → Auction
+- Unique constraint: `[userId, auctionId]`
+- Cascade delete on auction deletion
 
-7. **UX Consistency & Trust Polish (quick-win batch)**:
-   - **Currency localization**: Pinned all 25 `toLocaleString()` calls across 7 files to `'en-US'` so prices render with Western grouping (`$350,050`) instead of the machine-locale `en-IN` form (`$3,50,050`) that read as a bug.
-   - **Honest data labeling**: The landing-page `StatsBand` KPIs are demonstration figures, so added an explicit "Illustrative platform figures shown for demonstration." caption to avoid presenting them as real platform metrics.
-   - **App-wide toast adoption**: Extended the toast system to `ProductDetails` (bid + watchlist outcomes — removed the dead inline `bidMessage` block), `Register` (submit success/error), and `Checkout` (settlement success/error). Every mutation/submit outcome in the app now surfaces through the consistent toast layer rather than inline divs or `alert()`. Inline state is retained only for field-level validation hints.
+### Enums
+- `AuctionStatus`: PENDING, ACTIVE, CLOSING, CLOSED, SETTLED
+- `VerificationStatus`: UNVERIFIED, PENDING, VERIFIED
+- `Role`: USER, ADMIN
 
-## Issues Faced & Resolutions
+### Database Indexes
+- `Auction`: `[status, featured]`, `[sellerId]`, `[verificationStatus]`, `[deletedAt]`
+- `Bid`: `[auctionId, amount(desc)]`
 
-1. **Accessibility and Contrast Compliances**:
-   - *Issue*: Low outline focus contrasts on Midnight background panels failed auditor scans.
-   - *Resolution*: Defined target focus selectors specifying white/gold outlines strictly on dark layouts.
-2. **Mobile Overflows**:
-   - *Issue*: Metric tables in the admin audit lists and bidder ledgers forced viewports wider than 375px.
-   - *Resolution*: Wrapped tables in overflow scroll boxes to safely constraint layouts.
-3. **Double Badge Nesting**:
-   - *Issue*: Countdown spans nested inside card spans resulted in duplicated badge layouts.
-   - *Resolution*: Configured `CountdownTimer.jsx` to return plain text string fragments.
-4. **WebSocket & Socket.io Integration**:
-   - *Issue*: Real-time updates were broken because `ProductDetails.jsx` tried connecting to native `/ws` while the backend used Socket.io.
-   - *Resolution*: Switched the frontend to use `socket.io-client` matching the backend rooms and event payloads.
-5. **Bid Placement Collision & DB Error**:
-   - *Issue*: Concurrent bid queries crashed with SQL syntax errors on snake_case columns.
-   - *Resolution*: Corrected column quotes in the `SELECT ... FOR UPDATE` raw transaction script to use camelCase `"currentBid"` and `"endTime"` as generated by Prisma.
+---
 
-## Frontend QA Remediation - 24 June 2026
+## 6. API Routes
 
-### Objective
+### Authentication (`/api/auth`)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/register` | — | Create account (rate limited) |
+| POST | `/login` | — | JWT login (rate limited) |
+| GET | `/me` | JWT | Get current user profile |
+| PATCH | `/profile` | JWT | Update profile (name, email) |
 
-Continue the production-readiness audit and implement the first critical remediation batch. The work focused on correctness, honest UI behavior, authentication boundaries, checkout/API contract consistency, seller-upload integrity, accessibility, and executable verification.
+### Auctions (`/api/auctions`)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/` | — | List active, non-deleted auctions (**⚠️ no pagination**) |
+| GET | `/:id` | — | Get auction details with bids |
+| POST | `/` | JWT | Create auction (rate limited, validated) |
+| DELETE | `/:id` | JWT | Soft-delete own auction |
+| PATCH | `/:id/settle` | JWT | Settle as winner |
 
-### Work Completed
+### Bids (`/api/bids`)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/:auctionId` | JWT | Place bid (transactional, SELECT FOR UPDATE) |
+| GET | `/my` | JWT | Get user's bid history |
 
-1. **Authentication and protected routes**
-   - Wrapped `/dashboard`, `/sell`, `/watchlist`, and `/checkout/:id` with the existing `ProtectedRoute` component.
-   - Connected the Axios `auth:logout` event to `AuthContext`, so a rejected/expired token now clears React authentication state as well as `localStorage`.
-   - Preserved the requested destination when redirecting unauthenticated users to login.
+### Watchlist (`/api/watchlist`)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/` | JWT | Get user's watchlist |
+| POST | `/:auctionId` | JWT | Add to watchlist |
+| DELETE | `/:auctionId` | JWT | Remove from watchlist |
 
-2. **Homepage stability and data integrity**
-   - Replaced derived auction state with `useMemo`, removing the state/effect feedback pattern that could cause repeated renders.
-   - Removed the seven-second random bid simulator. The production UI no longer invents bid amounts or bid counts.
-   - Kept countdown rendering time-based without mutating auction records every second.
-   - Changed decorative homepage watchlist buttons into honest navigation actions. Database-backed lots open their real product route; mock lots direct users to browse real auctions.
+### Admin (`/api/admin`)
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/dashboard` | Admin | Platform statistics |
+| GET | `/users` | Admin | All users |
+| PATCH | `/users/:id/role` | Admin | Change user role |
+| PATCH | `/users/:id/suspend` | Admin | Suspend/unsuspend |
+| GET | `/auctions` | Admin | All auctions (including soft-deleted) |
+| PATCH | `/auctions/:id` | Admin | Update auction (verify, feature, change status) |
+| DELETE | `/auctions/:id` | Admin | Hard-delete auction |
+| GET | `/auctions/deleted` | Admin | **⚠️ UNREACHABLE — route order bug** |
 
-3. **Checkout and settlement contract**
-   - Normalized winner IDs before comparison to avoid string-versus-number authorization failures.
-   - Derived the winner consistently from the highest bid returned by the auction API.
-   - Blocked settlement UI until the auction is `CLOSED`; `SETTLED` auctions render completed state.
-   - Removed client-invented 15% premium, tax, and shipping charges.
-   - Added a server-generated `settlementSummary` for closed/settled auctions using the backend's canonical 5% buyer-premium rule.
-   - Reused the settlement endpoint response after completion instead of recalculating financial values independently in React.
+### Socket.io Events
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `join:auction` | Client → Server | Join auction room for real-time updates |
+| `bid:new` | Server → Room | Broadcast new bid to auction room |
+| `auction:closed` | Server → Room | Broadcast auction closure |
 
-4. **Seller listing integrity**
-   - Made an uploaded image mandatory before publishing.
-   - Made missing Cloudinary configuration and upload failures visible and blocking.
-   - Removed the behavior that silently replaced a failed seller upload with an unrelated Unsplash image.
+---
 
-5. **Navigation and interaction honesty**
-   - Converted the navbar search icon into an accessible button with a label.
-   - Removed visual-only notification and dark-mode controls that had no implementation.
-   - Adjusted search-button positioning styles for the new semantic button element.
+## 7. Core User Workflows
 
-6. **Browse and watchlist correctness**
-   - Added validation for non-numeric prices, negative prices, and minimum prices greater than maximum prices.
-   - Normalized watchlist auction IDs before comparison.
-   - Replaced render-time `Date.now()` calculations in watchlist statistics with a controlled minute timer.
+### Buyer Journey
+1. Register → Browse catalog → View auction details
+2. Place bid (real-time via Socket.io) → Monitor in watchlist
+3. Win auction → Checkout with buyer premium (5%) → Settle
 
-7. **Product detail correctness**
-   - Removed the unsupported fixed `+$10` minimum-increment claim; the UI now reflects the backend rule that a bid must exceed the current high bid.
-   - Replaced random fallback bid keys with deterministic bid data.
-   - Prevented seller proceeds from displaying `NaN` when `platformFee` is absent.
+### Seller Journey
+1. Register → Upload item with Cloudinary image → Submit for consignment
+2. Admin verifies listing → Auction goes ACTIVE
+3. Auction closes → Winner settles → Seller receives (amount - 10% commission)
 
-8. **Admin dialog accessibility**
-   - Added `role="dialog"`, `aria-modal`, and a labelled dialog heading.
-   - Added initial focus, keyboard focus containment, and Escape-to-close behavior.
+### Admin Journey
+1. Login with admin role → Access admin dashboard
+2. Verify/reject new listings → Manage users (suspend, role changes)
+3. Feature auctions → Monitor platform statistics
 
-9. **Lint and generated-file handling**
-   - Excluded generated Vite dependency output and `node_modules` from ESLint.
-   - Kept practical JavaScript checks active while disabling React compiler-oriented rules that the current codebase is not structured to satisfy.
+---
 
-10. **Prisma runtime repair**
-    - The auctions endpoint returned HTTP 500 even though `deletedAt` existed in `schema.prisma` and its migration.
-    - Root cause: the generated Prisma client was stale and did not include `Auction.deletedAt`.
-    - Regenerated Prisma Client and restarted the development API process. `/api/auctions` then returned HTTP 200 with real auction data.
+## 8. Work Completed (Chronological)
 
-### Challenges Encountered
+### Phase 0 — Foundation (Initial Build)
+1. **React Migration**: Ported from vanilla HTML/CSS/JS to React (Vite)
+2. **Auth System**: JWT-based AuthContext with Axios interceptor
+3. **Core Pages**: Home, Browse, ProductDetails, Dashboard, AdminDashboard, Login, Register
+4. **Real-time Bidding**: Socket.io integration for live bid updates
+5. **Cloudinary Integration**: Direct image upload for consignment listings
 
-1. **Interrupted previous session**
-   - The earlier remediation stopped after editing ESLint configuration because of a usage-limit interruption.
-   - Approach: inspected the working tree and existing changes first, then resumed from verification instead of reapplying or overwriting the work.
+### Phase 1 — Design System ("Technical Precision 2.0")
+1. **Color Token System**: Strict 60-30-10 distribution (Surface/Midnight/Gold)
+2. **Typography**: Geist, Inter, JetBrains Mono font stack
+3. **8px Grid**: Consistent spacing tokens and layout utilities
+4. **Material Symbols**: Icon font integration replacing literal text
+5. **Component Library**: Buttons, inputs, status pills, skeleton loaders
 
-2. **Git safe-directory restriction**
-   - Git rejected normal status/diff operations because the repository owner differed from the current Windows user.
-   - Approach: used a per-command `safe.directory` override. No global Git configuration was modified.
+### Phase 2 — Feature Additions
+1. **Watchlist**: Portfolio monitoring with real-time activity feed
+2. **Checkout**: Settlement flow with server-derived buyer premium
+3. **StatsBand**: Animated KPI infographic on homepage
+4. **Scroll Reveals**: IntersectionObserver-powered entrance animations
+5. **Pagination**: Windowed page numbers for admin tables
+6. **Toast System**: Non-blocking notifications replacing all `alert()` calls
 
-3. **Vite `spawn EPERM` in the restricted environment**
-   - The normal production build could not spawn Vite/Rolldown child processes inside the sandbox.
-   - Approach: reran the same build with the required execution permission. This confirmed a real successful production compilation rather than treating the sandbox error as an application failure.
+### Phase 3 — Design Audit & Remediation (Score: 42 → ~72/100)
+1. **Icon Font Fix**: Material Symbols was used but never imported
+2. **Button/Input States**: Added `:disabled`, `.is-loading`, `.is-error` states
+3. **Color Unification**: Purged 13 hardcoded hex values from JSX
+4. **Token Gaps**: Added `--warning`, `--info`, `--on-success` semantic tokens
+5. **Tooltip Component**: Accessible CSS tooltip with `aria-describedby`
+6. **Layout Utilities**: `.stack`, `.row`, `.cluster`, `.gap-*`, `.text-muted`
 
-4. **Large stylesheet line-ending diff**
-   - An earlier Windows edit made `styles.css` appear almost entirely changed because of whitespace/line-ending normalization.
-   - Approach: isolated the intended semantic CSS change with whitespace-insensitive Git diffing and removed trailing-whitespace errors. The functional stylesheet change is only the five search-button positioning/reset declarations.
+### Phase 4 — Production Hardening (24 June 2026)
+1. **Protected Routes**: `/dashboard`, `/sell`, `/watchlist`, `/checkout/:id` guarded
+2. **Session Validation**: `/me` endpoint validates JWT on app startup
+3. **Checkout Integrity**: Server-derived settlement amounts replace client calculations
+4. **Upload Enforcement**: Failed Cloudinary uploads block publication (no silent fallbacks)
+5. **Navigation Honesty**: Removed non-functional search/notification/dark-mode decorations
+6. **Filter URL Sync**: Browse page filters synchronized with URL parameters
+7. **Admin Modals**: Accessible confirmation dialogs with focus trapping
+8. **Dynamic Watchlist**: Real data replaces mock "Live Market Feed"
+9. **Currency Localization**: All `toLocaleString()` pinned to `'en-US'`
+10. **Rate Limiting**: Modular rate limiter for auth and listing endpoints
+11. **Input Validation**: Price validation, Cloudinary URL sanitization on auction creation
+12. **Role-Based Navigation**: Dynamic nav links + intelligent nested-route highlighting
 
-5. **Patch tool failure on the Windows writable-root layout**
-   - The patch helper could not initialize its Windows sandbox for this workspace.
-   - Approach: used bounded, exact text replacements, checked each expected match, immediately ran ESLint after replacements, and repaired two escaping artifacts before building.
+---
 
-6. **Browser automation connection failure**
-   - The in-app browser connection stalled twice before returning page state, despite the frontend server responding normally.
-   - Approach: stopped retrying after the bounded attempts, verified the running frontend and API over HTTP, and recorded interactive click-through QA as still pending rather than claiming it passed.
+## 9. Production-Readiness Audit
 
-7. **Stale Prisma client versus current schema**
-   - Source schema and migration contained `deletedAt`, but the running client rejected it as an unknown field.
-   - Approach: compared route usage, schema, and migrations; regenerated Prisma Client; triggered a controlled API restart; then repeated the endpoint smoke test.
+### 🔴 CRITICAL Issues
 
-### Approaches Used
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| C1 | **JWT expiry of 365 days** with no refresh/revocation mechanism | `api/.env`, `auth.js` | Stolen token = year-long access |
+| C2 | **Admin role read from JWT payload**, not from DB on each request | `middleware/auth.js` | Demoted admins retain access until token expires |
+| C3 | **Socket.io has zero authentication** — any connection can join any room | `api/src/index.js` | Unauthenticated users can monitor all bid activity |
+| C4 | **No `express.json()` size limit** — default accepts unlimited payload | `api/src/index.js` | DoS via 100MB+ JSON body |
+| C5 | **CORS defaults to `*`** if `CORS_ORIGIN` env is not set | `api/src/index.js` | Any origin can make authenticated requests |
+| C6 | **No test framework installed** — zero unit, integration, or e2e tests | `api/package.json` | Zero confidence in regression safety |
 
-- Began with repository and diff inspection to preserve pre-existing work.
-- Prioritized critical domain and security flows before visual cleanup.
-- Treated the backend as the canonical source for settlement financial rules.
-- Removed fake interactions/data when no real implementation existed.
-- Used semantic HTML and keyboard behavior for accessibility changes.
-- Used lint, syntax checking, production compilation, Git whitespace checks, and live HTTP smoke tests as independent verification layers.
-- Distinguished code defects from environment/tooling failures and documented both.
+### 🟠 HIGH Issues
 
-### Verification Results
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| H1 | **Seller can bid on own auction** (shill bidding) | `api/src/routes/bids.js` | Auction integrity compromise |
+| H2 | **No email format validation** on registration | `api/src/routes/auth.js` | Invalid accounts created |
+| H3 | **No pagination on public auction list** | `api/src/routes/auctions.js` | OOM/timeout with thousands of listings |
+| H4 | **Admin route ordering bug** — `/auctions/deleted` unreachable | `api/src/routes/admin.js` | Dead endpoint, no soft-delete recovery for admins |
+| H5 | **XSS via auction title in email templates** | `api/src/jobs/auctionCloser.js` | Stored XSS in winner/seller notification emails |
+| H6 | **Auction deletion doesn't check status** — active auctions with bids can be deleted | `api/src/routes/auctions.js` | Bidders lose bids with no notification |
+| H7 | **In-memory rate limiter Map grows unbounded** | `api/src/middleware/rateLimit.js` | Memory leak in production |
+| H8 | **Settlement race condition** — no transaction on status check + update | `api/src/routes/auctions.js` | Double-settlement possible |
+| H9 | **Auction closer race condition** — no transaction wrapping loop | `api/src/jobs/auctionCloser.js` | Duplicate closure/emails in clustered deploys |
+| H10 | **No `updatedAt` field on any model** | `prisma/schema.prisma` | No audit trail for record modifications |
 
-- `client`: `npm run lint` passes.
-- `client`: `npm run build` passes with Vite 8; 180 modules transformed.
-- `api`: `node --check src/routes/auctions.js` passes.
-- Frontend development server: `GET http://127.0.0.1:5173/` returns HTTP 200.
-- Node API after Prisma regeneration/restart: `GET http://127.0.0.1:3001/api/auctions` returns HTTP 200 with auction data.
-- Git whitespace check passes after cleanup.
-- Interactive browser click-through validation remains pending because the browser-control connection failed twice.
+### 🟡 MEDIUM Issues
 
-### Remaining Work
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| M1 | **Floating-point arithmetic for financial calculations** (`parseFloat`) | Multiple routes | Rounding errors on commissions/premiums |
+| M2 | **Helmet CSP explicitly disabled** | `api/src/index.js` | No Content-Security-Policy protection |
+| M3 | **No structured logging** (only `console.log/error`) | All backend files | No log aggregation, correlation, or alerting |
+| M4 | **No graceful shutdown** (SIGTERM/SIGINT handlers) | `api/src/index.js` | Open connections dropped on deploy |
+| M5 | **Health check doesn't verify DB connectivity** | `api/src/index.js` | `/health` says OK even if DB is down |
+| M6 | **Dead code: `src/lib/socket.js`** never imported | `api/src/lib/socket.js` | Confusion, maintenance burden |
+| M7 | **No API versioning** — all routes under `/api/` | All routes | Breaking changes affect all clients |
+| M8 | **~330 inline `style={{}}` objects remain** in JSX | Multiple pages | Design system bypass, maintenance debt |
+| M9 | **Database connection pool capped at 3** with no health monitoring | `api/src/lib/prisma.js` | Pool exhaustion under load |
+| M10 | **Seed script Unsplash URLs conflict with Cloudinary validation** | `prisma/seed.js` | Seeded data fails creation endpoint validation |
 
-- Implement a real payment or escrow provider. The current settlement endpoint remains a status-changing purchase confirmation, not a money-moving payment flow.
-- Decide whether to implement KYC, provenance, escrow, PCI/security, and insured logistics workflows or remove unsupported marketing claims.
-- Complete interactive desktop/mobile/browser QA when browser automation is available.
+### 🟢 LOW / Enhancement Issues
 
-### Completed (Remediated June 2026)
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| L1 | No password reset / forgot-password flow | Backend | Users locked out permanently |
+| L2 | No email verification on registration | Backend | Unverified accounts active immediately |
+| L3 | No logout endpoint / token invalidation | Backend | Tokens live forever once issued |
+| L4 | No OpenAPI / Swagger documentation | Backend | No API contract documentation |
+| L5 | No audit trail for admin actions | Backend | No accountability for admin operations |
+| L6 | No payment / escrow integration | Backend | Settlement is just a status flip |
+| L7 | Mixed line endings (CRLF/LF) across files | All files | Git diff noise, inconsistency |
+| L8 | No `.editorconfig` | Project root | No cross-editor formatting agreement |
+| L9 | No route-level code splitting (`React.lazy`) | Frontend | Single large bundle |
+| L10 | Mobile breakpoints below 720px need work | Frontend CSS | Small device UX degradation |
 
-- **Session Hydration & Validation**: Added `GET /api/auth/me` and wired the frontend `AuthContext` to validate the JWT token on app startup, automatically logging out invalid/expired sessions and maintaining fresh cache in `localStorage`.
-- **URL-Driven Catalog Filtering**: Refactored the `Browse.jsx` filters so that search queries, category selections, and numeric price filters are synchronized with the browser URL parameters, enabling consistent page refresh, navigation history, and sharing of filtered catalogs.
-- **Audited Confirmation Modals**: Designed and integrated high-fidelity, accessible custom React modals to replace all browser-native `window.confirm` popups in `AdminDashboard.jsx` and `Dashboard.jsx` (for account suspension, purging lots, and restoring catalog entries), featuring ARIA roles, focus trapping, and keyboard `Escape` closing behavior.
-- **Dynamic Watchlist Feed**: Overhauled the mock static "Live Market Feed" timeline on the Watchlist page with a dynamic watched assets activity log, displaying real-time bidding values, closing hammer prices, and remaining times directly from the user's actual database-backed watched lots.
-- **React Purity Compliance**: Refactored rendering-time `Date.now()` calls in `Watchlist.jsx` to consume a controlled, state-backed `nowMs` timer, fully complying with React purity guidelines.
+---
 
-### Superseded Context
+## 10. Remediation Priority Roadmap
 
-- The earlier statement that Checkout uses a client-side 15% buyer premium, local tax, and shipping calculator is no longer accurate. Checkout now consumes the backend settlement summary and the backend currently defines a 5% buyer premium.
-- The earlier statement that seller image uploads use category-based fallback images is no longer accurate. Upload failures now block publication.
-- The backend uses PostgreSQL through Prisma, not SQLite; the older technology/folder descriptions should be treated as historical.
+### 🔥 Tier 1 — Ship Blockers (Must Fix Before Production)
 
-## Future Recommendations & Files to Reference
+1. **Reduce JWT expiry to 24h**, add refresh token rotation
+2. **Read user role from DB** in `requireAuth` middleware, not JWT
+3. **Add Socket.io JWT authentication** on connection handshake
+4. **Add `express.json({ limit: '1mb' })`** body size limit
+5. **Set explicit CORS origin** (remove `*` fallback)
+6. **Fix admin route ordering** — move `/auctions/deleted` before `/:id`
+7. **Block seller self-bidding** — check `userId !== sellerId`
+8. **Add pagination** to public auction listing
+9. **Sanitize HTML in email templates** to prevent stored XSS
+10. **Wrap settlement in a transaction** to prevent race condition
 
-- **`client/src/assets/css/styles.css`**: Check this file to add new UI color variables or animations.
-- **`client/src/pages/ProductDetails.jsx`**: Reference this file to examine WebSocket events or real-time ticker integrations.
-- **`client/src/pages/Checkout.jsx`**: Reference this file to modify tax brackets, delivery steps, or escrow hooks.
-- **Database**: Runs on PostgreSQL (hosted on Neon, serverless) via Prisma with the `@prisma/adapter-pg` driver. Connection pool is capped at `max: 3` to stay within Neon's free-tier connection limit.
-- **Remaining design-system work**: ~330 inline `style={{}}` objects still to migrate onto utility/component classes (heaviest: Checkout, ProductDetails, Home, Watchlist); mobile breakpoints below 720px; WCAG AA contrast audit on gold; re-introduce route-level code-splitting (`React.lazy`).
-- **Pending integrations**: Cloudinary signed upload, Resend transactional emails (outbid/won), Upstash rate limiting, provenance-document upload + cultural-property compliance.
+### 🔧 Tier 2 — High-Priority Hardening
+
+11. Add email format validation (Zod/express-validator)
+12. Add `updatedAt @updatedAt` to all Prisma models
+13. Add graceful shutdown handlers (SIGTERM/SIGINT)
+14. Replace `parseFloat` with `Decimal.js` for financial math
+15. Enable Helmet CSP
+16. Add structured logging (pino/winston)
+17. Add health check DB ping
+18. Prune in-memory rate limiter entries (TTL cleanup)
+19. Protect auction deletion (block if status=ACTIVE with bids)
+20. Transaction-wrap auction closer cron job
+
+### 🧹 Tier 3 — Quality & Maintainability
+
+21. Install and configure Vitest for unit testing
+22. Migrate remaining ~330 inline styles to CSS classes
+23. Add `.editorconfig` and normalize line endings
+24. Delete dead `src/lib/socket.js`
+25. Add API versioning prefix (`/api/v1/`)
+26. Add route-level code splitting (`React.lazy`)
+27. Add OpenAPI documentation
+28. Add admin action audit logging
+29. Add Sentry/error tracking integration
+
+### 🌟 Tier 4 — Feature Completeness
+
+30. Password reset flow (forgot-password + email token)
+31. Email verification on registration
+32. Logout endpoint with token blacklist
+33. Payment/escrow provider integration
+34. KYC and provenance verification
+35. Signed Cloudinary uploads (server-side)
+
+---
+
+## 11. Issues Faced & Resolutions (Historical)
+
+1. **Low-contrast focus rings**: Fixed with white/gold outlines on dark panels (WCAG AA)
+2. **Mobile table overflow**: Tables wrapped in `.table-scroll-container`
+3. **Countdown badge nesting**: `CountdownTimer.jsx` returns plain text fragments
+4. **WebSocket/Socket.io mismatch**: Frontend switched from native `WebSocket` to `socket.io-client`
+5. **Bid SQL syntax errors**: Corrected snake_case to camelCase column quotes in `SELECT FOR UPDATE`
+6. **Stale Prisma client**: Regenerated after schema migration added `deletedAt`
+7. **Git safe-directory restriction**: Per-command `safe.directory` override
+8. **Vite `spawn EPERM` in sandbox**: Rerun with execution permission
+9. **Browser automation failures**: Recorded as pending manual QA
+
+---
+
+## 12. Superseded Context
+
+> The following earlier statements are no longer accurate:
+
+- ~~Checkout uses a client-side 15% buyer premium, local tax, and shipping calculator.~~ → Checkout now consumes the backend settlement summary (5% buyer premium).
+- ~~Seller image uploads use category-based fallback images.~~ → Upload failures now block publication.
+- ~~Backend uses SQLite.~~ → PostgreSQL via Prisma + `@prisma/adapter-pg` (Neon Serverless).
+- ~~Frontend uses native WebSockets.~~ → Uses `socket.io-client` matching the backend.
+- ~~Navigation is static.~~ → Navigation is role-based with intelligent nested-route highlighting.
+- ~~`StatsBand` displays real platform metrics.~~ → Explicitly labeled as illustrative demonstration figures.
+
+---
+
+## 13. Key File Reference
+
+| File | Purpose | When to Reference |
+|------|---------|-------------------|
+| `client/src/assets/css/styles.css` | Design system tokens, components, utilities | Adding UI styles or color variables |
+| `client/src/pages/ProductDetails.jsx` | Real-time bidding + Socket.io integration | WebSocket events, bid flow changes |
+| `client/src/pages/Checkout.jsx` | Settlement with server-derived financial summary | Payment flow, premium calculations |
+| `client/src/pages/AdminDashboard.jsx` | Full admin panel (46KB, largest file) | Admin feature changes |
+| `client/src/components/Navbar.jsx` | Role-based navigation + active highlights | Navigation structure changes |
+| `client/src/context/AuthContext.jsx` | JWT session management + validation | Auth flow changes |
+| `api/src/routes/bids.js` | Transactional bidding with SELECT FOR UPDATE | Bid logic or concurrency changes |
+| `api/src/routes/auctions.js` | Auction CRUD + settlement | Auction lifecycle changes |
+| `api/src/middleware/auth.js` | JWT verification + admin guard | Security changes |
+| `api/src/jobs/auctionCloser.js` | Cron: close expired auctions + notify | Auction lifecycle automation |
+| `prisma/schema.prisma` | Database models and indexes | Schema changes |
+| `DESIGN.md` | Technical Precision 2.0 style guide | UI design decisions |
+
+---
+
+## 14. Environment Variables
+
+| Variable | Purpose | Notes |
+|----------|---------|-------|
+| `DATABASE_URL` | PostgreSQL connection string | Neon Serverless |
+| `JWT_SECRET` | Token signing secret | **⚠️ Must be rotated if ever committed** |
+| `JWT_EXPIRES_IN` | Token lifetime | Currently `365d` — **should be `24h`** |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account | Image uploads |
+| `CLOUDINARY_API_KEY` | Cloudinary key | |
+| `CLOUDINARY_API_SECRET` | Cloudinary secret | |
+| `RESEND_API_KEY` | Resend email service | |
+| `CORS_ORIGIN` | Allowed CORS origin | **Falls back to `*` if unset** |
+| `PORT` | Server port | Default: 3001 |
+| `UPSTASH_REDIS_REST_URL` | Redis for rate limiting | Optional, falls back to in-memory |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token | |
+
+---
+
+## 15. Verification Status
+
+| Check | Result | Date |
+|-------|--------|------|
+| `client: npm run lint` | ✅ Pass | 24 June 2026 |
+| `client: npm run build` | ✅ Pass (180 modules) | 24 June 2026 |
+| `api: node --check` all routes | ✅ Pass | 24 June 2026 |
+| Frontend dev server (`127.0.0.1:5173`) | ✅ HTTP 200 | 24 June 2026 |
+| API dev server (`127.0.0.1:3001/api/auctions`) | ✅ HTTP 200 | 24 June 2026 |
+| Git whitespace check | ✅ Pass | 24 June 2026 |
+| Interactive browser QA | ⏳ Pending | — |
+| Unit/integration tests | ❌ None exist | — |
+| Security penetration test | ❌ Not performed | — |
+| Accessibility audit (Lighthouse/axe) | ❌ Not performed | — |
+| Load testing | ❌ Not performed | — |

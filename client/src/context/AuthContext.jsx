@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback, useRef } from 'react';
 import api from '../lib/api';
 
 
@@ -10,12 +10,15 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token') || null);
     const [loading, setLoading] = useState(true);
+    const skipHydrationRef = useRef(false);
 
     const login = (userData, authToken) => {
+        skipHydrationRef.current = true;
         localStorage.setItem('token', authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         setToken(authToken);
         setUser(userData);
+        setLoading(false);
     };
 
     const logout = useCallback(() => {
@@ -34,6 +37,14 @@ export const AuthProvider = ({ children }) => {
         let active = true;
 
         const hydrateSession = async () => {
+            if (skipHydrationRef.current) {
+                skipHydrationRef.current = false;
+                if (active) {
+                    setLoading(false);
+                }
+                return;
+            }
+
             if (!token) {
                 if (active) {
                     setUser(null);

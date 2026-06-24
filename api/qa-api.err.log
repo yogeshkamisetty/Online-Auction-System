@@ -46753,3 +46753,124 @@ See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode de
 [2026-06-24T07:10:39.345Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 12:38:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
 [2026-06-24T07:10:39.353Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 12:39:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
 [2026-06-24T07:10:39.359Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 12:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.044Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:32:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.105Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:33:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.111Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:34:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.119Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:35:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.126Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:36:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.133Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:37:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.139Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:38:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.145Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:39:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.150Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.156Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:41:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.162Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:42:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.168Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:43:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.173Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:44:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.179Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:45:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.184Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:46:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.190Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:47:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.197Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:48:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.203Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:49:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.210Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:50:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.216Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:51:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.223Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:52:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.229Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:53:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.236Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:54:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.242Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:55:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.248Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:56:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.256Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:57:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.262Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:58:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.266Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 13:59:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.274Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:00:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.277Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:01:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.283Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:02:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.288Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:03:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.293Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:04:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.297Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:05:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.302Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:06:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T08:37:38.308Z] [PID: 16620] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:07:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[cron] auctionCloser error: 
+Invalid `prisma.auction.findMany()` invocation in
+D:\Yogesh\Coding\FSD - Auction System\api\src\jobs\auctionCloser.js:9:44
+
+  6 // Runs every minute — finds ACTIVE auctions past their endTime and closes them
+  7 cron.schedule('* * * * *', async () => {
+  8   try {
+→ 9     const expired = await prisma.auction.findMany(
+Can't reach database server at ep-solitary-moon-aqb60aj1-pooler.c-8.us-east-1.aws.neon.tech
+[cron] auctionCloser error: 
+Invalid `prisma.auction.findMany()` invocation in
+D:\Yogesh\Coding\FSD - Auction System\api\src\jobs\auctionCloser.js:9:44
+
+  6 // Runs every minute — finds ACTIVE auctions past their endTime and closes them
+  7 cron.schedule('* * * * *', async () => {
+  8   try {
+→ 9     const expired = await prisma.auction.findMany(
+Can't reach database server at ep-solitary-moon-aqb60aj1-pooler.c-8.us-east-1.aws.neon.tech
+D:\Yogesh\Coding\FSD - Auction System\api\src\routes\auth.js:4
+    const valid = await bcrypt.compare(password, user.passwordHash);
+                  ^^^^^
+
+SyntaxError: await is only valid in async functions and the top level bodies of modules
+    at wrapSafe (node:internal/modules/cjs/loader:1692:18)
+    at Module._compile (node:internal/modules/cjs/loader:1735:20)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (D:\Yogesh\Coding\FSD - Auction System\api\src\index.js:8:23)
+
+Node.js v24.11.1
+(node:1776) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9804) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[2026-06-24T09:12:48.364Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:25:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.373Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:26:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.391Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:27:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.409Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:28:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.421Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:29:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.430Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:30:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.438Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:31:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.447Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:32:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.457Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:33:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.465Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:34:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.473Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:35:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.481Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:36:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.488Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:37:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.498Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:38:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.506Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:39:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.511Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.519Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:41:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:12:48.526Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:42:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:16:13.170Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:43:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:16:13.200Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:44:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:16:13.205Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:45:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T09:16:13.208Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 14:46:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:05:43.232Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:31:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:05:43.433Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:32:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:05:43.437Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:33:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:05:43.440Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:34:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:05:43.444Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:35:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:10:15.505Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:36:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:10:15.523Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:37:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:10:15.542Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:38:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:10:15.548Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:39:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-06-24T10:10:15.563Z] [PID: 9804] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Jun 24 2026 15:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
