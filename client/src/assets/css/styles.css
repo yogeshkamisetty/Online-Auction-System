@@ -3253,5 +3253,748 @@ textarea:focus-visible {
     }
 }
 
+/* ==========================================================================
+   CONSIGNMENT WIZARD — PREMIUM SELL PAGE
+   Uses existing dark-luxury tokens from homepage-dark.css
+   ========================================================================== */
 
+/* ── Root wrapper ────────────────────────────────────────────────────────── */
+.sell-premium-root {
+    background-color: #060709;
+    color: #f0f1f5;
+    min-height: 100vh;
+    padding: 48px 0 80px;
+    position: relative;
+    overflow: hidden;
+}
 
+/* Subtle ambient glow behind page */
+.sell-premium-root::before {
+    content: '';
+    position: absolute;
+    top: -15%;
+    right: -10%;
+    width: 55%;
+    height: 55%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+.sell-premium-root::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    left: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.sell-premium-root .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.sell-page-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.sell-page-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: #e6c35c;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.sell-page-badge .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: #e6c35c;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #e6c35c;
+}
+
+.sell-page-title {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.sell-page-subtitle {
+    font-size: 16px;
+    color: #9fa4b0;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ── Step Indicator ──────────────────────────────────────────────────────── */
+.sell-step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sell-step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sell-step-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sell-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: #6b7280;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+}
+
+.sell-step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+    transition: color 0.3s ease;
+}
+
+.sell-step-item.active .sell-step-circle {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.12);
+    color: #e6c35c;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.3), 0 0 4px rgba(212, 175, 55, 0.15);
+}
+
+.sell-step-item.active .sell-step-label {
+    color: #ffffff;
+}
+
+.sell-step-item.completed .sell-step-circle {
+    border-color: #d4af37;
+    background: #d4af37;
+    color: #060709;
+}
+
+.sell-step-item.completed .sell-step-label {
+    color: #9fa4b0;
+}
+
+.sell-step-connector {
+    width: 40px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.sell-step-connector.completed {
+    background: linear-gradient(90deg, #d4af37, rgba(212, 175, 55, 0.5));
+}
+
+/* ── Wizard Layout ───────────────────────────────────────────────────────── */
+.sell-wizard-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* ── Form Panel (Glass) ──────────────────────────────────────────────────── */
+.sell-form-panel {
+    background: rgba(15, 17, 20, 0.65);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    border-radius: 20px;
+    padding: 36px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle top-edge gold highlight */
+.sell-form-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
+}
+
+.sell-form-section-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sell-form-section-title .material-symbols-outlined {
+    color: #e6c35c;
+    font-size: 22px;
+}
+
+.sell-form-section-desc {
+    font-size: 13px;
+    color: #9fa4b0;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+/* ── Form inputs (dark) ──────────────────────────────────────────────────── */
+.sell-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.sell-form-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9fa4b0;
+}
+
+.sell-form-input,
+.sell-form-select,
+.sell-form-textarea {
+    width: 100%;
+    background: #111216;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    color: #f0f1f5;
+    outline: none;
+    transition: all 0.3s ease;
+    min-height: 44px;
+}
+
+.sell-form-input::placeholder,
+.sell-form-textarea::placeholder {
+    color: #4b5563;
+}
+
+.sell-form-input:focus,
+.sell-form-select:focus,
+.sell-form-textarea:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    background: #0f1115;
+}
+
+.sell-form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%239fa4b0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.sell-form-select option {
+    background: #111216;
+    color: #f0f1f5;
+}
+
+.sell-form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+.sell-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ── Dropzone ────────────────────────────────────────────────────────────── */
+.sell-dropzone {
+    position: relative;
+    border: 2px dashed rgba(212, 175, 55, 0.2);
+    border-radius: 16px;
+    padding: 40px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(212, 175, 55, 0.02);
+    overflow: hidden;
+}
+
+.sell-dropzone:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.04);
+}
+
+.sell-dropzone.has-image {
+    border-style: solid;
+    border-color: rgba(212, 175, 55, 0.3);
+    padding: 16px;
+}
+
+.sell-dropzone-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.sell-dropzone-icon {
+    font-size: 40px;
+    color: rgba(212, 175, 55, 0.4);
+    margin-bottom: 12px;
+}
+
+.sell-dropzone-text {
+    font-size: 14px;
+    color: #9fa4b0;
+    margin-bottom: 4px;
+}
+
+.sell-dropzone-text strong {
+    color: #e6c35c;
+}
+
+.sell-dropzone-hint {
+    font-size: 11px;
+    color: #4b5563;
+}
+
+.sell-dropzone-preview {
+    width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+}
+
+.sell-dropzone-filename {
+    font-size: 12px;
+    color: #e6c35c;
+    margin-top: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* ── Navigation Buttons ──────────────────────────────────────────────────── */
+.sell-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sell-btn-back {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.sell-btn-back:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sell-btn-next {
+    background: linear-gradient(135deg, #ffeaa7 0%, #d4af37 50%, #b8962e 100%);
+    color: #060709;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.25);
+}
+
+.sell-btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+}
+
+.sell-btn-next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ── Golden Shimmer Publish Button ───────────────────────────────────────── */
+.btn-gold-shimmer {
+    position: relative;
+    background: linear-gradient(135deg, #ffeaa7 0%, #d4af37 30%, #b8962e 60%, #d4af37 100%);
+    background-size: 200% 100%;
+    color: #060709;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 36px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+    animation: shimmerSlide 3s ease-in-out infinite;
+    width: 100%;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+@keyframes shimmerSlide {
+    0% { background-position: 100% 50%; }
+    50% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.btn-gold-shimmer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.15);
+}
+
+.btn-gold-shimmer:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
+    animation: none;
+}
+
+/* ── Live Preview Card ───────────────────────────────────────────────────── */
+.sell-preview-wrapper {
+    position: sticky;
+    top: 100px;
+}
+
+.sell-preview-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.sell-preview-card {
+    background: rgba(15, 17, 20, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.sell-preview-card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.05);
+}
+
+.sell-preview-image-wrap {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #111216 0%, #0d0e12 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.sell-preview-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sell-preview-placeholder-icon {
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.06);
+}
+
+.sell-preview-live-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    color: #e6c35c;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sell-preview-content {
+    padding: 20px;
+}
+
+.sell-preview-category {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: #e6c35c;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+
+.sell-preview-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    min-height: 24px;
+}
+
+.sell-preview-condition {
+    font-size: 12px;
+    color: #9fa4b0;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sell-preview-condition .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #4b5563;
+}
+
+.sell-preview-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sell-preview-price-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.sell-preview-price-label {
+    font-size: 10px;
+    color: #9fa4b0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px;
+}
+
+.sell-preview-price-value {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.sell-preview-duration {
+    font-size: 11px;
+    color: #9fa4b0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sell-preview-duration .material-symbols-outlined {
+    font-size: 14px;
+    color: #e6c35c;
+}
+
+/* Preview tips section */
+.sell-preview-tips {
+    margin-top: 20px;
+    background: rgba(15, 17, 20, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.sell-preview-tips-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e6c35c;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sell-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.sell-tip-item:last-child {
+    margin-bottom: 0;
+}
+
+.sell-tip-icon {
+    font-size: 16px;
+    color: #e6c35c;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.sell-tip-text {
+    font-size: 12px;
+    color: #9fa4b0;
+    line-height: 1.5;
+}
+
+.sell-tip-text strong {
+    color: #d1d5db;
+}
+
+/* ── Error alert (dark variant) ──────────────────────────────────────────── */
+.sell-alert-error {
+    background: rgba(186, 26, 26, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Step transition animation ───────────────────────────────────────────── */
+.sell-step-content {
+    animation: sellFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sellFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .sell-wizard-layout {
+        grid-template-columns: 1fr;
+    }
+    .sell-preview-wrapper {
+        position: static;
+        order: -1;
+    }
+    .sell-page-title {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sell-step-indicator {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .sell-step-connector {
+        display: none;
+    }
+    .sell-step-label {
+        display: none;
+    }
+    .sell-form-panel {
+        padding: 24px 20px;
+    }
+    .sell-form-row {
+        grid-template-columns: 1fr;
+    }
+    .sell-premium-root {
+        padding: 32px 0 60px;
+    }
+}
