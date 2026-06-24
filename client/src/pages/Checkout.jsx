@@ -47,7 +47,7 @@ const Checkout = () => {
 
     if (isLoading) {
         return (
-            <div className="flex-center" style={{ minHeight: '60vh' }}>
+            <div className="flex-center min-h-page">
                 <Spinner />
             </div>
         );
@@ -58,7 +58,7 @@ const Checkout = () => {
             <div className="container py-xl text-center">
                 <h2 className="headline-lg text-danger">Error</h2>
                 <p className="body-md">Failed to retrieve won auction details. Please ensure you are authorized.</p>
-                <Link to="/dashboard" className="btn btn-primary" style={{ marginTop: 'var(--space-md)' }}>Back to Dashboard</Link>
+                <Link to="/dashboard" className="btn btn-primary mt-md">Back to Dashboard</Link>
             </div>
         );
     }
@@ -76,7 +76,7 @@ const Checkout = () => {
             <div className="container py-xl text-center">
                 <h2 className="headline-lg text-danger">Access Denied</h2>
                 <p className="body-md">Only the winning bidder can settle payments for this asset.</p>
-                <Link to="/dashboard" className="btn btn-primary" style={{ marginTop: 'var(--space-md)' }}>Back to Dashboard</Link>
+                <Link to="/dashboard" className="btn btn-primary mt-md">Back to Dashboard</Link>
             </div>
         );
     }
@@ -86,7 +86,7 @@ const Checkout = () => {
             <div className="container py-xl text-center">
                 <h2 className="headline-lg">Settlement Not Available</h2>
                 <p className="body-md">This auction must close before the winning bidder can settle the purchase.</p>
-                <Link to={'/product/' + id} className="btn btn-primary" style={{ marginTop: 'var(--space-md)' }}>Back to Auction</Link>
+                <Link to={'/product/' + id} className="btn btn-primary mt-md">Back to Auction</Link>
             </div>
         );
     }
@@ -208,7 +208,7 @@ const Checkout = () => {
 
                         {settledSuccess || isAlreadySettled ? (
                             <div className="alert alert-success text-center">
-                                <p style={{ fontWeight: 'bold' }}>Payment Complete</p>
+                                <p className="font-bold">Payment Complete</p>
                                 <p className="body-sm checkout-success-note">Funds are held in secure escrow. You will be updated when authentication is completed.</p>
                                 <Link to="/dashboard" className="btn btn-ghost w-full checkout-success-btn">Go to Dashboard</Link>
                             </div>

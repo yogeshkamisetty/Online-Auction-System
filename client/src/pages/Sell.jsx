@@ -92,8 +92,8 @@ const Sell = () => {
             {/* Page Header */}
             <div className="section-header-flex">
                 <div>
-                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>Consignment Registry</h1>
-                    <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
+                    <h1 className="headline-lg text-secondary">Consignment Registry</h1>
+                    <p className="body-md text-muted mt-xs">
                         Register new high-stakes collections or luxury assets for public auction.
                     </p>
                 </div>
@@ -103,7 +103,7 @@ const Sell = () => {
                 {/* Form area */}
                 <div>
                     <form onSubmit={handleSell} className="detail-card space-y-lg">
-                        <h3 className="panel-heading" style={{ borderBottom: '1px solid var(--outline-variant)', paddingBottom: '8px', fontSize: '18px' }}>
+                        <h3 className="panel-heading consignment-section-title">
                             1. Asset Specifications
                         </h3>
                         
@@ -119,7 +119,7 @@ const Sell = () => {
                             />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="grid-2-col">
                             <div className="form-group">
                                 <label>Category</label>
                                 <select 
@@ -167,11 +167,11 @@ const Sell = () => {
                             ></textarea>
                         </div>
 
-                        <h3 className="panel-heading" style={{ borderBottom: '1px solid var(--outline-variant)', paddingBottom: '8px', fontSize: '18px', marginTop: '32px' }}>
+                        <h3 className="panel-heading consignment-section-title mt-lg">
                             2. Financial Valuation
                         </h3>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="grid-2-col">
                             <div className="form-group">
                                 <label>Opening Estimated Bid ($)</label>
                                 <input 
@@ -202,46 +202,31 @@ const Sell = () => {
                             </div>
                         </div>
 
-                        <h3 className="panel-heading" style={{ borderBottom: '1px solid var(--outline-variant)', paddingBottom: '8px', fontSize: '18px', marginTop: '32px' }}>
+                        <h3 className="panel-heading consignment-section-title mt-lg">
                             3. Image Registry
                         </h3>
 
                         <div className="form-group">
                             <label>Asset Portrait (Required)</label>
-                            <div style={{ 
-                                border: '2px dashed var(--outline-variant)', 
-                                borderRadius: '8px', 
-                                padding: '32px', 
-                                textAlign: 'center',
-                                backgroundColor: 'var(--surface-container-low)',
-                                cursor: 'pointer',
-                                position: 'relative'
-                            }}>
+                            <div className="file-upload-dropzone surface-low-card">
                                 <input 
                                     type="file" 
                                     accept="image/*" 
                                     required 
                                     onChange={(e) => setImageFile(e.target.files[0])}
-                                    style={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        width: '100%',
-                                        height: '100%',
-                                        opacity: 0,
-                                        cursor: 'pointer'
-                                    }}
+                                    className="file-upload-input"
                                 />
-                                <span className="material-symbols-outlined" style={{ fontSize: '36px', color: 'var(--outline)', marginBottom: '8px' }}>
+                                <span className="material-symbols-outlined text-muted mb-xs" style={{ fontSize: '36px' }}>
                                     upload_file
                                 </span>
                                 {imageFile ? (
-                                    <p className="body-md" style={{ fontWeight: 600, color: 'var(--primary)' }}>
+                                    <p className="body-md font-semibold text-primary">
                                         ✓ Selected: {imageFile.name}
                                     </p>
                                 ) : (
-                                    <div className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
+                                    <div className="body-sm text-muted">
                                         <strong>Click to browse</strong> or drag file here.<br/>
-                                        <span style={{ fontSize: '12px', color: 'var(--outline)' }}>PNG, JPG up to 5MB</span>
+                                        <span className="text-muted" style={{ fontSize: '12px' }}>PNG, JPG up to 5MB</span>
                                     </div>
                                 )}
                             </div>
@@ -253,11 +238,10 @@ const Sell = () => {
                             </div>
                         )}
 
-                        <div style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid var(--outline-variant)' }}>
+                        <div className="mt-lg pt-sm" style={{ borderTop: '1px solid var(--outline-variant)' }}>
                             <button 
                                 type="submit" 
-                                className="btn btn-primary" 
-                                style={{ width: '100%', padding: '14px', fontSize: '14px' }} 
+                                className="btn btn-primary w-full py-md" 
                                 disabled={uploading}
                             >
                                 {uploading ? 'Registering Consignment...' : 'Publish Auction Listing'}
@@ -269,22 +253,22 @@ const Sell = () => {
                 {/* Sidebar Tips */}
                 <aside className="sidebar">
                     <h3 className="sidebar-title">Consignor Guidelines</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div className="stack gap-md">
                         <div>
-                            <h4 className="body-md" style={{ fontWeight: 600, color: 'var(--secondary)', marginBottom: '4px' }}>📷 High Resolution Portrayal</h4>
-                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
+                            <h4 className="body-md font-semibold text-secondary mb-xs">📷 High Resolution Portrayal</h4>
+                            <p className="body-sm text-muted">
                                 Assets photographed in clean, neutral studio lighting experience significantly higher bid increments and clearance rate.
                             </p>
                         </div>
                         <div>
-                            <h4 className="body-md" style={{ fontWeight: 600, color: 'var(--secondary)', marginBottom: '4px' }}>✍ Full Provenance Disclosure</h4>
-                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
+                            <h4 className="body-md font-semibold text-secondary mb-xs">✍ Full Provenance Disclosure</h4>
+                            <p className="body-sm text-muted">
                                 Document all prior ownership details and physical flaws. Full disclosure builds collector trust and avoids disputes.
                             </p>
                         </div>
                         <div>
-                            <h4 className="body-md" style={{ fontWeight: 600, color: 'var(--secondary)', marginBottom: '4px' }}>💰 Opening Reserve Strategy</h4>
-                            <p className="body-sm" style={{ color: 'var(--on-surface-variant)' }}>
+                            <h4 className="body-md font-semibold text-secondary mb-xs">💰 Opening Reserve Strategy</h4>
+                            <p className="body-sm text-muted">
                                 A conservative opening estimate acts as a low barrier to entry, sparking early bidding actions that drive higher endings.
                             </p>
                         </div>

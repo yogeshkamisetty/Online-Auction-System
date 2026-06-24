@@ -190,7 +190,7 @@ const ProductDetails = () => {
             <div className="container py-xl text-center">
                 <h2 className="headline-lg text-danger">Asset Not Found</h2>
                 <p className="body-md">The requested auction record does not exist or failed to load.</p>
-                <Link to="/browse" className="btn btn-primary" style={{ marginTop: '20px' }}>Back to Catalog</Link>
+                <Link to="/browse" className="btn btn-primary mt-md">Back to Catalog</Link>
             </div>
         );
     }
@@ -205,7 +205,7 @@ const ProductDetails = () => {
                 &larr; Back to Catalog
             </Link>
 
-            <div className="item-details-layout" style={{ marginTop: 'var(--space-md)' }}>
+            <div className="item-details-layout mt-md">
                 {/* Left Side: Media Gallery */}
                 <div className="item-gallery">
                     <div className="main-image-container">
@@ -215,24 +215,24 @@ const ProductDetails = () => {
                             className="main-item-image" 
                         />
                     </div>
-                    <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                        <div style={{ flex: 1, height: '80px', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-container-low)' }}></div>
-                        <div style={{ flex: 1, height: '80px', borderRadius: 'var(--rounded-lg)', border: '1px solid var(--outline-variant)', backgroundColor: 'var(--surface-container-low)' }}></div>
+                    <div className="row gap-sm">
+                        <div className="gallery-thumbnail-placeholder"></div>
+                        <div className="gallery-thumbnail-placeholder"></div>
                     </div>
                 </div>
 
                 {/* Right Side: Item Details & Live Bidding Panel */}
                 <div className="item-info-col">
                     <div className="detail-card">
-                        <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
+                        <div className="detail-header cluster between align-start gap-sm">
                             <div>
-                                <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: 'var(--space-xs)' }}>
+                                <span className="font-mono label-caps text-primary d-block mb-xs" style={{ fontSize: '11px' }}>
                                     {lotCode}
                                 </span>
-                                <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>{product.title}</h1>
+                                <h1 className="headline-lg text-secondary">{product.title}</h1>
                             </div>
                             
-                            <div style={{ display: 'flex', gap: 'var(--space-base)', alignItems: 'center' }}>
+                            <div className="row gap-md">
                                 {product.status === 'ACTIVE' ? (
                                     <span className="badge-live">
                                         <span className="pulse-indicator" aria-hidden="true"></span> LIVE BIDDING
@@ -250,17 +250,8 @@ const ProductDetails = () => {
                                 {token && (
                                     <button 
                                         onClick={handleWatchToggle}
-                                        className="btn btn-ghost"
+                                        className={`btn btn-ghost btn-watchlist-toggle ${isWatched ? 'is-watching' : ''}`}
                                         aria-label={isWatched ? `Remove ${product.title} from watchlist` : `Add ${product.title} to watchlist`}
-                                        style={{ 
-                                            padding: '8px var(--space-sm)', 
-                                            textTransform: 'none', 
-                                            fontWeight: 600, 
-                                            fontSize: '12px',
-                                            borderColor: isWatched ? 'var(--primary)' : 'var(--outline-variant)',
-                                            color: isWatched ? 'var(--primary)' : 'var(--on-surface-variant)',
-                                            backgroundColor: isWatched ? 'var(--primary-container)' : 'transparent'
-                                        }}
                                     >
                                         {isWatched ? '★ Watching' : '☆ Watch'}
                                     </button>
@@ -269,8 +260,8 @@ const ProductDetails = () => {
                         </div>
 
                         <p className="item-meta">
-                            Category: <span style={{ fontWeight: 600, color: 'var(--secondary)' }}>{product.category}</span> • 
-                            Seller: <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{product.seller?.name || 'Authorized Agent'}</span>
+                            Category: <span className="font-semibold text-secondary">{product.category}</span> • 
+                            Seller: <span className="font-semibold text-primary">{product.seller?.name || 'Authorized Agent'}</span>
                         </p>
 
                         <p className="item-description body-md">
@@ -281,7 +272,7 @@ const ProductDetails = () => {
                         <div className="timer-box">
                             <div className="timer-label">WebSocket Countdown Ticker</div>
                             {product.status !== 'ACTIVE' ? (
-                                <div className="body-md" style={{ color: 'var(--error)', fontWeight: 'bold', marginTop: 'var(--space-xs)' }}>
+                                <div className="body-md text-danger font-bold mt-xs">
                                     Bidding Concluded
                                 </div>
                             ) : (
@@ -306,7 +297,7 @@ const ProductDetails = () => {
                             {product.status === 'ACTIVE' ? (
                                 <>
                                     <div className="bid-labels">
-                                        <label htmlFor="bid-amount-input" className="label-caps" style={{ color: 'var(--secondary)' }}>Place Ascending Bid</label>
+                                        <label htmlFor="bid-amount-input" className="label-caps text-secondary">Place Ascending Bid</label>
                                         <span className="min-increment font-mono">Next bid must exceed current high bid</span>
                                     </div>
 
@@ -329,61 +320,61 @@ const ProductDetails = () => {
                                 </>
                             ) : product.status === 'CLOSED' ? (
                                 isWinner ? (
-                                    <div className="detail-card text-center" style={{ background: 'linear-gradient(135deg, rgba(255,212,95,0.05) 0%, rgba(255,255,255,0) 100%)', borderColor: 'var(--primary)' }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: '36px', color: 'var(--primary)', fontVariationSettings: "'FILL' 1" }} aria-hidden="true">
+                                    <div className="detail-card text-center winner-celebration-card">
+                                        <span className="material-symbols-outlined text-primary font-fill" style={{ fontSize: '36px' }} aria-hidden="true">
                                             emoji_events
                                         </span>
-                                        <h3 className="headline-lg" style={{ fontSize: '20px', color: 'var(--secondary)', marginTop: 'var(--space-base)' }}>
+                                        <h3 className="headline-lg text-secondary mt-md" style={{ fontSize: '20px' }}>
                                             You Won the Auction!
                                         </h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)', marginBottom: 'var(--space-md)' }}>
+                                        <p className="body-sm text-muted mt-xs mb-md">
                                             Congratulations! You placed the winning bid. Settle the transaction securely.
                                         </p>
-                                        <Link to={`/checkout/${id}`} className="btn btn-primary" style={{ width: '100%' }} aria-label="Proceed to secure checkout session">
+                                        <Link to={`/checkout/${id}`} className="btn btn-primary w-full" aria-label="Proceed to secure checkout session">
                                             Proceed to Secure Checkout
                                         </Link>
                                     </div>
                                 ) : product.sellerId === user?.id ? (
-                                    <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
-                                        <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Asset Auction Ended</h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
+                                    <div className="detail-card text-center surface-low-card">
+                                        <h3 className="headline-lg text-secondary" style={{ fontSize: '18px' }}>Asset Auction Ended</h3>
+                                        <p className="body-sm text-muted mt-xs">
                                             Sold for <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>. Awaiting winning buyer settlement checkouts.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
-                                        <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--on-surface-variant)' }}>Auction Concluded</h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
+                                    <div className="detail-card text-center surface-low-card">
+                                        <h3 className="headline-lg text-muted" style={{ fontSize: '18px' }}>Auction Concluded</h3>
+                                        <p className="body-sm text-muted mt-xs">
                                             Sold to the highest bidder for <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>.
                                         </p>
                                     </div>
                                 )
                             ) : product.status === 'SETTLED' ? (
                                 isWinner ? (
-                                    <div className="detail-card text-center" style={{ background: 'var(--success-light)', borderColor: 'var(--success)' }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--success)' }} aria-hidden="true">task_alt</span>
-                                        <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)', marginTop: 'var(--space-base)' }}>Purchase Settled</h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)', marginBottom: 'var(--space-sm)' }}>
+                                    <div className="detail-card text-center settled-buyer-card">
+                                        <span className="material-symbols-outlined text-success" style={{ fontSize: '32px' }} aria-hidden="true">task_alt</span>
+                                        <h3 className="headline-lg text-secondary mt-md" style={{ fontSize: '18px' }}>Purchase Settled</h3>
+                                        <p className="body-sm text-muted mt-xs mb-sm">
                                             Your transaction has been securely processed. Monitor shipment journey on your checkout sheet.
                                         </p>
-                                        <Link to={`/checkout/${id}`} className="btn btn-secondary" style={{ width: '100%' }} aria-label="View acquisition and delivery logs">
+                                        <Link to={`/checkout/${id}`} className="btn btn-secondary w-full" aria-label="View acquisition and delivery logs">
                                             View Acquisition Journey
                                         </Link>
                                     </div>
                                 ) : product.sellerId === user?.id ? (
-                                    <div className="detail-card" style={{ background: 'var(--surface-container-low)' }}>
-                                        <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--secondary)' }}>Sale Settled & Paid</h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
+                                    <div className="detail-card surface-low-card">
+                                        <h3 className="headline-lg text-secondary" style={{ fontSize: '18px' }}>Sale Settled & Paid</h3>
+                                        <p className="body-sm text-muted mt-xs">
                                             Winner has completed settlement. Platform commission deducted. Net earnings released: 
-                                            <strong className="font-mono" style={{ color: 'var(--success)', display: 'block', fontSize: '18px', marginTop: 'var(--space-xs)' }}>
+                                            <strong className="font-mono font-mono-lg-success">
                                                 ${(Number(product.currentBid) - Number(product.platformFee || 0)).toLocaleString('en-US')}
                                             </strong>
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="detail-card text-center" style={{ background: 'var(--surface-container-low)' }}>
-                                        <h3 className="headline-lg" style={{ fontSize: '18px', color: 'var(--on-surface-variant)' }}>Transaction Finalized</h3>
-                                        <p className="body-sm" style={{ color: 'var(--on-surface-variant)', marginTop: 'var(--space-xs)' }}>
+                                    <div className="detail-card text-center surface-low-card">
+                                        <h3 className="headline-lg text-muted" style={{ fontSize: '18px' }}>Transaction Finalized</h3>
+                                        <p className="body-sm text-muted mt-xs">
                                             This asset was sold and settled at <strong className="font-mono">${Number(product.currentBid).toLocaleString('en-US')}</strong>.
                                         </p>
                                     </div>
@@ -401,21 +392,21 @@ const ProductDetails = () => {
                         <h3 className="ledger-title">
                             <span>Live Bid Ledger</span>
                             {product.status === 'ACTIVE' && (
-                                <span className="badge-live" style={{ fontSize: '9px', padding: '2px 6px' }}>WebSocket Sync</span>
+                                <span className="badge-live badge-mini">WebSocket Sync</span>
                             )}
                         </h3>
                         <div className="bid-history-list" aria-live="polite" aria-relevant="additions" aria-label="Live bid transaction log">
                             {product.bids?.length > 0 ? (
                                 product.bids.map((bid, index) => (
                                     <div className={`bid-history-item ${index === 0 && product.status === 'ACTIVE' ? 'winning-bid' : ''}`} key={bid.id}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                                            <div className="avatar-large" style={{ width: '32px', height: '32px', fontSize: '14px', margin: 0 }}>
+                                        <div className="row gap-sm">
+                                            <div className="avatar-large avatar-sm">
                                                 {(bid.user?.name || 'U').charAt(0).toUpperCase()}
                                             </div>
                                             <div>
                                                 <p className="bidder-name">{bid.user?.name || 'Anonymous Bidder'}</p>
                                                 {index === 0 && product.status === 'ACTIVE' && (
-                                                    <span className="font-mono" style={{ fontSize: '9px', color: 'var(--success)', fontWeight: 'bold' }}>CURRENT WINNER</span>
+                                                    <span className="font-mono text-success font-bold" style={{ fontSize: '9px' }}>CURRENT WINNER</span>
                                                 )}
                                             </div>
                                         </div>
@@ -426,7 +417,7 @@ const ProductDetails = () => {
                                     </div>
                                 ))
                             ) : (
-                                <p className="body-sm text-center" style={{ padding: 'var(--space-lg) 0', color: 'var(--on-surface-variant)' }}>
+                                <p className="body-sm text-center text-muted py-lg">
                                     No bidding history recorded. Be the opening bidder!
                                 </p>
                             )}
