@@ -64,14 +64,14 @@ const Navbar = () => {
                     <nav className="nav-links" aria-label="Desktop primary navigation">
                         {showAdminNav ? (
                             <>
-                                <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''}>KPIs</Link>
+                                <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''}>Overview</Link>
                                 <Link to="/admin?tab=verification" className={isAdminTabActive('verification') ? 'active' : ''}>Verifications</Link>
                                 <Link to="/admin?tab=users" className={isAdminTabActive('users') ? 'active' : ''}>Users</Link>
-                                <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''}>Auctions Log</Link>
-                                <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''}>Deleted Lots</Link>
+                                <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''}>Auctions</Link>
+                                <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''}>Deleted</Link>
                                 <Link to="/" className="exit-admin-link">
                                     <span className="material-symbols-outlined" style={{ fontSize: '16px', marginRight: '4px', verticalAlign: 'middle' }}>logout</span>
-                                    Exit Console
+                                    Exit Admin
                                 </Link>
                             </>
                         ) : (
@@ -86,7 +86,7 @@ const Navbar = () => {
                                 {user && (
                                     <>
                                         <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''}>Watchlist</Link>
-                                        <Link to="/sell" className={isActive('/sell') ? 'active' : ''}>Consign Asset</Link>
+                                        <Link to="/sell" className={isActive('/sell') ? 'active' : ''}>Sell</Link>
                                         <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''}>Dashboard</Link>
                                     </>
                                 )}
@@ -205,29 +205,29 @@ const Navbar = () => {
                     {showAdminNav ? (
                         <>
                             <div className="mobile-admin-header font-bold text-center py-xs mb-sm" style={{ color: 'var(--primary-container)', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)', letterSpacing: '0.05em' }}>
-                                ADMIN COMMAND CONSOLE
+                                Admin Panel
                             </div>
-                            <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''} onClick={() => setMenuOpen(false)}>System KPIs</Link>
-                            <Link to="/admin?tab=verification" className={isAdminTabActive('verification') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Verification Queue</Link>
-                            <Link to="/admin?tab=users" className={isAdminTabActive('users') ? 'active' : ''} onClick={() => setMenuOpen(false)}>User Directory</Link>
-                            <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Auction Audit Log</Link>
-                            <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Deleted Lots</Link>
+                            <Link to="/admin?tab=overview" className={isAdminTabActive('overview') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Overview</Link>
+                            <Link to="/admin?tab=verification" className={isAdminTabActive('verification') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Verifications</Link>
+                            <Link to="/admin?tab=users" className={isAdminTabActive('users') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Users</Link>
+                            <Link to="/admin?tab=auctions" className={isAdminTabActive('auctions') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Auctions</Link>
+                            <Link to="/admin?tab=deleted" className={isAdminTabActive('deleted') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Deleted</Link>
                             <hr className="mobile-divider" />
                             <Link to="/" className="exit-admin-link justify-center w-full" onClick={() => setMenuOpen(false)}>
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px', marginRight: '6px' }}>logout</span>
-                                Exit Console
+                                Exit Admin
                             </Link>
                         </>
                     ) : (
                         <>
                             <Link to="/" className={isActive('/') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Home</Link>
-                            <Link to="/browse" className={isActive('/browse') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Browse Catalog</Link>
+                            <Link to="/browse" className={isActive('/browse') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Auctions</Link>
                             
                             {user && (
                                 <>
-                                    <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>My Watchlist</Link>
-                                    <Link to="/sell" className={isActive('/sell') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Consign Asset</Link>
-                                    <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard Workspace</Link>
+                                    <Link to="/watchlist" className={isActive('/watchlist') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Watchlist</Link>
+                                    <Link to="/sell" className={isActive('/sell') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Sell</Link>
+                                    <Link to="/dashboard" className={isActive('/dashboard') ? 'active' : ''} onClick={() => setMenuOpen(false)}>Dashboard</Link>
                                 </>
                             )}
                             

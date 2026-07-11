@@ -66,7 +66,7 @@ const Dashboard = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['myListings'] });
-            toast.success('Listing placed in retention (will be purged in 7 days).');
+            toast.success('Listing deleted successfully.');
         },
         onError: (err) => {
             toast.error(err.message || 'Failed to delete listing');
@@ -76,7 +76,7 @@ const Dashboard = () => {
     const handleDeleteListing = (auctionId, title) => {
         setConfirmation({
             title: 'Delete Listing',
-            message: `Are you sure you want to delete "${title}"? It will be placed in retention for 7 days before permanent purge.`,
+            message: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
             actionText: 'Delete Listing',
             isDestructive: true,
             onConfirm: () => {
@@ -167,9 +167,9 @@ const Dashboard = () => {
             {/* Header Title */}
             <div className="section-header-flex">
                 <div>
-                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>Collector Workspace</h1>
+                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>My Dashboard</h1>
                     <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
-                        Manage your active acquisitions, listing pipeline, and profile configuration.
+                        Track your bids, manage your listings, and update your profile.
                     </p>
                 </div>
             </div>
@@ -182,11 +182,11 @@ const Dashboard = () => {
                         <div className="avatar-large">{user.name.charAt(0).toUpperCase()}</div>
                         <h3>{user.name}</h3>
                         <p className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '10px' }}>
-                            {user.role} Member
+                            {user.role === 'ADMIN' ? 'Admin' : 'Member'}
                         </p>
                     </div>
                     
-                    <h3 className="sidebar-title">Workspace Menu</h3>
+                    <h3 className="sidebar-title">Menu</h3>
                     <ul className="dashboard-menu">
                         <li>
                             <a 
@@ -195,13 +195,13 @@ const Dashboard = () => {
                                 onClick={(e) => { e.preventDefault(); setActivePanel('dashboardHome'); }}
                             >
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>dashboard</span>
-                                Workspace Home
+                                Overview
                             </a>
                         </li>
                         <li>
                             <Link to="/watchlist">
                                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>visibility</span>
-                                Watchlist Ticker
+                                Watchlist
                             </Link>
                         </li>
                         <li>
@@ -224,20 +224,20 @@ const Dashboard = () => {
                         <>
                             <div className="dashboard-header" style={{ marginBottom: '24px' }}>
                                 <h2 className="panel-heading" style={{ margin: 0 }}>
-                                    {dashboardTab === 'buyer' ? 'Acquisition Center' : 'Consignment Center'}
+                                    {dashboardTab === 'buyer' ? 'My Bids' : 'My Listings'}
                                 </h2>
                                 <div className="dashboard-tabs">
                                     <button 
                                         className={`tab-btn ${dashboardTab === 'buyer' ? 'active' : ''}`} 
                                         onClick={() => setDashboardTab('buyer')}
                                     >
-                                        Buyer Console
+                                        Buying
                                     </button>
                                     <button 
                                         className={`tab-btn ${dashboardTab === 'seller' ? 'active' : ''}`} 
                                         onClick={() => setDashboardTab('seller')}
                                     >
-                                        Seller Console
+                                        Selling
                                     </button>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@ const Dashboard = () => {
                                 <div className="space-y-lg">
                                     <div className="metrics-grid">
                                         <div className="metric-card">
-                                            <p className="metric-title">Active Monitored Bids</p>
+                                            <p className="metric-title">Active Bids</p>
                                             <p className="metric-value">{activeBids.length}</p>
                                         </div>
                                         <div className="metric-card">
@@ -255,24 +255,24 @@ const Dashboard = () => {
                                             <p className="metric-value">{wonBids.length}</p>
                                         </div>
                                         <div className="metric-card">
-                                            <p className="metric-title">Escrow Capital Spent</p>
+                                            <p className="metric-title">Total Spent</p>
                                             <p className="metric-value font-mono">${totalSpent.toLocaleString('en-US')}</p>
                                         </div>
                                     </div>
 
-                                    <h3 className="panel-heading">My Bidding Ledger</h3>
+                                    <h3 className="panel-heading">My Bids</h3>
                                     <div className="table-container table-scroll-container">
                                         {isBuyerError ? (
-                                            <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve bids.</div>
+                                            <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to load your bids.</div>
                                         ) : (
-                                            <table className="dashboard-table" aria-label="Bidding activities and invoice tracking">
+                                            <table className="dashboard-table" aria-label="Your bids">
                                                 <thead>
                                                     <tr>
-                                                        <th>Lot Asset</th>
-                                                        <th>My Bid Amount</th>
-                                                        <th>Current Top Bid</th>
-                                                        <th>Bidding Status</th>
-                                                        <th>Console Action</th>
+                                                        <th>Item</th>
+                                                        <th>Your Bid</th>
+                                                        <th>Current Bid</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -323,12 +323,12 @@ const Dashboard = () => {
                                                                 </td>
                                                                 <td>
                                                                     {bid.auction.status === 'ACTIVE' ? (
-                                                                        <Link to={`/product/${bid.auctionId}`} className="btn btn-primary btn-sm" aria-label={`Monitor live bidding details for ${bid.auction.title}`}>
-                                                                            {bid.isWinning ? 'Monitor' : 'Bid Again'}
+                                                                        <Link to={`/product/${bid.auctionId}`} className="btn btn-primary btn-sm" aria-label={`View live bidding for ${bid.auction.title}`}>
+                                                                            {bid.isWinning ? 'View' : 'Bid Again'}
                                                                         </Link>
                                                                     ) : bid.auction.status === 'CLOSED' && bid.isWinning ? (
-                                                                        <Link to={`/checkout/${bid.auctionId}`} className="btn btn-primary btn-sm" aria-label={`Settle invoice payment for won lot ${bid.auction.title}`}>
-                                                                            Settle Invoice
+                                                                        <Link to={`/checkout/${bid.auctionId}`} className="btn btn-primary btn-sm" aria-label={`Complete payment for ${bid.auction.title}`}>
+                                                                            Pay Now
                                                                         </Link>
                                                                     ) : (
                                                                         <Link to={`/product/${bid.auctionId}`} className="btn btn-ghost btn-sm" aria-label={`View lot details for ${bid.auction.title}`}>
@@ -351,36 +351,36 @@ const Dashboard = () => {
                                 <div className="space-y-lg">
                                     <div className="metrics-grid">
                                         <div className="metric-card">
-                                            <p className="metric-title">Active Consigned Lots</p>
+                                            <p className="metric-title">Active Listings</p>
                                             <p className="metric-value">{sellerActiveCount}</p>
                                         </div>
                                         <div className="metric-card">
-                                            <p className="metric-title">Lots Sold</p>
+                                            <p className="metric-title">Items Sold</p>
                                             <p className="metric-value">{sellerSoldCount}</p>
                                         </div>
                                         <div className="metric-card">
-                                            <p className="metric-title">Gross Merchandise Value (GMV)</p>
+                                            <p className="metric-title">Total Earnings</p>
                                             <p className="metric-value font-mono">${totalGMV.toLocaleString('en-US')}</p>
                                         </div>
                                     </div>
 
                                     <div className="panel-header-flex">
-                                        <h3 className="panel-heading">Consigned Inventory</h3>
-                                        <Link to="/sell" className="btn btn-secondary btn-sm" aria-label="List a new luxury consignment asset">List New Asset</Link>
+                                        <h3 className="panel-heading">My Listings</h3>
+                                        <Link to="/sell" className="btn btn-secondary btn-sm" aria-label="List a new item for auction">List New Item</Link>
                                     </div>
 
                                     <div className="table-container table-scroll-container">
                                         {isSellerError ? (
                                             <div className="alert alert-error text-center" style={{ margin: 'var(--space-md)' }}>Failed to retrieve listings.</div>
                                         ) : (
-                                            <table className="dashboard-table" aria-label="Consigned luxury inventory ledger">
+                                            <table className="dashboard-table" aria-label="Your auction listings">
                                                 <thead>
                                                     <tr>
-                                                        <th>Lot Name</th>
-                                                        <th>Start Val Est</th>
-                                                        <th>High Bid Price</th>
-                                                        <th>Asset State</th>
-                                                        <th>Console Action</th>
+                                                        <th>Item</th>
+                                                        <th>Starting Bid</th>
+                                                        <th>Current Bid</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -442,7 +442,7 @@ const Dashboard = () => {
                     {/* Account Settings View */}
                     {activePanel === 'accountSettingsView' && (
                         <div className="space-y-lg">
-                            <h2 className="panel-heading">Profile Configuration</h2>
+                            <h2 className="panel-heading">Profile Settings</h2>
                             <form onSubmit={handleProfileUpdate} className="detail-card space-y-md" style={{ maxWidth: '600px' }}>
                                 <div className="form-group">
                                     <label>Full Name</label>
@@ -454,7 +454,7 @@ const Dashboard = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Registered Email Address</label>
+                                    <label>Email Address</label>
                                     <input 
                                         type="email" 
                                         className="form-input"
@@ -463,11 +463,11 @@ const Dashboard = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Update Password</label>
+                                    <label>New Password</label>
                                     <input 
                                         type="password" 
                                         className="form-input"
-                                        placeholder="Leave blank to maintain current credentials" 
+                                        placeholder="Leave blank to keep your current password" 
                                         value={profileForm.password} 
                                         onChange={e => setProfileForm({ ...profileForm, password: e.target.value })} 
                                     />
@@ -480,7 +480,7 @@ const Dashboard = () => {
                                 )}
 
                                 <button type="submit" className="btn btn-primary" style={{ marginTop: '8px' }}>
-                                    Save Configurations
+                                    Save Changes
                                 </button>
                             </form>
                         </div>

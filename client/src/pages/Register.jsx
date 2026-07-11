@@ -24,7 +24,7 @@ const Register = () => {
         if (password !== confirmPassword) return setMessage({ text: 'Passwords do not match.', type: 'error' });
         if (!terms) return setMessage({ text: 'Please agree to the Terms & Conditions.', type: 'error' });
 
-        setMessage({ text: 'Registering new profile...', type: 'info' });
+        setMessage({ text: 'Creating your account...', type: 'info' });
 
         try {
             await api.post('/auth/register', {
@@ -33,7 +33,7 @@ const Register = () => {
                 password
             });
             setMessage({ text: '', type: '' });
-            toast.success('Account created. Redirecting to login…');
+            toast.success('Account created! Taking you to sign in…');
             setTimeout(() => {
                 navigate('/login');
             }, 1200);
@@ -49,9 +49,9 @@ const Register = () => {
             <div className="detail-card" style={{ width: '100%', maxWidth: '460px', padding: '32px', boxW: 'var(--shadow-combined)' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                     <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: '4px' }}>
-                        Collector Registration
+                        Get Started
                     </span>
-                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Register New Account</h2>
+                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Create an Account</h2>
                 </div>
 
                 <form onSubmit={handleRegister} className="space-y-md">
@@ -80,7 +80,7 @@ const Register = () => {
                         <input 
                             type="password" 
                             className="form-input"
-                            placeholder="Min 6 characters" 
+                            placeholder="At least 6 characters" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
@@ -90,7 +90,7 @@ const Register = () => {
                         <input 
                             type="password" 
                             className="form-input"
-                            placeholder="Re-type password" 
+                            placeholder="Re-enter your password" 
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
@@ -116,12 +116,12 @@ const Register = () => {
                     )}
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px' }}>
-                        Create Registry Account
+                        Create Account
                     </button>
                 </form>
 
                 <p className="body-sm text-center" style={{ marginTop: '20px', color: 'var(--on-surface-variant)' }}>
-                    Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Log In here</Link>
+                    Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>Sign in</Link>
                 </p>
             </div>
         </main>

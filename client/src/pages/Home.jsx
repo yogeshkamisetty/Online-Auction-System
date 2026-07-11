@@ -155,7 +155,7 @@ const Home = () => {
             toast.error("Please enter a valid email address.");
             return;
         }
-        toast.success("Welcome aboard! You have successfully subscribed to exclusive previews.");
+        toast.success("You're subscribed! We'll send you the latest auction updates.");
         setEmail('');
     };
 
@@ -195,7 +195,7 @@ const Home = () => {
                                     </div>
                                     <div className="feature-text">
                                         <span className="feature-title">Verified Sellers</span>
-                                        <span className="feature-sub">100% KYC Verified</span>
+                                        <span className="feature-sub">All sellers verified</span>
                                     </div>
                                 </div>
                                 <div className="hero-feature-pill">
@@ -320,36 +320,36 @@ const Home = () => {
                             <div className="bento-icon-box">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>military_tech</span>
                             </div>
-                            <h3 className="bento-title">Curated Premium Assets</h3>
-                            <p className="bento-desc">Only the finest assets, handpicked and meticulously graded by global industry experts.</p>
+                            <h3 className="bento-title">Handpicked Items</h3>
+                            <p className="bento-desc">Every listing is reviewed and graded by our team of experts before going live.</p>
                         </div>
                         <div className="bento-card">
                             <div className="bento-icon-box">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>schedule</span>
                             </div>
-                            <h3 className="bento-title">Real-Time Bidding</h3>
-                            <p className="bento-desc">Experience fully synchronized live, transparent, and intensely competitive bidding rooms.</p>
+                            <h3 className="bento-title">Live Bidding</h3>
+                            <p className="bento-desc">Bid in real time with full transparency. Every bid is shown instantly to all participants.</p>
                         </div>
                         <div className="bento-card">
                             <div className="bento-icon-box">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>insights</span>
                             </div>
-                            <h3 className="bento-title">AI Price Insights</h3>
-                            <p className="bento-desc">Leverage advanced, data-driven valuations and deep market trends to bid smarter.</p>
+                            <h3 className="bento-title">Smart Price Insights</h3>
+                            <p className="bento-desc">Use data-driven valuations and market trends to help you bid at the right price.</p>
                         </div>
                         <div className="bento-card">
                             <div className="bento-icon-box">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>shield</span>
                             </div>
                             <h3 className="bento-title">Secure & Insured</h3>
-                            <p className="bento-desc">Your transactions are backed by credit-rated escrow vaults and full logistics insurance.</p>
+                            <p className="bento-desc">Every transaction is protected. Your payment is held securely until you receive your item.</p>
                         </div>
                         <div className="bento-card">
                             <div className="bento-icon-box">
                                 <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>public</span>
                             </div>
                             <h3 className="bento-title">Global Community</h3>
-                            <p className="bento-desc">Interact with a elite network of collectors, institutional investors, and enthusiasts.</p>
+                            <p className="bento-desc">Join a worldwide network of collectors, investors, and enthusiasts all in one place.</p>
                         </div>
                     </Reveal>
                 </div>
@@ -501,7 +501,7 @@ const Home = () => {
                                     <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&h=100&q=80" alt="Collector 4" className="facepile-avatar" />
                                 </div>
                                 <span className="facepile-text">
-                                    Join <strong>40,000+</strong> elite subscribers
+                                    Join <strong>40,000+</strong> subscribers
                                 </span>
                             </div>
                         </div>

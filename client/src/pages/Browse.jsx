@@ -146,9 +146,9 @@ const Browse = () => {
             {/* Header Section */}
             <div className="section-header-flex" style={{ flexWrap: 'wrap', gap: '16px' }}>
                 <div>
-                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>Asset Catalog</h1>
+                    <h1 className="headline-lg" style={{ color: 'var(--secondary)' }}>Browse Auctions</h1>
                     <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: '4px' }}>
-                        Browse active, verified assets currently undergoing open ascending price bidding.
+                        Explore all active auctions and place your bids.
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', width: '100%', maxWidth: '400px' }}>
@@ -168,7 +168,7 @@ const Browse = () => {
             <div className="split-layout">
                 {/* Filters Sidebar */}
                 <aside className="sidebar">
-                    <h3 className="sidebar-title">Catalog Filters</h3>
+                    <h3 className="sidebar-title">Filters</h3>
                 
                     <div className="form-group" style={{ marginBottom: '24px' }}>
                         <label style={{ marginBottom: '8px' }}>Categories</label>
@@ -234,7 +234,7 @@ const Browse = () => {
                         </div>
                     ) : isError ? (
                         <div className="alert alert-error text-center">
-                            Failed to retrieve auctions. Please verify network connectivity.
+                            Failed to load auctions. Please check your connection and try again.
                         </div>
                     ) : filteredProducts.length === 0 ? (
                         <div className="detail-card text-center" style={{ padding: '60px' }}>
@@ -242,7 +242,7 @@ const Browse = () => {
                                 search_off
                             </span>
                             <p className="body-md" style={{ color: 'var(--on-surface-variant)', marginTop: '16px' }}>
-                                No assets matched your current search filters.
+                                No results found. Try different search terms or filters.
                             </p>
                         </div>
                     ) : (

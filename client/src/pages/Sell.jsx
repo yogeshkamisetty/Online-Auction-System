@@ -6,9 +6,9 @@ import { AuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
 const STEPS = [
-    { num: 1, label: 'Asset Details', icon: 'inventory_2' },
-    { num: 2, label: 'Provenance & Media', icon: 'image' },
-    { num: 3, label: 'Valuation & Publish', icon: 'gavel' },
+    { num: 1, label: 'Item Details', icon: 'inventory_2' },
+    { num: 2, label: 'Description & Photo', icon: 'image' },
+    { num: 3, label: 'Pricing & Publish', icon: 'gavel' },
 ];
 
 const CATEGORIES = [
@@ -205,10 +205,10 @@ const Sell = () => {
         <div className="sell-step-content" key="step1">
             <h3 className="sell-form-section-title">
                 <span className="material-symbols-outlined">inventory_2</span>
-                Asset Specifications
+                Item Details
             </h3>
             <p className="sell-form-section-desc">
-                Provide the core details of the item you wish to consign for auction.
+                Tell us about the item you want to sell.
             </p>
 
             <div className="sell-form-group">
@@ -258,17 +258,17 @@ const Sell = () => {
         <div className="sell-step-content" key="step2">
             <h3 className="sell-form-section-title">
                 <span className="material-symbols-outlined">image</span>
-                Provenance & Media
+                Description & Photo
             </h3>
             <p className="sell-form-section-desc">
-                Document the history, distinguishing marks, and upload a high-quality photograph.
+                Describe your item and upload a clear photo.
             </p>
 
             <div className="sell-form-group">
-                <label className="sell-form-label">Provenance & Description</label>
+                <label className="sell-form-label">Description</label>
                 <textarea
                     className="sell-form-textarea"
-                    placeholder="Describe the history, hallmarks, dimensions, and visual condition..."
+                    placeholder="Describe the item's condition, dimensions, and any notable features..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
@@ -276,7 +276,7 @@ const Sell = () => {
             </div>
 
             <div className="sell-form-group">
-                <label className="sell-form-label">Asset Portrait</label>
+                <label className="sell-form-label">Upload a Photo</label>
                 <div className={`sell-dropzone ${imageFile ? 'has-image' : ''}`}>
                     <input
                         type="file"
@@ -316,15 +316,15 @@ const Sell = () => {
         <div className="sell-step-content" key="step3">
             <h3 className="sell-form-section-title">
                 <span className="material-symbols-outlined">gavel</span>
-                Financial Valuation
+                Pricing
             </h3>
             <p className="sell-form-section-desc">
-                Set the opening bid and auction duration. Review your listing before publishing.
+                Set your starting bid and how long the auction runs. Review before publishing.
             </p>
 
             <div className="sell-form-row">
                 <div className="sell-form-group">
-                    <label className="sell-form-label">Opening Bid ($)</label>
+                    <label className="sell-form-label">Starting Bid ($)</label>
                     <input
                         type="number"
                         className="sell-form-input"
@@ -391,7 +391,7 @@ const Sell = () => {
                     disabled={uploading || !startPrice || !imageFile}
                 >
                     <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>rocket_launch</span>
-                    {uploading ? 'Publishing Auction...' : 'Publish Auction Listing'}
+                    {uploading ? 'Publishing...' : 'Publish Listing'}
                 </button>
             </div>
         </div>
@@ -439,24 +439,24 @@ const Sell = () => {
             <div className="sell-preview-tips">
                 <p className="sell-preview-tips-title">
                     <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>tips_and_updates</span>
-                    Consignor Tips
+                    Seller Tips
                 </p>
                 <div className="sell-tip-item">
                     <span className="material-symbols-outlined sell-tip-icon">photo_camera</span>
                     <p className="sell-tip-text">
-                        <strong>High-resolution photos</strong> in clean, neutral lighting drive significantly higher bid increments.
+                        <strong>Clear, bright photos</strong> attract more bids and help buyers feel confident.
                     </p>
                 </div>
                 <div className="sell-tip-item">
                     <span className="material-symbols-outlined sell-tip-icon">history_edu</span>
                     <p className="sell-tip-text">
-                        <strong>Full provenance disclosure</strong> builds collector trust and prevents post-sale disputes.
+                        <strong>A detailed description</strong> builds buyer trust and reduces disputes.
                     </p>
                 </div>
                 <div className="sell-tip-item">
                     <span className="material-symbols-outlined sell-tip-icon">trending_up</span>
                     <p className="sell-tip-text">
-                        A <strong>conservative opening bid</strong> sparks early competition and often drives higher final prices.
+                        A <strong>lower starting bid</strong> attracts early bidders and can drive the final price higher.
                     </p>
                 </div>
             </div>
@@ -470,11 +470,11 @@ const Sell = () => {
                 <div className="sell-page-header">
                     <div className="sell-page-badge">
                         <span className="badge-dot" />
-                        Consignment Registry
+                        List an Item
                     </div>
-                    <h1 className="sell-page-title">Register Your Asset</h1>
+                    <h1 className="sell-page-title">Sell Your Item</h1>
                     <p className="sell-page-subtitle">
-                        List high-value collections and luxury assets for public auction on the premier platform.
+                        List your item for auction and reach thousands of buyers worldwide.
                     </p>
                 </div>
 

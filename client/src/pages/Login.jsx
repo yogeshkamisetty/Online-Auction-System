@@ -25,12 +25,12 @@ const Login = () => {
             return;
         }
 
-        setMessage({ text: 'Verifying credentials...', type: 'info' });
+        setMessage({ text: 'Signing in...', type: 'info' });
 
         try {
             const res = await api.post('/auth/login', { email, password });
             login(res.data.user, res.data.token);
-            toast.success('Welcome back. Redirecting to your workspace…');
+            toast.success('Welcome back! Taking you to your dashboard…');
             setMessage({ text: '', type: '' });
             setTimeout(() => {
                 navigate('/dashboard');
@@ -47,14 +47,14 @@ const Login = () => {
             <div className="detail-card" style={{ width: '100%', maxWidth: '440px', padding: '32px', boxShadow: 'var(--shadow-combined)' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                     <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: '4px' }}>
-                        Collector Portal
+                        Welcome Back
                     </span>
-                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Portal Authentication</h2>
+                    <h2 className="headline-lg" style={{ color: 'var(--secondary)', margin: 0 }}>Sign In</h2>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-md">
                     <div className="form-group">
-                        <label>Registered Email</label>
+                        <label>Email Address</label>
                         <input 
                             type="email" 
                             className="form-input"
@@ -64,11 +64,11 @@ const Login = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Private Key Password</label>
+                        <label>Password</label>
                         <input 
                             type="password" 
                             className="form-input"
-                            placeholder="Enter password" 
+                            placeholder="Enter your password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
@@ -81,12 +81,12 @@ const Login = () => {
                     )}
 
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px', marginTop: '16px' }}>
-                        Authenticate Account
+                        Sign In
                     </button>
                 </form>
 
                 <p className="body-sm text-center" style={{ marginTop: '20px', color: 'var(--on-surface-variant)' }}>
-                    New collector? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create an account</Link>
+                    Don't have an account? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600 }}>Create one</Link>
                 </p>
             </div>
         </main>
