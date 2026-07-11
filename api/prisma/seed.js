@@ -43,6 +43,24 @@ async function main() {
 
   const catalog = [
     {
+      title: '1967 Shelby GT500 Super Snake',
+      description: 'The holy grail of muscle cars. Stamped with original Shelby American documentation. Equipped with a race-tuned 427 Cobra Jet V8. Active and attracting high-end automotive collectors.',
+      category: 'Vehicles', condition: 'Museum Grade', imageUrl: img('1568605114967-8130f3a36994'),
+      startPrice: 1200000, featured: true, endTime: days(18250), bids: 14,
+    },
+    {
+      title: 'First Edition 2011 Physical Bitcoin (1 BTC)',
+      description: 'An original Casascius 1 BTC physical coin. Mint condition, brass-plated with intact holographic security seal containing the private key. Legendary piece of digital financial history.',
+      category: 'Modern', condition: 'Mint', imageUrl: img('1621761191319-c6fb62004040'),
+      startPrice: 95000, featured: true, endTime: days(18250), bids: 8,
+    },
+    {
+      title: 'Original Chola Dynasty Bronze Ganesha',
+      description: '11th-century South Indian bronze masterpiece. Certified authenticity with documentation from leading archaeological experts. A timeless attraction for fine art enthusiasts.',
+      category: 'Ancient', condition: 'Excellent', imageUrl: img('1609137144820-21a4fa65b056'),
+      startPrice: 180000, featured: true, endTime: days(18250), bids: 11,
+    },
+    {
       title: 'Patek Philippe Perpetual Calendar 5320G',
       description: 'White gold perpetual calendar with luminous Breguet numerals. Box, papers, and service history included. A grail-tier complication from the modern Patek canon.',
       category: 'Luxury', condition: 'Mint', imageUrl: img('1523275335684-37898b6baf30'),
