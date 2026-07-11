@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Spinner from './components/Spinner';
+import CustomCursor from './components/CustomCursor';
+import TouchRipple from './components/TouchRipple';
 
 // Route Guards
 import AdminRoute from './components/AdminRoute';
@@ -26,6 +28,8 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 function App() {
   return (
     <>
+      <CustomCursor />
+      <TouchRipple />
       <Navbar />
       <Suspense fallback={<div className="flex-center" style={{ minHeight: '60vh' }}><Spinner /></div>}>
         <Routes>

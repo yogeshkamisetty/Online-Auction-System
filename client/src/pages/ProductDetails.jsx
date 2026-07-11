@@ -7,6 +7,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { API_BASE } from '../config';
 import SkeletonDetails from '../components/SkeletonDetails';
+import BidSuccessAnimation from '../components/BidSuccessAnimation';
+import WinAnimation from '../components/WinAnimation';
 
 const DetailedCountdown = ({ endTime }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
@@ -63,6 +65,9 @@ const ProductDetails = () => {
     const toast = useToast();
 
     const [bidAmount, setBidAmount] = useState('');
+    const [showBidSuccess, setShowBidSuccess] = useState(false);
+    const [lastBidAmount, setLastBidAmount] = useState(null);
+    const [showWin, setShowWin] = useState(false);
 
     // Fetch product details
     const { data: product, isLoading, isError, refetch } = useQuery({
@@ -153,6 +158,17 @@ const ProductDetails = () => {
                 if (!oldProduct) return oldProduct;
                 return { ...oldProduct, status: 'CLOSED' };
             });
+            // Check if this user is the winner after close
+            setTimeout(() => {
+                queryClient.fetchQuery({ queryKey: ['auction', id] }).then(freshProduct => {
+                    if (!freshProduct || !user) return;
+                    const topBid = freshProduct.bids?.[0];
+                    const winnerId = topBid?.userId ?? topBid?.user?.id;
+                    if (winnerId && String(winnerId) === String(user.id)) {
+                        setShowWin(true);
+                    }
+                }).catch(() => {});
+            }, 800);
         });
 
         return () => {
@@ -170,11 +186,14 @@ const ProductDetails = () => {
         }
 
         try {
+            const placedAmount = parseFloat(bidAmount);
             await api.post('/bids', {
                 auctionId: id,
-                amount: parseFloat(bidAmount)
+                amount: placedAmount
             });
             toast.success('Bid placed successfully.');
+            setLastBidAmount(placedAmount);
+            setShowBidSuccess(true);
             refetch();
         } catch (err) {
             toast.error(err.message || 'Failed to place bid');
@@ -200,6 +219,18 @@ const ProductDetails = () => {
     const lotCode = `LOT-${String(product.id).padStart(3, '0')}`;
 
     return (
+        <>
+        <BidSuccessAnimation
+            show={showBidSuccess}
+            amount={lastBidAmount}
+            onComplete={() => setShowBidSuccess(false)}
+        />
+        <WinAnimation
+            show={showWin}
+            title={product?.title}
+            amount={product?.currentBid}
+            onClose={() => setShowWin(false)}
+        />
         <main className="container py-xl" aria-label={`Auction details for ${product.title}`}>
             <Link to="/browse" className="back-link body-sm" aria-label="Return to Browse Catalog">
                 &larr; Back to Catalog
@@ -426,6 +457,7 @@ const ProductDetails = () => {
                 </div>
             </div>
         </main>
+        </>
     );
 };
 

@@ -1829,3 +1829,392 @@ a {
         padding: 25px 20px;
     }
 }
+
+/* =========================================
+   Custom Cursor
+   ========================================= */
+/* Hide default cursor on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+    * { cursor: none !important; }
+}
+
+.custom-cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    background: #D4AF37;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: opacity 0.2s ease, transform 0.05s linear, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+    box-shadow: 0 0 8px 2px rgba(212, 175, 55, 0.7);
+    mix-blend-mode: normal;
+}
+
+.custom-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(212, 175, 55, 0.55);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transition: opacity 0.3s ease, width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 0 14px 0 rgba(212, 175, 55, 0.2);
+}
+
+.custom-cursor-dot.cursor-pointer-state {
+    width: 18px;
+    height: 18px;
+    background: #FFD700;
+    box-shadow: 0 0 14px 4px rgba(255, 215, 0, 0.85);
+}
+
+.custom-cursor-ring.cursor-pointer-state {
+    width: 52px;
+    height: 52px;
+    border-color: rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 20px 2px rgba(255, 215, 0, 0.3);
+}
+
+/* =========================================
+   Touch Ripple
+   ========================================= */
+.touch-ripple-ring {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(212, 175, 55, 0.9);
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: touchRippleExpand 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.5);
+}
+
+.touch-ripple-dot {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #FFD700;
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    animation: touchDotPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.7);
+}
+
+.touch-ripple-particle {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #D4AF37;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: touchParticle 0.55s ease-out forwards;
+}
+
+@keyframes touchRippleExpand {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    80%  { opacity: 0.6; }
+    100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+}
+
+@keyframes touchDotPop {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    60%  { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+@keyframes touchParticle {
+    0%   { transform: translate(calc(-50%), calc(-50%)); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))); opacity: 0; }
+}
+
+/* =========================================
+   Bid Success Animation
+   ========================================= */
+.bid-success-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 9995;
+}
+
+.bid-particle-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.bid-particle {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: bidParticleBurst 0.9s ease-out forwards;
+}
+
+@keyframes bidParticleBurst {
+    0%   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.2); opacity: 0; }
+}
+
+.bid-success-stamp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(20, 16, 10, 0.95), rgba(40, 30, 10, 0.95));
+    border: 2px solid #D4AF37;
+    border-radius: 16px;
+    padding: 24px 36px;
+    box-shadow:
+        0 0 40px rgba(212, 175, 55, 0.5),
+        0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: bidStampIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+               bidStampOut 0.4s ease-in 0.75s forwards;
+    pointer-events: none;
+    backdrop-filter: blur(12px);
+}
+
+.bid-success-icon {
+    font-size: 40px;
+    color: #D4AF37;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+    animation: gavelSwing 0.5s ease-out;
+}
+
+.bid-success-label {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #D4AF37;
+    text-transform: uppercase;
+}
+
+.bid-success-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
+}
+
+@keyframes bidStampIn {
+    0%   { opacity: 0; transform: scale(0.5) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes bidStampOut {
+    0%   { opacity: 1; transform: scale(1) translateY(0); }
+    100% { opacity: 0; transform: scale(0.8) translateY(-20px); }
+}
+
+@keyframes gavelSwing {
+    0%   { transform: rotate(-30deg); }
+    50%  { transform: rotate(10deg); }
+    75%  { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* =========================================
+   Win Animation Overlay
+   ========================================= */
+.win-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 4, 2, 0.85);
+    backdrop-filter: blur(6px);
+    animation: winFadeIn 0.5s ease forwards;
+}
+
+@keyframes winFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.win-confetti-canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.win-panel {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 48px 40px;
+    background: linear-gradient(160deg, rgba(25, 20, 8, 0.98) 0%, rgba(40, 30, 10, 0.98) 100%);
+    border: 2px solid #D4AF37;
+    border-radius: 24px;
+    box-shadow:
+        0 0 80px rgba(212, 175, 55, 0.4),
+        0 0 200px rgba(212, 175, 55, 0.15),
+        0 24px 64px rgba(0, 0, 0, 0.7);
+    max-width: 460px;
+    width: 90%;
+    animation: winPanelSlideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes winPanelSlideUp {
+    0%   { opacity: 0; transform: translateY(60px) scale(0.85); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.win-trophy-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.win-trophy-glow {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.5) 0%, transparent 70%);
+    animation: trophyPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes trophyPulse {
+    from { transform: scale(0.9); opacity: 0.6; }
+    to   { transform: scale(1.3); opacity: 1; }
+}
+
+.win-trophy-icon {
+    font-size: 72px;
+    color: #FFD700;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.9));
+    animation: trophyBounce 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes trophyBounce {
+    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.2) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.win-eyebrow {
+    font-size: 16px;
+    color: rgba(212, 175, 55, 0.8);
+    letter-spacing: 0.04em;
+    margin: 0;
+}
+
+.win-headline {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 900;
+    color: #FFD700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    margin: 0;
+    animation: winHeadlineGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes winHeadlineGlow {
+    from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+    to   { text-shadow: 0 0 40px rgba(255, 215, 0, 0.9), 0 0 80px rgba(212, 175, 55, 0.4); }
+}
+
+.win-subtitle {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 300px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.win-amount-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 12px 28px;
+}
+
+.win-amount-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(212, 175, 55, 0.7);
+}
+
+.win-amount-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #D4AF37;
+    font-family: 'Courier New', monospace;
+    letter-spacing: -0.01em;
+}
+
+.win-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.win-btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #D4AF37, #FFD700, #B8860B);
+    color: #1a1200;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.5);
+}
+
+.win-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.7);
+}
+
+.win-btn-secondary {
+    padding: 13px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.win-btn-secondary:hover {
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.35);
+}
