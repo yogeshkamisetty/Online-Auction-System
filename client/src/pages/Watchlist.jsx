@@ -27,7 +27,7 @@ const Watchlist = () => {
 
     // Fetch Watchlist
     const { data: watchlist = [], isLoading, isError } = useQuery({
-        queryKey: ['watchlistPage'],
+        queryKey: ['watchlist'],
         queryFn: async () => {
             const res = await api.get('/watchlist');
             return res.data;

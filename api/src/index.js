@@ -38,6 +38,16 @@ app.use('/api/bids',      bidRoutes);
 app.use('/api/admin',     adminRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 
+// ── Newsletter subscription ──────────────────────────────────────────────────
+app.post('/api/newsletter', (req, res) => {
+  const { email } = req.body;
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())) {
+    return res.status(400).json({ error: 'Please provide a valid email address' });
+  }
+  console.log(`[newsletter] Subscribed: ${email.trim()}`);
+  res.json({ message: 'Thank you for subscribing to Golden Hammer private previews!' });
+});
+
 // ── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
   console.error('[error]', err.stack);
@@ -66,6 +76,10 @@ startPurgeJob();
 
 // ── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  httpServer.listen(PORT, () => {
+    console.log(`API running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { app, httpServer, io };

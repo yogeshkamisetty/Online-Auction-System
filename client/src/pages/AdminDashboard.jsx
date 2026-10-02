@@ -13,7 +13,7 @@ const AdminDashboard = () => {
     const toast = useToast();
     const verificationDialogRef = useRef(null);
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'overview';
     
     // Pagination & Search States

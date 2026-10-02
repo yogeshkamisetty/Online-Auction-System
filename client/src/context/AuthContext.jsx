@@ -7,9 +7,16 @@ export const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        try {
+            const saved = localStorage.getItem('user');
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
+        }
+    });
     const [token, setToken] = useState(localStorage.getItem('token') || null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(!user && !!localStorage.getItem('token'));
     const skipHydrationRef = useRef(false);
 
     const login = (userData, authToken) => {
@@ -72,9 +79,21 @@ export const AuthProvider = ({ children }) => {
         };
     }, [token, logout]);
 
+    if (loading && !user && token) {
+        return (
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B0F19', color: '#C5A880' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ width: '40px', height: '40px', border: '3px solid rgba(197, 168, 128, 0.2)', borderTopColor: '#C5A880', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+                    <p style={{ fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', fontSize: '0.85rem' }}>GOLDEN HAMMER AUCTIONS</p>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <AuthContext.Provider value={{ user, token, login, logout, loading, isAuthenticated: !!token }}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };

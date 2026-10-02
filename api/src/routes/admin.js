@@ -171,13 +171,18 @@ router.patch('/auctions/:id/verify', async (req, res) => {
     if (!VALID_VERIFICATION.includes(verificationStatus)) {
       return res.status(400).json({ error: 'Invalid verification status' });
     }
+    const data = {
+      verificationStatus,
+      verificationNotes: verificationNotes || null,
+      verifiedBy: verificationStatus === 'VERIFIED' ? req.user.email : null,
+    };
+    if (verificationStatus === 'VERIFIED') {
+      data.status = 'ACTIVE';
+    }
+
     const auction = await prisma.auction.update({
       where: { id: req.params.id },
-      data: {
-        verificationStatus,
-        verificationNotes: verificationNotes || null,
-        verifiedBy: verificationStatus === 'VERIFIED' ? req.user.email : null,
-      },
+      data,
     });
     res.json(auction);
   } catch (err) {

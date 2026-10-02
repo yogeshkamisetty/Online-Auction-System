@@ -23,16 +23,30 @@ router.post('/register', authRateLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'name, email and password are required' });
+      return res.status(400).json({ error: 'Name, email, and password are required' });
     }
+
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2 || trimmedName.length > 70) {
+      return res.status(400).json({ error: 'Full name must be between 2 and 70 characters' });
+    }
+
+    const trimmedEmail = email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
+    }
+
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return res.status(409).json({ error: 'Email already in use' });
+    const existing = await prisma.user.findUnique({ where: { email: trimmedEmail } });
+    if (existing) return res.status(409).json({ error: 'An account with this email already exists' });
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({ data: { name, email, passwordHash } });
+    const user = await prisma.user.create({
+      data: { name: trimmedName, email: trimmedEmail, passwordHash, role: 'USER' }
+    });
     res.status(201).json({ token: signToken(user), user: publicUser(user) });
   } catch (err) {
     console.error(err);
@@ -45,14 +59,15 @@ router.post('/login', authRateLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: 'email and password are required' });
+      return res.status(400).json({ error: 'Email and password are required' });
     }
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    if (user.suspended) return res.status(403).json({ error: 'Account suspended' });
+    const trimmedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { email: trimmedEmail } });
+    if (!user) return res.status(401).json({ error: 'Invalid email or password' });
+    if (user.suspended) return res.status(403).json({ error: 'Account suspended. Contact administration.' });
 
     const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+    if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
 
     res.json({ token: signToken(user), user: publicUser(user) });
   } catch (err) {

@@ -3,8 +3,8 @@ const prisma = require('../lib/prisma');
 const { requireAuth } = require('../middleware/auth');
 const { listingRateLimiter } = require('../middleware/rateLimit');
 
-// Statuses visible to any public request
-const PUBLIC_STATUSES = ['ACTIVE', 'CLOSING', 'CLOSED', 'SETTLED'];
+// Valid statuses for listing auctions
+const VALID_STATUSES = ['ACTIVE', 'CLOSING', 'CLOSED', 'SETTLED', 'PENDING', 'CANCELLED', 'ALL'];
 const SELLER_COMMISSION_RATE = 0.10;
 const BUYER_PREMIUM_RATE = 0.05;
 
@@ -13,13 +13,16 @@ router.get('/', async (req, res) => {
   try {
     const { category, featured, search, status, sellerId } = req.query;
 
-    // Validate status — default ACTIVE, reject non-public values
+    // Validate status — default ACTIVE
     const requestedStatus = status || 'ACTIVE';
-    if (!PUBLIC_STATUSES.includes(requestedStatus)) {
+    if (!VALID_STATUSES.includes(requestedStatus)) {
       return res.status(400).json({ error: 'Invalid status filter' });
     }
 
-    const where = { status: requestedStatus, deletedAt: null };
+    const where = { deletedAt: null };
+    if (requestedStatus !== 'ALL') {
+      where.status = requestedStatus;
+    }
     if (featured === 'true') where.featured = true;
     if (sellerId) where.sellerId = sellerId;
     if (category) where.category = { equals: category, mode: 'insensitive' };
@@ -76,126 +79,153 @@ router.post('/', requireAuth, listingRateLimiter, async (req, res) => {
   try {
     const { title, description, category, condition, imageUrl, startPrice, endTime } = req.body;
     if (!title || !description || !category || !startPrice || !endTime) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Missing required fields: title, description, category, startPrice, endTime' });
     }
 
     // Starting price validation
     const parsedPrice = parseFloat(startPrice);
     if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      return res.status(400).json({ error: 'Starting price must be a positive number' });
+      return res.status(400).json({ error: 'Starting valuation must be a positive number' });
     }
 
     // End time validation
     const parsedEndTime = new Date(endTime);
-    if (isNaN(parsedEndTime.getTime()) || parsedEndTime <= new Date(Date.now() + 5 * 60 * 1000)) {
-      return res.status(400).json({ error: 'Bidding end time must be at least 5 minutes in the future' });
+    if (isNaN(parsedEndTime.getTime()) || parsedEndTime <= new Date(Date.now() + 60 * 1000)) {
+      return res.status(400).json({ error: 'Bidding end time must be in the future' });
     }
 
-    // Image URL safety validation
-    if (imageUrl) {
+    // Image URL validation with flexible fallback
+    let finalImageUrl = (imageUrl || '').trim();
+    if (finalImageUrl) {
       try {
-        const parsedUrl = new URL(imageUrl);
-        if (parsedUrl.hostname !== 'res.cloudinary.com') {
-          return res.status(400).json({ error: 'Image must be uploaded to the trusted platform storage (Cloudinary)' });
+        const parsedUrl = new URL(finalImageUrl);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+          return res.status(400).json({ error: 'Image URL must use http or https' });
         }
-        const secureExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.avif'];
-        const pathname = parsedUrl.pathname.toLowerCase();
-        const hasSecureExtension = secureExtensions.some(ext => pathname.endsWith(ext));
-        if (!hasSecureExtension) {
-          return res.status(400).json({ error: 'Image file type is not supported. Use JPG, JPEG, PNG, WEBP, or AVIF' });
-        }
-      } catch (urlErr) {
+      } catch {
         return res.status(400).json({ error: 'Provided image URL is invalid' });
       }
+    } else {
+      finalImageUrl = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=85';
     }
+
+    const isAdmin = req.user.role === 'ADMIN';
+    const status = isAdmin ? 'ACTIVE' : 'PENDING';
+    const verificationStatus = isAdmin ? 'VERIFIED' : 'PENDING';
+    const verifiedBy = isAdmin ? req.user.email : null;
+    const verificationNotes = isAdmin ? 'Direct listing verified by Chief Curator.' : null;
 
     const auction = await prisma.auction.create({
       data: {
-        title,
-        description,
-        category,
-        condition: condition || null,
-        imageUrl: imageUrl || '',
+        title: title.trim(),
+        description: description.trim(),
+        category: category.trim(),
+        condition: condition ? condition.trim() : 'Excellent',
+        imageUrl: finalImageUrl,
         startPrice: parsedPrice,
         currentBid: parsedPrice,
         endTime: parsedEndTime,
-        status: 'ACTIVE',
+        status,
+        featured: isAdmin,
+        verificationStatus,
+        verifiedBy,
+        verificationNotes,
         sellerId: req.user.userId,
       },
     });
     res.status(201).json(auction);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to create auction' });
+    res.status(500).json({ error: 'Failed to create auction listing' });
   }
 });
 
-// PATCH /api/auctions/:id/settle — winner confirms purchase
+// PATCH /api/auctions/:id/settle — winner confirms purchase with transactional integrity
 router.patch('/:id/settle', requireAuth, async (req, res) => {
   try {
-    const auction = await prisma.auction.findUnique({
-      where: { id: req.params.id },
-      include: {
-        bids: { orderBy: { amount: 'desc' }, take: 1, include: { user: true } },
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const auction = await tx.auction.findUnique({
+        where: { id: req.params.id },
+        include: {
+          bids: { orderBy: { amount: 'desc' }, take: 1, include: { user: true } },
+        },
+      });
+
+      if (!auction || auction.deletedAt) {
+        throw Object.assign(new Error('Auction not found'), { status: 404 });
+      }
+      if (auction.status === 'SETTLED') {
+        throw Object.assign(new Error('This auction has already been settled and paid'), { status: 400 });
+      }
+      if (auction.status !== 'CLOSED') {
+        throw Object.assign(new Error('Auction must be closed before settling payment'), { status: 400 });
+      }
+
+      const winningBid = auction.bids[0];
+      if (!winningBid) {
+        throw Object.assign(new Error('No bids found on this auction to settle'), { status: 400 });
+      }
+      if (winningBid.userId !== req.user.userId) {
+        throw Object.assign(new Error('Only the winning bidder can settle this auction'), { status: 403 });
+      }
+
+      const hammer = parseFloat(winningBid.amount);
+      const platformFee = hammer * SELLER_COMMISSION_RATE;
+      const buyerPremium = hammer * BUYER_PREMIUM_RATE;
+
+      const settled = await tx.auction.update({
+        where: { id: req.params.id },
+        data: {
+          status: 'SETTLED',
+          platformFee,
+          buyerPremium,
+        },
+      });
+
+      return {
+        message: 'Purchase confirmed. Settlement completed successfully!',
+        auction: settled,
+        summary: {
+          hammerPrice: hammer,
+          buyerPremium,
+          totalPaid: hammer + buyerPremium,
+          sellerReceives: hammer - platformFee,
+        },
+      };
     });
 
-    if (!auction) return res.status(404).json({ error: 'Auction not found' });
-    if (auction.status !== 'CLOSED') {
-      return res.status(400).json({ error: 'Auction must be closed before settling' });
-    }
-
-    const winningBid = auction.bids[0];
-    if (!winningBid) return res.status(400).json({ error: 'No bids found on this auction' });
-    if (winningBid.userId !== req.user.userId) {
-      return res.status(403).json({ error: 'Only the winning bidder can settle this auction' });
-    }
-
-    const hammer = parseFloat(winningBid.amount);
-
-    const settled = await prisma.auction.update({
-      where: { id: req.params.id },
-      data: {
-        status: 'SETTLED',
-        platformFee:   hammer * SELLER_COMMISSION_RATE,
-        buyerPremium:  hammer * BUYER_PREMIUM_RATE,
-      },
-    });
-
-    res.json({
-      message: 'Purchase confirmed. Thank you!',
-      auction: settled,
-      summary: {
-        hammerPrice:    hammer,
-        buyerPremium:   hammer * BUYER_PREMIUM_RATE,
-        totalPaid:      hammer + hammer * BUYER_PREMIUM_RATE,
-        sellerReceives: hammer - hammer * SELLER_COMMISSION_RATE,
-      },
-    });
+    res.json(result);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to settle auction' });
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message || 'Failed to settle auction' });
   }
 });
 
-// DELETE /api/auctions/:id — seller or admin deletes a listing
+// DELETE /api/auctions/:id — seller or admin deletes a listing with safeguards
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const auction = await prisma.auction.findUnique({
-      where: { id: req.params.id }
+      where: { id: req.params.id },
     });
     if (!auction) return res.status(404).json({ error: 'Auction not found' });
-    
+
     // Check ownership or admin status
     if (auction.sellerId !== req.user.userId && req.user.role !== 'ADMIN') {
       return res.status(403).json({ error: 'You are not authorized to delete this listing' });
     }
-    
+
+    // Safety guard: active auctions with real bids cannot be silently deleted by seller
+    if (auction.status === 'ACTIVE' && auction.bidCount > 0 && req.user.role !== 'ADMIN') {
+      return res.status(400).json({
+        error: 'Active auctions with existing bids cannot be deleted. Contact administration to withdraw lots.',
+      });
+    }
+
     await prisma.auction.update({
       where: { id: req.params.id },
-      data: { deletedAt: new Date() }
+      data: { deletedAt: new Date() },
     });
-    
+
     res.json({ message: 'Listing successfully placed in retention.' });
   } catch (err) {
     console.error(err);

@@ -9,6 +9,7 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [terms, setTerms] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ text: '', type: '' });
     const toast = useToast();
     const navigate = useNavigate();
@@ -17,36 +18,38 @@ const Register = () => {
         e.preventDefault();
         setMessage({ text: '', type: '' });
 
-        if (!fullName) return setMessage({ text: 'Please enter your full name.', type: 'error' });
-        if (!email) return setMessage({ text: 'Please enter your email address.', type: 'error' });
+        if (!fullName.trim()) return setMessage({ text: 'Please enter your full name.', type: 'error' });
+        if (!email.trim()) return setMessage({ text: 'Please enter your email address.', type: 'error' });
         if (!password) return setMessage({ text: 'Please enter a password.', type: 'error' });
         if (password.length < 6) return setMessage({ text: 'Password must be at least 6 characters long.', type: 'error' });
         if (password !== confirmPassword) return setMessage({ text: 'Passwords do not match.', type: 'error' });
         if (!terms) return setMessage({ text: 'Please agree to the Terms & Conditions.', type: 'error' });
 
+        setIsSubmitting(true);
         setMessage({ text: 'Creating your account...', type: 'info' });
 
         try {
             await api.post('/auth/register', {
-                name: fullName,
-                email,
+                name: fullName.trim(),
+                email: email.trim().toLowerCase(),
                 password
             });
             setMessage({ text: '', type: '' });
             toast.success('Account created! Taking you to sign in…');
             setTimeout(() => {
-                navigate('/login');
-            }, 1200);
+                navigate('/login', { state: { email: email.trim().toLowerCase() } });
+            }, 1000);
         } catch (err) {
             const text = err.response?.data?.error || err.message || 'Registration failed';
             setMessage({ text: '', type: '' });
             toast.error(text);
+            setIsSubmitting(false);
         }
     };
 
     return (
         <main className="container flex-center" style={{ minHeight: '85vh', padding: '40px 0' }}>
-            <div className="detail-card" style={{ width: '100%', maxWidth: '460px', padding: '32px', boxW: 'var(--shadow-combined)' }}>
+            <div className="detail-card" style={{ width: '100%', maxWidth: '460px', padding: '32px', boxShadow: 'var(--shadow-combined)' }}>
                 <div style={{ textAlign: 'center', marginBottom: '24px' }}>
                     <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', display: 'block', marginBottom: '4px' }}>
                         Get Started
@@ -115,8 +118,8 @@ const Register = () => {
                         </div>
                     )}
 
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px' }}>
-                        Create Account
+                    <button type="submit" disabled={isSubmitting} className="btn btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px', opacity: isSubmitting ? 0.7 : 1 }}>
+                        {isSubmitting ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
 

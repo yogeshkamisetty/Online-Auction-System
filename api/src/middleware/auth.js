@@ -18,7 +18,8 @@ async function requireAuth(req, res, next) {
       return res.status(403).json({ error: 'Account suspended' });
     }
 
-    req.user = payload; // { userId, email, role }
+    // Use live database state so role updates and suspensions take immediate effect
+    req.user = { userId: user.id, email: user.email, role: user.role, name: user.name };
     next();
   } catch (err) {
     res.status(401).json({ error: 'Invalid or expired token' });

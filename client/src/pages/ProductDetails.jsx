@@ -65,6 +65,8 @@ const ProductDetails = () => {
     const toast = useToast();
 
     const [bidAmount, setBidAmount] = useState('');
+    const [isBidding, setIsBidding] = useState(false);
+    const [selectedImage, setSelectedImage] = useState('');
     const [showBidSuccess, setShowBidSuccess] = useState(false);
     const [lastBidAmount, setLastBidAmount] = useState(null);
     const [showWin, setShowWin] = useState(false);
@@ -78,12 +80,15 @@ const ProductDetails = () => {
         }
     });
 
-    // Initialize bid amount
+    // Initialize bid amount and main image
     useEffect(() => {
         if (product) {
             setBidAmount(Math.floor(Number(product.currentBid)) + 10);
+            if (!selectedImage && product.imageUrl) {
+                setSelectedImage(product.imageUrl);
+            }
         }
-    }, [product]);
+    }, [product, selectedImage]);
 
     // Query watchlist
     const { data: watchlist = [] } = useQuery({
@@ -158,6 +163,7 @@ const ProductDetails = () => {
                 if (!oldProduct) return oldProduct;
                 return { ...oldProduct, status: 'CLOSED' };
             });
+
             // Check if this user is the winner after close
             setTimeout(() => {
                 queryClient.fetchQuery({ queryKey: ['auction', id] }).then(freshProduct => {
@@ -175,7 +181,7 @@ const ProductDetails = () => {
             socket.emit('leave:auction', id);
             socket.disconnect();
         };
-    }, [id, queryClient]);
+    }, [id, queryClient, user]);
 
     const handleBid = async (e) => {
         e.preventDefault();
@@ -185,8 +191,19 @@ const ProductDetails = () => {
             return;
         }
 
+        if (product?.sellerId === user?.id) {
+            toast.error('Consignors are not permitted to bid on their own lots.');
+            return;
+        }
+
+        const placedAmount = parseFloat(bidAmount);
+        if (placedAmount <= parseFloat(product.currentBid)) {
+            toast.error(`Bid must be greater than current high bid ($${product.currentBid})`);
+            return;
+        }
+
+        setIsBidding(true);
         try {
-            const placedAmount = parseFloat(bidAmount);
             await api.post('/bids', {
                 auctionId: id,
                 amount: placedAmount
@@ -196,7 +213,10 @@ const ProductDetails = () => {
             setShowBidSuccess(true);
             refetch();
         } catch (err) {
-            toast.error(err.message || 'Failed to place bid');
+            const msg = err.response?.data?.error || err.message || 'Failed to place bid';
+            toast.error(msg);
+        } finally {
+            setIsBidding(false);
         }
     };
 
@@ -239,16 +259,13 @@ const ProductDetails = () => {
             <div className="item-details-layout mt-md">
                 {/* Left Side: Media Gallery */}
                 <div className="item-gallery">
-                    <div className="main-image-container">
+                    <div className="main-image-container" style={{ borderRadius: '8px', overflow: 'hidden' }}>
                         <img 
-                            src={product.imageUrl || '/images/camera-1.avif'} 
+                            src={selectedImage || product.imageUrl || '/images/camera-1.avif'} 
                             alt={product.title} 
                             className="main-item-image" 
+                            style={{ width: '100%', height: 'auto', display: 'block' }}
                         />
-                    </div>
-                    <div className="row gap-sm">
-                        <div className="gallery-thumbnail-placeholder"></div>
-                        <div className="gallery-thumbnail-placeholder"></div>
                     </div>
                 </div>
 
@@ -326,29 +343,36 @@ const ProductDetails = () => {
                         {/* Bid Placement or Settlement */}
                         <div className="bidding-section">
                             {product.status === 'ACTIVE' ? (
-                                <>
-                                    <div className="bid-labels">
-                                        <label htmlFor="bid-amount-input" className="label-caps text-secondary">Place Ascending Bid</label>
-                                        <span className="min-increment font-mono">Next bid must exceed current high bid</span>
+                                user && product.sellerId === user.id ? (
+                                    <div className="alert alert-info text-center" style={{ margin: '16px 0', fontSize: '13px', background: 'rgba(197, 168, 128, 0.1)', border: '1px solid rgba(197, 168, 128, 0.3)' }}>
+                                        🏛️ You are the consignor of this lot. Shill bidding is strictly prohibited under Golden Hammer bylaws.
                                     </div>
-
-                                    <form className="bid-form" onSubmit={handleBid} aria-label="Bid placement form">
-                                        <div className="input-wrapper">
-                                            <span className="currency-symbol" aria-hidden="true">$</span>
-                                            <input 
-                                                id="bid-amount-input"
-                                                type="number" 
-                                                value={bidAmount}
-                                                onChange={(e) => setBidAmount(e.target.value)}
-                                                aria-label="Enter bid amount in dollars"
-                                                required
-                                            />
+                                ) : (
+                                    <>
+                                        <div className="bid-labels">
+                                            <label htmlFor="bid-amount-input" className="label-caps text-secondary">Place Ascending Bid</label>
+                                            <span className="min-increment font-mono">Next bid must exceed current high bid</span>
                                         </div>
-                                        <button type="submit" className="btn btn-primary bid-submit-btn" aria-label="Place new high bid">
-                                            Place Bid
-                                        </button>
-                                    </form>
-                                </>
+
+                                        <form className="bid-form" onSubmit={handleBid} aria-label="Bid placement form">
+                                            <div className="input-wrapper">
+                                                <span className="currency-symbol" aria-hidden="true">$</span>
+                                                <input 
+                                                    id="bid-amount-input"
+                                                    type="number" 
+                                                    value={bidAmount}
+                                                    onChange={(e) => setBidAmount(e.target.value)}
+                                                    disabled={isBidding}
+                                                    aria-label="Enter bid amount in dollars"
+                                                    required
+                                                />
+                                            </div>
+                                            <button type="submit" disabled={isBidding} className="btn btn-primary bid-submit-btn" aria-label="Place new high bid" style={{ opacity: isBidding ? 0.7 : 1 }}>
+                                                {isBidding ? 'Placing Bid...' : 'Place Bid'}
+                                            </button>
+                                        </form>
+                                    </>
+                                )
                             ) : product.status === 'CLOSED' ? (
                                 isWinner ? (
                                     <div className="detail-card text-center winner-celebration-card">
@@ -443,7 +467,9 @@ const ProductDetails = () => {
                                         </div>
                                         <div className="bid-amount-time">
                                             <span className="bid-history-amount font-mono">${Number(bid.amount).toLocaleString('en-US')}</span>
-                                            <span className="bid-history-time font-mono">{new Date(bid.createdAt).toLocaleDateString()}</span>
+                                            <span className="bid-history-time font-mono">
+                                                {new Date(bid.createdAt).toLocaleDateString()} {new Date(bid.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
                                         </div>
                                     </div>
                                 ))

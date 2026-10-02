@@ -13,11 +13,24 @@ const STEPS = [
 
 const CATEGORIES = [
     { value: '', label: 'Select category...' },
-    { value: 'Ancient', label: 'Ancient Antiquities' },
-    { value: 'Modern', label: 'Modern Expression' },
-    { value: 'Luxury', label: 'Luxury Assets' },
-    { value: 'Furniture', label: 'Vintage Furniture' },
-    { value: 'Other', label: 'Other' },
+    { value: 'Luxury Watches', label: 'Luxury Watches' },
+    { value: 'Classic Vehicles', label: 'Classic Vehicles' },
+    { value: 'Fine Art', label: 'Fine Art' },
+    { value: 'Ancient Antiquities', label: 'Ancient Antiquities' },
+    { value: 'Rare Coins', label: 'Rare Coins' },
+    { value: 'Jewelry & Gems', label: 'Jewelry & Gems' },
+    { value: 'Vintage Furniture', label: 'Vintage Furniture' },
+];
+
+const CURATED_IMAGES = [
+    { name: 'Tourbillon Grand Complication', category: 'Luxury Watches', url: '/images/luxury-tourbillon-watch.jpg' },
+    { name: '1964 Ferrari 250 GT Lusso', category: 'Classic Vehicles', url: '/images/ferrari-250gt-classic.jpg' },
+    { name: 'Royal Colombian Emerald Necklace', category: 'Jewelry & Gems', url: '/images/emerald-diamond-necklace.jpg' },
+    { name: 'Impressionist Sunset Riviera', category: 'Fine Art', url: '/images/impressionist-coastal-painting.jpg' },
+    { name: 'Julius Caesar Gold Aureus 44 BC', category: 'Rare Coins', url: '/images/julius-caesar-gold-aureus.jpg' },
+    { name: 'Patek Philippe Celestial', category: 'Luxury Watches', url: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop' },
+    { name: 'Ancient Hellenistic Bronze', category: 'Ancient Antiquities', url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1200&auto=format&fit=crop' },
+    { name: 'Rosewood Lounge & Ottoman', category: 'Vintage Furniture', url: 'https://images.unsplash.com/photo-1580481077195-c228c407f9ab?q=80&w=1200&auto=format&fit=crop' },
 ];
 
 const CONDITIONS = [
@@ -36,7 +49,7 @@ const DURATIONS = [
 ];
 
 const Sell = () => {
-    const { token } = useContext(AuthContext);
+    const { token, user } = useContext(AuthContext);
     const navigate = useNavigate();
     const toast = useToast();
 
@@ -48,7 +61,8 @@ const Sell = () => {
     const [startPrice, setStartPrice] = useState('');
     const [duration, setDuration] = useState('7');
     const [imageFile, setImageFile] = useState(null);
-    const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+    const [customUrlInput, setCustomUrlInput] = useState('');
     const [uploading, setUploading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -58,16 +72,31 @@ const Sell = () => {
         }
     }, [token, navigate]);
 
-    // Create / revoke object URL for image preview
+    // Handle file upload preview
     useEffect(() => {
         if (imageFile) {
             const url = URL.createObjectURL(imageFile);
             setImagePreviewUrl(url);
+            setCustomUrlInput('');
             return () => URL.revokeObjectURL(url);
-        } else {
-            setImagePreviewUrl(null);
         }
     }, [imageFile]);
+
+    const handleSelectCuratedImage = (img) => {
+        setImageFile(null);
+        setCustomUrlInput(img.url);
+        setImagePreviewUrl(img.url);
+        if (!category) {
+            setCategory(img.category);
+        }
+        toast.info(`Selected ${img.name} image`);
+    };
+
+    const handleCustomUrlChange = (url) => {
+        setCustomUrlInput(url);
+        setImageFile(null);
+        setImagePreviewUrl(url);
+    };
 
     const categoryLabel = useMemo(
         () => CATEGORIES.find((c) => c.value === category)?.label || '',
@@ -85,7 +114,7 @@ const Sell = () => {
     );
 
     const canAdvanceStep1 = title.trim() && category && condition;
-    const canAdvanceStep2 = description.trim();
+    const canAdvanceStep2 = description.trim() && (imagePreviewUrl || imageFile || customUrlInput);
 
     const goNext = () => {
         setErrorMessage('');
@@ -94,7 +123,7 @@ const Sell = () => {
             return;
         }
         if (step === 2 && !canAdvanceStep2) {
-            setErrorMessage('Please provide a description before continuing.');
+            setErrorMessage('Please provide a description and choose or upload an image before continuing.');
             return;
         }
         if (step < 3) setStep(step + 1);
@@ -112,6 +141,13 @@ const Sell = () => {
         }
     };
 
+    const fileToDataUri = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
+
     const handleSell = async (e) => {
         e.preventDefault();
         setUploading(true);
@@ -120,48 +156,60 @@ const Sell = () => {
         const endTime = new Date();
         endTime.setDate(endTime.getDate() + parseInt(duration));
 
-        if (!imageFile) {
-            setErrorMessage('Please upload an asset image before publishing.');
-            setUploading(false);
-            return;
+        let finalImageUrl = customUrlInput || imagePreviewUrl;
+
+        // If a file was selected, attempt Cloudinary upload or convert to Data URI
+        if (imageFile) {
+            const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+            const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'golden_hammer_preset';
+
+            if (cloudName && uploadPreset) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', imageFile);
+                    formData.append('upload_preset', uploadPreset);
+
+                    const uploadRes = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
+                    finalImageUrl = uploadRes.data.secure_url;
+                } catch {
+                    // Fallback to data URI if Cloudinary fails
+                    try {
+                        finalImageUrl = await fileToDataUri(imageFile);
+                    } catch {
+                        finalImageUrl = 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop';
+                    }
+                }
+            } else {
+                try {
+                    finalImageUrl = await fileToDataUri(imageFile);
+                } catch {
+                    finalImageUrl = 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop';
+                }
+            }
         }
 
-        const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-        const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'golden_hammer_preset';
-
-        if (!cloudName) {
-            setErrorMessage('Image upload is not configured. Set VITE_CLOUDINARY_CLOUD_NAME before publishing listings.');
-            setUploading(false);
-            return;
-        }
-
-        try {
-            const formData = new FormData();
-            formData.append('file', imageFile);
-            formData.append('upload_preset', uploadPreset);
-
-            const uploadRes = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, formData);
-            var imageUrl = uploadRes.data.secure_url;
-        } catch (uploadErr) {
-            const text = uploadErr.response?.data?.error?.message || uploadErr.message || 'Image upload failed';
-            setErrorMessage(text);
-            toast.error(text);
-            setUploading(false);
-            return;
+        if (!finalImageUrl) {
+            finalImageUrl = 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1200&auto=format&fit=crop';
         }
 
         try {
             const res = await api.post('/auctions', {
-                title,
+                title: title.trim(),
                 category,
                 condition,
-                description,
+                description: description.trim(),
                 startPrice: parseFloat(startPrice),
                 endTime,
-                imageUrl
+                imageUrl: finalImageUrl
             });
-            toast.success('Auction launched successfully.');
-            navigate(`/product/${res.data.id}`);
+
+            if (res.data.status === 'ACTIVE') {
+                toast.success('Auction published live to catalog!');
+                navigate(`/product/${res.data.id}`);
+            } else {
+                toast.success('Consignment submitted! It is in the curator verification queue.');
+                navigate('/dashboard');
+            }
         } catch (err) {
             const text = err.response?.data?.error || err.message || 'Failed to create listing';
             setErrorMessage(text);
@@ -276,8 +324,50 @@ const Sell = () => {
             </div>
 
             <div className="sell-form-group">
-                <label className="sell-form-label">Upload a Photo</label>
-                <div className={`sell-dropzone ${imageFile ? 'has-image' : ''}`}>
+                <label className="sell-form-label">Asset Image (Select Preset, Upload, or Enter URL)</label>
+
+                {/* Curated Presets Bar */}
+                <div style={{ marginBottom: '16px' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--on-surface-variant)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '8px' }}>
+                        Curated Luxury Vault Presets (One-Click Selection)
+                    </span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '8px' }}>
+                        {CURATED_IMAGES.map((img) => (
+                            <button
+                                key={img.name}
+                                type="button"
+                                onClick={() => handleSelectCuratedImage(img)}
+                                title={img.name}
+                                style={{
+                                    border: customUrlInput === img.url ? '2px solid var(--primary)' : '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '6px',
+                                    overflow: 'hidden',
+                                    padding: 0,
+                                    background: 'none',
+                                    cursor: 'pointer',
+                                    aspectRatio: '1',
+                                    position: 'relative'
+                                }}
+                            >
+                                <img src={img.url} alt={img.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Direct Image URL input */}
+                <div style={{ marginBottom: '16px' }}>
+                    <input
+                        type="url"
+                        className="sell-form-input"
+                        placeholder="Or enter direct image URL (https://...)"
+                        value={customUrlInput}
+                        onChange={(e) => handleCustomUrlChange(e.target.value)}
+                    />
+                </div>
+
+                {/* File Upload Dropzone */}
+                <div className={`sell-dropzone ${imageFile || imagePreviewUrl ? 'has-image' : ''}`}>
                     <input
                         type="file"
                         accept="image/*"
@@ -293,7 +383,7 @@ const Sell = () => {
                             />
                             <div className="sell-dropzone-filename">
                                 <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>check_circle</span>
-                                {imageFile.name}
+                                {imageFile ? imageFile.name : 'Asset Image Selected'}
                             </div>
                         </>
                     ) : (
@@ -316,7 +406,7 @@ const Sell = () => {
         <div className="sell-step-content" key="step3">
             <h3 className="sell-form-section-title">
                 <span className="material-symbols-outlined">gavel</span>
-                Pricing
+                Pricing & Review
             </h3>
             <p className="sell-form-section-desc">
                 Set your starting bid and how long the auction runs. Review before publishing.
@@ -377,8 +467,8 @@ const Sell = () => {
                     </div>
                     <div>
                         <span style={{ color: '#6b7280', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Image</span>
-                        <p style={{ color: imageFile ? '#10b981' : '#fca5a5', fontWeight: 600, margin: '2px 0 0' }}>
-                            {imageFile ? '✓ Uploaded' : '✗ Required'}
+                        <p style={{ color: (imagePreviewUrl || customUrlInput || imageFile) ? '#10b981' : '#fca5a5', fontWeight: 600, margin: '2px 0 0' }}>
+                            {(imagePreviewUrl || customUrlInput || imageFile) ? '✓ Attached' : '✗ Required'}
                         </p>
                     </div>
                 </div>
@@ -388,7 +478,7 @@ const Sell = () => {
                 <button
                     type="submit"
                     className="btn-gold-shimmer"
-                    disabled={uploading || !startPrice || !imageFile}
+                    disabled={uploading || !startPrice || (!imageFile && !customUrlInput && !imagePreviewUrl)}
                 >
                     <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>rocket_launch</span>
                     {uploading ? 'Publishing...' : 'Publish Listing'}
@@ -470,7 +560,7 @@ const Sell = () => {
                 <div className="sell-page-header">
                     <div className="sell-page-badge">
                         <span className="badge-dot" />
-                        List an Item
+                        {user?.role === 'ADMIN' ? 'Curator Console (Instant Publish)' : 'List an Item'}
                     </div>
                     <h1 className="sell-page-title">Sell Your Item</h1>
                     <p className="sell-page-subtitle">

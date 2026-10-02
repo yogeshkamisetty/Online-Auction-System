@@ -6,7 +6,10 @@ const { requireAuth } = require('../middleware/auth');
 router.get('/', requireAuth, async (req, res) => {
     try {
         const watchlisted = await prisma.watchlist.findMany({
-            where: { userId: req.user.userId },
+            where: {
+                userId: req.user.userId,
+                auction: { deletedAt: null }
+            },
             orderBy: { createdAt: 'desc' },
             include: {
                 auction: {
@@ -18,7 +21,7 @@ router.get('/', requireAuth, async (req, res) => {
         });
         
         // Return array of auctions directly to make rendering simple
-        const auctions = watchlisted.map(w => w.auction);
+        const auctions = watchlisted.map(w => w.auction).filter(Boolean);
         res.json(auctions);
     } catch (err) {
         console.error(err);
@@ -34,6 +37,13 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     try {
+        const auction = await prisma.auction.findUnique({
+            where: { id: auctionId }
+        });
+        if (!auction || auction.deletedAt) {
+            return res.status(404).json({ error: 'Auction lot not found' });
+        }
+
         // Double-check if the item is already watched
         const existing = await prisma.watchlist.findUnique({
             where: {

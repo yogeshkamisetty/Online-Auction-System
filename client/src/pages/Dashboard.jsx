@@ -42,19 +42,11 @@ const Dashboard = () => {
     });
 
     // Fetch Seller Data (My Listings)
-    const { data: sellerData = { activeListings: [], settledListings: [], closedListings: [] }, isLoading: isSellerLoading, isError: isSellerError } = useQuery({
+    const { data: sellerListings = [], isLoading: isSellerLoading, isError: isSellerError } = useQuery({
         queryKey: ['myListings', user?.id],
         queryFn: async () => {
-            const [activeRes, settledRes, closedRes] = await Promise.all([
-                api.get(`/auctions?sellerId=${user.id}&status=ACTIVE`),
-                api.get(`/auctions?sellerId=${user.id}&status=SETTLED`),
-                api.get(`/auctions?sellerId=${user.id}&status=CLOSED`)
-            ]);
-            return {
-                activeListings: activeRes.data,
-                settledListings: settledRes.data,
-                closedListings: closedRes.data
-            };
+            const res = await api.get(`/auctions?sellerId=${user.id}&status=ALL`);
+            return res.data;
         },
         enabled: !!user && !!token
     });
@@ -152,15 +144,16 @@ const Dashboard = () => {
     const uniqueBids = Object.values(latestByAuction);
 
     // Process Seller Stats
-    const activeListings = sellerData.activeListings || [];
-    const settledListings = sellerData.settledListings || [];
-    const closedListings = sellerData.closedListings || [];
+    const activeListings = sellerListings.filter(a => a.status === 'ACTIVE');
+    const pendingListings = sellerListings.filter(a => a.status === 'PENDING');
+    const settledListings = sellerListings.filter(a => a.status === 'SETTLED');
+    const closedListings = sellerListings.filter(a => a.status === 'CLOSED');
     const sellerActiveCount = activeListings.length;
     const sellerSoldCount = settledListings.length;
     const totalGMV = settledListings.reduce((sum, a) => sum + parseFloat(a.currentBid), 0);
 
-    // Combined listings list sorted with most active first
-    const allListings = [...activeListings, ...closedListings, ...settledListings];
+    // Combined listings list sorted with pending and active first
+    const allListings = [...pendingListings, ...activeListings, ...closedListings, ...settledListings];
 
     return (
         <main className="container py-xl">
@@ -214,6 +207,14 @@ const Dashboard = () => {
                                 Settings & Profile
                             </a>
                         </li>
+                        {user.role === 'ADMIN' && (
+                            <li>
+                                <Link to="/admin" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>shield_person</span>
+                                    Admin Console
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </aside>
 

@@ -130,6 +130,12 @@ const Browse = () => {
         }
 
         const params = new URLSearchParams(location.search);
+        if (searchInput.trim()) {
+            params.set('search', searchInput.trim());
+        } else {
+            params.delete('search');
+        }
+
         if (min !== null) params.set('min', String(min));
         else params.delete('min');
         
@@ -139,7 +145,15 @@ const Browse = () => {
         navigate({ pathname: '/browse', search: params.toString() ? `?${params}` : '' });
     };
 
-    const categoriesList = ['Collections', 'Electronics', 'Furniture', 'Accessories', 'Vehicles', 'Ancient', 'Modern', 'Luxury'];
+    const categoriesList = [
+        'Luxury Watches',
+        'Classic Vehicles',
+        'Fine Art',
+        'Ancient Antiquities',
+        'Rare Coins',
+        'Jewelry & Gems',
+        'Vintage Furniture'
+    ];
 
     return (
         <main className="container py-xl">
@@ -214,9 +228,27 @@ const Browse = () => {
                         </div>
                     </div>
                     
-                    <button className="btn btn-secondary" onClick={applyFilters} style={{ width: '100%' }}>
-                        Apply Price Range
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <button className="btn btn-secondary" onClick={applyFilters} style={{ width: '100%' }}>
+                            Apply Price Range
+                        </button>
+                        {(selectedCategories.length > 0 || searchInput || minPrice || maxPrice) && (
+                            <button
+                                className="btn btn-ghost"
+                                onClick={() => {
+                                    setSearchInput('');
+                                    setSelectedCategories([]);
+                                    setMinPrice('');
+                                    setMaxPrice('');
+                                    setFilterError('');
+                                    navigate('/browse');
+                                }}
+                                style={{ width: '100%', fontSize: '12px' }}
+                            >
+                                Clear All Filters
+                            </button>
+                        )}
+                    </div>
                     {filterError && (
                         <div className="alert alert-error" style={{ marginTop: 'var(--space-base)' }}>
                             {filterError}

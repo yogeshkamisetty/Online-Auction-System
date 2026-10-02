@@ -38,6 +38,16 @@ router.get('/my', requireAuth, async (req, res) => {
   }
 });
 
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }[m]));
+}
+
 // POST /api/bids — place a bid (auth required)
 router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
   const { auctionId, amount } = req.body;
@@ -49,7 +59,7 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
     const result = await prisma.$transaction(async (tx) => {
       // SELECT FOR UPDATE — row-level lock prevents concurrent bid collisions
       const rows = await tx.$queryRaw`
-        SELECT id, "currentBid", status, "endTime"
+        SELECT id, "currentBid", status, "endTime", "sellerId", title
         FROM "Auction"
         WHERE id = ${auctionId} AND "deletedAt" IS NULL
         FOR UPDATE
@@ -61,15 +71,19 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
 
       const auction = rows[0];
 
+      if (auction.sellerId === req.user.userId) {
+        throw Object.assign(new Error('Sellers cannot place bids on their own consignments'), { status: 403 });
+      }
+
       if (auction.status !== 'ACTIVE') {
-        throw Object.assign(new Error('Auction is not active'), { status: 400 });
+        throw Object.assign(new Error('Auction is not active for bidding'), { status: 400 });
       }
       if (new Date() > new Date(auction.endTime)) {
-        throw Object.assign(new Error('Auction has ended'), { status: 400 });
+        throw Object.assign(new Error('Auction bidding period has concluded'), { status: 400 });
       }
       if (parseFloat(amount) <= parseFloat(auction.currentBid)) {
         throw Object.assign(
-          new Error(`Bid must be higher than current bid of $${parseFloat(auction.currentBid).toLocaleString()}`),
+          new Error(`Bid must be higher than current bid of $${parseFloat(auction.currentBid).toLocaleString('en-US')}`),
           { status: 400 }
         );
       }
@@ -105,6 +119,7 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
     const io = req.app.get('io');
     if (io) {
       io.to(auctionId).emit('bid:new', {
+        id: result.bid.id,
         auctionId,
         currentBid: result.auction.currentBid,
         bidCount: result.auction.bidCount,
@@ -117,16 +132,17 @@ router.post('/', requireAuth, bidRateLimiter, async (req, res) => {
     // Async outbid email notification
     if (result.previousHighestBid && result.previousHighestBid.userId !== req.user.userId) {
       const { user: prevUser } = result.previousHighestBid;
+      const safeTitle = escapeHtml(result.auction.title);
       sendEmail({
         to: prevUser.email,
-        subject: `⚠️ Outbid Warning: ${result.auction.title}`,
+        subject: `⚠️ Outbid Warning: ${safeTitle}`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <h2 style="color: #b91c1c;">You have been outbid!</h2>
-            <p>Hello <strong>${prevUser.name}</strong>,</p>
-            <p>Another bidder placed a higher bid on <strong>${result.auction.title}</strong>.</p>
+            <p>Hello <strong>${escapeHtml(prevUser.name)}</strong>,</p>
+            <p>Another collector placed a higher bid on <strong>${safeTitle}</strong>.</p>
             <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0; border: 1px solid #f3f4f6;">
-              <p style="margin: 0;">New Highest Bid: <strong style="font-size: 1.2rem; color: #111827;">$${result.auction.currentBid.toLocaleString()}</strong></p>
+              <p style="margin: 0;">New Highest Bid: <strong style="font-size: 1.2rem; color: #111827;">$${Number(result.auction.currentBid).toLocaleString('en-US')}</strong></p>
             </div>
             <p>Don't lose this treasure! Reclaim your lead by placing a higher bid.</p>
             <div style="text-align: center; margin: 30px 0;">

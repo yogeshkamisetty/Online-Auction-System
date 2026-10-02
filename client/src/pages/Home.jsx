@@ -148,15 +148,25 @@ const Home = () => {
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     };
 
+    const [submittingNewsletter, setSubmittingNewsletter] = useState(false);
+
     // Newsletter submit handler
-    const handleSubscribe = (e) => {
+    const handleSubscribe = async (e) => {
         e.preventDefault();
-        if (!email.trim()) {
+        if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
             toast.error("Please enter a valid email address.");
             return;
         }
-        toast.success("You're subscribed! We'll send you the latest auction updates.");
-        setEmail('');
+        setSubmittingNewsletter(true);
+        try {
+            const res = await api.post('/newsletter', { email: email.trim() });
+            toast.success(res.data.message || "You're subscribed! We'll send you private previews.");
+            setEmail('');
+        } catch (err) {
+            toast.error(err.response?.data?.error || err.message || "Failed to subscribe");
+        } finally {
+            setSubmittingNewsletter(false);
+        }
     };
 
     return (
@@ -471,8 +481,108 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 5. NEWSLETTER SUBSCRIBE BANNER */}
-            <section className="subscribe-section" id="how-it-works">
+            {/* 5. HOW IT WORKS */}
+            <section className="how-it-works-section" id="how-it-works" style={{ padding: '80px 0', borderTop: '1px solid rgba(255, 255, 255, 0.06)', background: 'linear-gradient(180deg, #060709 0%, #0d111a 100%)' }}>
+                <div className="container">
+                    <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 50px' }}>
+                        <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', letterSpacing: '0.15em' }}>
+                            The Collector's Journey
+                        </span>
+                        <h2 className="headline-lg" style={{ color: '#F3F4F6', fontSize: '2.2rem', marginTop: '8px' }}>
+                            How Golden Hammer Works
+                        </h2>
+                        <p style={{ color: '#9CA3AF', fontSize: '15px', marginTop: '10px' }}>
+                            A seamless, institutional-grade auction process connecting discerning collectors with museum-tier provenance.
+                        </p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(197, 168, 128, 0.2)', borderRadius: '8px', padding: '28px 20px', textAlign: 'left' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(197, 168, 128, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+                                <span className="material-symbols-outlined">inventory_2</span>
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--primary)', fontFamily: 'monospace', fontWeight: 600 }}>01 / CONSIGNMENT</span>
+                            <h3 style={{ color: '#FFFFFF', fontSize: '17px', margin: '8px 0', fontWeight: 600 }}>Curation & Verification</h3>
+                            <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.6 }}>
+                                Every submitted lot undergoes multi-point physical provenance verification and appraisal before going live.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(197, 168, 128, 0.2)', borderRadius: '8px', padding: '28px 20px', textAlign: 'left' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(197, 168, 128, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+                                <span className="material-symbols-outlined">gavel</span>
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--primary)', fontFamily: 'monospace', fontWeight: 600 }}>02 / BIDDING</span>
+                            <h3 style={{ color: '#FFFFFF', fontSize: '17px', margin: '8px 0', fontWeight: 600 }}>Live Price Discovery</h3>
+                            <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.6 }}>
+                                Bid in real time with WebSocket synchronisation. Watch the live ascending ledger update with zero latency.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(197, 168, 128, 0.2)', borderRadius: '8px', padding: '28px 20px', textAlign: 'left' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(197, 168, 128, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+                                <span className="material-symbols-outlined">timer</span>
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--primary)', fontFamily: 'monospace', fontWeight: 600 }}>03 / FAIR PLAY</span>
+                            <h3 style={{ color: '#FFFFFF', fontSize: '17px', margin: '8px 0', fontWeight: 600 }}>Anti-Snipe Protection</h3>
+                            <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.6 }}>
+                                Late bids extend the countdown clock by 2 minutes, ensuring genuine collectors have fair time to react.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(197, 168, 128, 0.2)', borderRadius: '8px', padding: '28px 20px', textAlign: 'left' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(197, 168, 128, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '16px' }}>
+                                <span className="material-symbols-outlined">local_shipping</span>
+                            </div>
+                            <span style={{ fontSize: '11px', color: 'var(--primary)', fontFamily: 'monospace', fontWeight: 600 }}>04 / SETTLEMENT</span>
+                            <h3 style={{ color: '#FFFFFF', fontSize: '17px', margin: '8px 0', fontWeight: 600 }}>Escrow & Armored Transit</h3>
+                            <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.6 }}>
+                                Payments are held in secure escrow. Fully insured white-glove transport delivers your asset to your private vault.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 6. ABOUT US */}
+            <section className="about-us-section" id="about-us" style={{ padding: '80px 0', borderTop: '1px solid rgba(255, 255, 255, 0.06)', background: '#080B12' }}>
+                <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+                    <div>
+                        <span className="font-mono label-caps" style={{ color: 'var(--primary)', fontSize: '11px', letterSpacing: '0.15em' }}>
+                            Our Heritage & Authenticity
+                        </span>
+                        <h2 className="headline-lg" style={{ color: '#F3F4F6', fontSize: '2.2rem', marginTop: '8px', lineHeight: 1.2 }}>
+                            The Standard in High-Value Online Auctions
+                        </h2>
+                        <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.7, marginTop: '16px' }}>
+                            Founded by master antiquarians and software engineers, Golden Hammer Auctions unites the centuries-old gravitas of London and Geneva salerooms with modern real-time technology.
+                        </p>
+                        <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.7, marginTop: '12px' }}>
+                            Every single asset is guaranteed authentic by our advisory board. Buyers enjoy comprehensive escrow protection, transparent fees, and discreet global delivery.
+                        </p>
+                        <div style={{ marginTop: '24px', display: 'flex', gap: '16px' }}>
+                            <Link to="/browse" className="btn btn-gold-gradient" style={{ padding: '12px 24px', textDecoration: 'none' }}>
+                                Explore The Catalog
+                            </Link>
+                            <Link to="/sell" className="btn btn-gold-outline" style={{ padding: '12px 24px', textDecoration: 'none' }}>
+                                Consign An Asset
+                            </Link>
+                        </div>
+                    </div>
+                    <div style={{ position: 'relative' }}>
+                        <div style={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(197, 168, 128, 0.3)', boxShadow: '0 20px 40px rgba(0,0,0,0.6)' }}>
+                            <img 
+                                src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=1200&auto=format&fit=crop" 
+                                alt="Golden Hammer Curatorial Excellence" 
+                                style={{ width: '100%', height: '360px', objectFit: 'cover', display: 'block' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 7. NEWSLETTER SUBSCRIBE BANNER */}
+            <section className="subscribe-section" id="newsletter">
                 <div className="container">
                     <div className="subscribe-card">
                         <div className="subscribe-left">
@@ -487,10 +597,11 @@ const Home = () => {
                                     className="subscribe-input"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    disabled={submittingNewsletter}
                                     required
                                 />
-                                <button type="submit" className="btn-subscribe">
-                                    Subscribe
+                                <button type="submit" disabled={submittingNewsletter} className="btn-subscribe" style={{ opacity: submittingNewsletter ? 0.7 : 1 }}>
+                                    {submittingNewsletter ? 'Subscribing...' : 'Subscribe'}
                                 </button>
                             </form>
                             <div className="facepile-wrapper">
